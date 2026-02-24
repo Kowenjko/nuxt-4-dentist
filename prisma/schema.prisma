@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "@/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CLIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Хеш пароля
+  name      String
+  phone     String?
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  
+  // Если пользователь врач, у него есть профиль врача
+  doctorProfile DoctorProfile? 
+  appointments  Appointment[] // Записи клиента
+}
+
+model DoctorProfile {
+  id          String   @id @default(uuid())
+
+  userId      String   @unique // Связь с User
+  user        User     @relation(fields: [userId], references: [id])
+  bio         String?       @db.Text // Добавил поле для описания врача (для Hero блока)
+
+  services    Service[]   // 👈 Many-to-Many
+  specialty   String   @default("Стоматолог")
+
+  doctorSchedule DoctorSchedule[]
+  appointments Appointment[]
+}
+
+model DoctorSchedule {
+  id        String   @id @default(uuid())
+  doctorId  String
+  doctor    DoctorProfile @relation(fields: [doctorId], references: [id])
+  weekday   Int      // 0-6
+  startTime String // "09:00"
+  endTime   String // "18:00"
+  isWorking Boolean  @default(true) // Выходной или рабочий день
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String   // Например: "Лечение кариеса"
+  duration    Int      // Длительность в минутах (например, 60)
+  price       Decimal @db.Decimal(10,2)
+
+  doctors     DoctorProfile[] // Врачи, которые оказывают эту услугу
+  appointments Appointment[]
+}
+
+model Appointment {
+  id        String   @id @default(uuid())
+  startTime DateTime // Начало приема (хранить в UTC!)
+  endTime   DateTime // Конец приема
+  status    AppointmentStatus   @default(PENDING) // PENDING, CONFIRMED, CANCELLED
+  notes       String?
+  
+  clientId  String
+  client    User     @relation(fields: [clientId], references: [id])
+  
+  doctorId  String
+  doctor    DoctorProfile @relation(fields: [doctorId], references: [id])
+  
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id])
+
+ 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+
+  @@unique([doctorId, startTime])
+
+  @@index([doctorId, startTime]) // Важно для быстрого поиска слотов
+  @@index([clientId])
+  
+}
