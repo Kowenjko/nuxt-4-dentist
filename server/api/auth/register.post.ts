@@ -11,12 +11,22 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (password.length < 8) {
+    throw createError({ statusCode: 400, statusMessage: 'Password must be at least 8 characters' })
+  }
+
   const existing = await prisma.user.findUnique({ where: { email } })
-  if (existing)
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Email already in use',
-    })
+
+  if (existing) {
+    // Account exists via Google — suggest login with Google instead
+    if (existing.googleId && !existing.password) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'This email is linked to a Google account. Please login with Google.',
+      })
+    }
+    throw createError({ statusCode: 409, statusMessage: 'Email already in use' })
+  }
 
   const hashedPassword = await bcrypt.hash(password, 12)
 
@@ -43,6 +53,7 @@ export default defineEventHandler(async (event) => {
       name: true,
       phone: true,
       role: true,
+      avatar: true,
       createdAt: true,
       doctorProfile: { select: { id: true, specialty: true } },
     },

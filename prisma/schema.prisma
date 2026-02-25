@@ -28,9 +28,12 @@ enum AppointmentStatus {
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
-  password  String   // Хеш пароля
+  googleId  String?  @unique
+  password  String?   // Хеш пароля
   name      String
   phone     String?
+  avatar    String?
+  
   role      Role     @default(CLIENT)
   createdAt DateTime @default(now())
   
