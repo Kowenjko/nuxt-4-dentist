@@ -110,7 +110,7 @@ const handleRegister = async () => {
         </button>
       </form>
 
-      <p class="auth-footer">Уже есть аккаунт? <NuxtLink to="/login">Войти</NuxtLink></p>
+      <p class="auth-footer">Уже есть аккаунт? <NuxtLink to="/auth/login">Войти</NuxtLink></p>
     </div>
   </div>
 </template>

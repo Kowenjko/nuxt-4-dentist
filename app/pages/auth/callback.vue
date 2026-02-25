@@ -45,7 +45,7 @@ onMounted(() => {
     <div v-if="errorMsg" class="error-box">
       <div class="error-icon">✕</div>
       <p class="error-text">{{ errorMsg }}</p>
-      <NuxtLink to="/login" class="back-link">← Вернуться к входу</NuxtLink>
+      <NuxtLink to="/auth/login" class="back-link">← Вернуться к входу</NuxtLink>
     </div>
 
     <!-- Загрузка -->

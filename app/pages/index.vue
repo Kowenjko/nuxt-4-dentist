@@ -1,5 +1,10 @@
 <script lang="ts" setup>
 const { logout } = useAuth()
+//definePageMeta({ middleware: 'auth' })
 </script>
 
-<template>Index <button @click="logout">Logout</button></template>
+<template>
+  <div>
+    <button @click="logout">Logout</button>
+  </div>
+</template>

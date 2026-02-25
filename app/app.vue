@@ -1,5 +1,18 @@
+<script lang="ts" setup>
+import { Toaster } from 'vue-sonner'
+
+useHead({
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - Dentist` : 'Dentist'
+  },
+})
+</script>
+
 <template>
-  <Suspense>
+  <NuxtLayout>
     <NuxtPage />
-  </Suspense>
+  </NuxtLayout>
+  <ClientOnly>
+    <Toaster position="top-right" richColors />
+  </ClientOnly>
 </template>

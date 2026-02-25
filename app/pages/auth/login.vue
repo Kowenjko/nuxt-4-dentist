@@ -22,7 +22,7 @@ if (route.query.error) {
 const handleLogin = async () => {
   formError.value = ''
   try {
-    await login(email.value, password.value)
+    await login({ email: email.value, password: password.value })
     navigateTo(redirectTo)
   } catch (e: any) {
     formError.value = e?.data?.statusMessage || 'Неверный email или пароль'
@@ -96,7 +96,7 @@ const handleLogin = async () => {
       </form>
 
       <p class="auth-footer">
-        Нет аккаунта? <NuxtLink to="/register">Зарегистрироваться</NuxtLink>
+        Нет аккаунта? <NuxtLink :to="REGISTER_LINK">Зарегистрироваться</NuxtLink>
       </p>
     </div>
   </div>
