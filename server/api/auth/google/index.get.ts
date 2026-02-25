@@ -1,17 +1,17 @@
 // GET /api/auth/google?redirect=/dashboard
 // Редиректит пользователя на страницу выбора Google аккаунта
 export default defineEventHandler(async (event) => {
-  const { appUrl, googleClientId: clientId } = useRuntimeConfig()
+  const { appBaseUrl, googleClientId: clientId } = useRuntimeConfig()
   if (!clientId) {
     throw createError({ statusCode: 500, statusMessage: 'GOOGLE_CLIENT_ID is not configured' })
   }
 
   const { redirect = '/' } = getQuery(event)
-  const baseUrl = appUrl || 'http://localhost:3000'
+  const appUrl = appBaseUrl || 'http://localhost:3000'
 
   const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: `${baseUrl}/api/auth/google/callback`,
+    redirect_uri: `${appUrl}/api/auth/google/callback`,
     response_type: 'code',
     scope: 'openid email profile',
     access_type: 'offline',

@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {},
     jwtSecret: process.env.JWT_SECRET,
-    appUrl: process.env.APP_URL,
+    appBaseUrl: process.env.APP_URL,
     googleClientId: process.env.GOOGLE_CLIENT_ID,
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
