@@ -72,7 +72,7 @@ export const useAuth = () => {
   const logout = () => {
     token.value = null
     user.value = null
-    navigateTo('/login')
+    navigateTo('/auth/login')
   }
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
