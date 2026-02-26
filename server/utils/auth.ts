@@ -22,7 +22,7 @@ export function verifyToken(token: string): JwtPayload {
 export async function requireAuth(event: H3Event): Promise<JwtPayload> {
   const authHeader = getHeader(event, 'authorization')
   if (!authHeader?.startsWith('Bearer '))
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    throw createError({ statusCode: 401, statusMessage: 'Несанкціонований' })
 
   const token = authHeader.slice(7)
   try {
@@ -30,7 +30,7 @@ export async function requireAuth(event: H3Event): Promise<JwtPayload> {
   } catch {
     throw createError({
       statusCode: 401,
-      statusMessage: 'Invalid or expired token',
+      statusMessage: 'Недійсний або прострочений токен',
     })
   }
 }
@@ -38,7 +38,7 @@ export async function requireAuth(event: H3Event): Promise<JwtPayload> {
 export async function requireRole(event: H3Event, roles: string[]) {
   const payload = await requireAuth(event)
   if (!roles.includes(payload.role)) {
-    throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
+    throw createError({ statusCode: 403, statusMessage: 'Доступ заборонено' })
   }
   return payload
 }
@@ -64,6 +64,6 @@ export async function getCurrentUser(event: H3Event) {
       },
     },
   })
-  if (!user) throw createError({ statusCode: 401, statusMessage: 'User not found' })
+  if (!user) throw createError({ statusCode: 401, statusMessage: 'Користувача не знайдено' })
   return user
 }
