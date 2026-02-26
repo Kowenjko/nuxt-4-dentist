@@ -72,11 +72,11 @@ const handleRegister = async () => {
 .auth-footer {
   text-align: center;
   font-size: 13px;
-  color: #7a7872;
+  color: var(--text-secondary);
   margin-top: 20px;
 }
 .auth-footer a {
-  color: #1a3a2a;
+  color: var(--text-brand);
   font-weight: 500;
   text-decoration: none;
 }
