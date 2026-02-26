@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     },
   ],
   imports: { dirs: ['composables/**'] },
-  pinia: { storesDirs: ['./app/store/**'] },
+  pinia: { storesDirs: ['./stores/**'] },
   fonts: {
     families: [{ name: 'DM Sans', provider: 'google' }],
     defaults: {

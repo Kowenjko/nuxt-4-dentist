@@ -1,1 +1,48 @@
 @import 'vue-sonner/style.css';
+
+:root {
+  /* Основные цвета */
+  --color-primary: #1a3a2a;
+  --color-primary-dark: #152e21;
+  --color-primary-light: #2e7d52;
+
+  /* Фоновые цвета */
+  --bg-page: #f5f4f0;
+  --bg-card: #ffffff;
+  --bg-google-btn: #ffffff;
+  --bg-error: #fdf0ee;
+
+  /* Цвета границ */
+  --border-light: #e4e2dc;
+  --border-google-btn: #e4e2dc;
+  --border-google-btn-hover: #bbbbbb;
+
+  /* Цвета текста */
+  --text-primary: #1a1917;
+  --text-secondary: #7a7872;
+  --text-muted: #aaaaaa;
+  --text-error: #c0392b;
+  --text-brand: #1a3a2a;
+  --text-brand-cross: #2e7d52;
+
+  /* Цвета кнопок */
+  --btn-primary-bg: #1a3a2a;
+  --btn-primary-text: #ffffff;
+  --btn-primary-bg-hover: #152e21;
+
+  /* Тени */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-google-btn: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+}
