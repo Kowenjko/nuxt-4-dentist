@@ -7,12 +7,12 @@ export default defineEventHandler(async (event) => {
   if (!email || !password || !name) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Email, password and name are required',
+      statusMessage: "Необхідно вказати електронну адресу, пароль та ім'я",
     })
   }
 
   if (password.length < 8) {
-    throw createError({ statusCode: 400, statusMessage: 'Password must be at least 8 characters' })
+    throw createError({ statusCode: 400, statusMessage: 'Пароль має містити принаймні 8 символів' })
   }
 
   const existing = await prisma.user.findUnique({ where: { email } })
@@ -22,10 +22,11 @@ export default defineEventHandler(async (event) => {
     if (existing.googleId && !existing.password) {
       throw createError({
         statusCode: 409,
-        statusMessage: 'This email is linked to a Google account. Please login with Google.',
+        statusMessage:
+          "Цей email пов'язаний з обліковим записом Google. Будь ласка, увійдіть через Google.",
       })
     }
-    throw createError({ statusCode: 409, statusMessage: 'Email already in use' })
+    throw createError({ statusCode: 409, statusMessage: 'Електронна адреса вже використовується' })
   }
 
   const hashedPassword = await bcrypt.hash(password, 12)

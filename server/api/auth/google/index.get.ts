@@ -3,7 +3,7 @@
 export default defineEventHandler(async (event) => {
   const { appBaseUrl, googleClientId: clientId } = useRuntimeConfig()
   if (!clientId) {
-    throw createError({ statusCode: 500, statusMessage: 'GOOGLE_CLIENT_ID is not configured' })
+    throw createError({ statusCode: 500, statusMessage: 'GOOGLE_CLIENT_ID не налаштований' })
   }
 
   const { redirect = '/' } = getQuery(event)

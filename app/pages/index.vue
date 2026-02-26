@@ -3,7 +3,16 @@ const { logout } = useAuth()
 </script>
 
 <template>
-  <div>
-    <button @click="logout">Logout</button>
+  <div class="home-page">
+    Index Page
+    <!-- <button @click="logout">Logout</button> -->
   </div>
 </template>
+<style scoped>
+.home-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+</style>

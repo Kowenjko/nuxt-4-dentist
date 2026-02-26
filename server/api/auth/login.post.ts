@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const { email, password } = body
 
   if (!email || !password)
-    throw createError({ statusCode: 400, statusMessage: 'Email and password are required' })
+    throw createError({ statusCode: 400, statusMessage: 'Потрібні електронна адреса та пароль' })
 
   const user = await prisma.user.findUnique({
     where: { email },
@@ -18,12 +18,13 @@ export default defineEventHandler(async (event) => {
   if (user && !user.password) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'This account uses Google Sign-In. Please login with Google.',
+      statusMessage:
+        'Цей обліковий запис використовує Google Sign-In. Будь ласка, увійдіть через Google.',
     })
   }
 
   if (!user || !(await bcrypt.compare(password, user.password!))) {
-    throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
+    throw createError({ statusCode: 401, statusMessage: 'Невірні облікові дані' })
   }
 
   const token = signToken({ userId: user.id, role: user.role })
