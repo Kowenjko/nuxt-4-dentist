@@ -64,7 +64,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f4f0;
+  background: var(--bg-page);
   font-family: 'DM Sans', sans-serif;
   padding: 20px;
 }
@@ -74,15 +74,15 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  color: #7a7872;
+  color: var(--text-secondary);
   font-size: 15px;
 }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid #e4e2dc;
-  border-top-color: #1a3a2a;
+  border: 3px solid var(--border-light);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -94,20 +94,20 @@ onMounted(() => {
 }
 
 .error-box {
-  background: white;
-  border: 1px solid #f0b8b0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-error);
   border-radius: 12px;
   padding: 36px 40px;
   max-width: 380px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-card-soft);
 }
 
 .error-icon {
   width: 44px;
   height: 44px;
-  background: #fdf0ee;
-  color: #c0392b;
+  background: var(--bg-error);
+  color: var(--text-error);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -119,14 +119,14 @@ onMounted(() => {
 
 .error-text {
   font-size: 14px;
-  color: #555;
+  color: var(--text-body);
   margin-bottom: 20px;
   line-height: 1.5;
 }
 
 .back-link {
   font-size: 13px;
-  color: #1a3a2a;
+  color: var(--text-brand);
   font-weight: 500;
   text-decoration: none;
 }

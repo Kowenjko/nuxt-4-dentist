@@ -67,37 +67,37 @@ const inputClasses = computed(() => ['form-input', props.error ? 'is-error' : ''
   display: block;
   font-size: 12.5px;
   font-weight: 500;
-  color: #7a7872;
+  color: var(--text-secondary);
   margin-bottom: 6px;
 }
 
 .required {
-  color: #c0392b;
+  color: var(--text-error);
   margin-left: 2px;
 }
 .form-input {
   width: 100%;
   padding: 9px 12px;
-  border: 1px solid #e4e2dc;
+  border: 1px solid var(--border-light);
   border-radius: 7px;
   font-family: inherit;
   font-size: 14px;
-  color: #1a1917;
+  color: var(--text-primary);
   outline: none;
   transition: border-color 0.15s;
 }
 .form-input:focus {
-  border-color: #1a3a2a;
+  border-color: var(--color-primary);
 }
 
 .form-input.is-error {
-  border-color: #c0392b;
-  background: #fdf0ee;
+  border-color: var(--text-error);
+  background: var(--bg-error);
 }
 
 .input-error {
   font-size: 12px;
-  color: #c0392b;
+  color: var(--text-error);
   margin-top: 4px;
 }
 </style>

@@ -15,8 +15,8 @@ const { type = 'button' } = defineProps<Props>()
 .btn-base {
   width: 100%;
   padding: 10px;
-  background: #1a3a2a;
-  color: white;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   border: none;
   border-radius: 8px;
   font-family: inherit;
@@ -27,7 +27,7 @@ const { type = 'button' } = defineProps<Props>()
   margin-top: 4px;
 }
 .btn-base:hover:not(:disabled) {
-  background: #152e21;
+  background: var(--btn-primary-bg-hover);
 }
 .btn-base:disabled {
   opacity: 0.6;
