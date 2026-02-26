@@ -4,9 +4,10 @@ interface Props {
   description: string
   loading?: boolean
   formError?: string
+  textGoogle?: string
 }
 
-const { title, description, loading, formError } = defineProps<Props>()
+const { title, description, loading, formError, textGoogle } = defineProps<Props>()
 
 const emit = defineEmits<{
   clickGoogle: []
@@ -24,7 +25,7 @@ const emit = defineEmits<{
     <p class="auth-sub">{{ description }}</p>
 
     <!-- Google button -->
-    <GoogleButton @click="emit('clickGoogle')" :disabled="loading" />
+    <GoogleButton @click="emit('clickGoogle')" :disabled="loading" :text="textGoogle" />
 
     <div class="divider"><span>або</span></div>
     <div v-if="formError" class="alert alert-error">{{ formError }}</div>

@@ -11,6 +11,7 @@ interface Props {
   required?: boolean
   disabled?: boolean
   textarea?: boolean
+  minlength?: string
 }
 
 const model = defineModel<string | number>()
@@ -37,6 +38,7 @@ const inputClasses = computed(() => ['form-input', props.error ? 'is-error' : ''
       v-bind="attrs"
       :placeholder="placeholder"
       :disabled="disabled"
+      :minlength="minlength"
       :class="inputClasses"
     />
 
@@ -48,6 +50,7 @@ const inputClasses = computed(() => ['form-input', props.error ? 'is-error' : ''
       :placeholder="placeholder"
       :required="required"
       :disabled="disabled"
+      :minlength="minlength"
       :class="inputClasses"
     />
 

@@ -1,9 +1,11 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const { text = 'Увійти через Google' } = defineProps<{ text?: string }>()
+</script>
 
 <template>
   <button class="btn-google" v-bind="$attrs">
     <GoogleIcon />
-    Увійти через Google
+    {{ text }}
   </button>
 </template>
 <style scoped>
