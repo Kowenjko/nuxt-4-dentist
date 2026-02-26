@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 const { logout } = useAuth()
-//definePageMeta({ middleware: 'auth' })
 </script>
 
 <template>

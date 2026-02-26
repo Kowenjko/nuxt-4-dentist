@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'auth' })
+definePageMeta({ layout: 'auth', middleware: 'register' })
 
 const { register, loginWithGoogle, loading } = useAuth()
 
