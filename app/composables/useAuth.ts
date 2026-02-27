@@ -56,9 +56,9 @@ export const useAuth = () => {
   }
 
   const isAuthenticated = computed(() => !!token.value && !!usersStore.user)
-  const isAdmin = computed(() => usersStore.user?.role === 'ADMIN')
-  const isDoctor = computed(() => usersStore.user?.role === 'DOCTOR')
-  const isClient = computed(() => usersStore.user?.role === 'CLIENT')
+  const isAdmin = computed(() => usersStore.user?.role === Roles.ADMIN)
+  const isDoctor = computed(() => usersStore.user?.role === Roles.DOCTOR)
+  const isClient = computed(() => usersStore.user?.role === Roles.CLIENT)
 
   return {
     token,
