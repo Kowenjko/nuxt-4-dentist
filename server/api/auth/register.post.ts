@@ -37,9 +37,9 @@ export default defineEventHandler(async (event) => {
       password: hashedPassword,
       name,
       phone: phone || null,
-      role: role === 'DOCTOR' ? 'DOCTOR' : 'CLIENT',
+      role: role === Roles.DOCTOR ? Roles.DOCTOR : Roles.CLIENT,
       // Auto-create doctor profile if role is DOCTOR
-      ...(role === 'DOCTOR' && {
+      ...(role === Roles.DOCTOR && {
         doctorProfile: {
           create: {
             specialty: body.specialty || 'Стоматолог',

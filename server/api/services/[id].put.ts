@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  await requireRole(event, ['ADMIN'])
+  await requireRole(event, [Roles.ADMIN])
   const id = getRouterParam(event, 'id')
 
   const service = await prisma.service.findUnique({ where: { id } })

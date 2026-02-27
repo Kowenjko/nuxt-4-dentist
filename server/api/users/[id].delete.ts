@@ -1,10 +1,10 @@
 export default defineEventHandler(async (event) => {
-  await requireRole(event, ['ADMIN'])
+  await requireRole(event, [Roles.ADMIN])
   const id = getRouterParam(event, 'id')
   const auth = await requireAuth(event)
 
   // Users can only view their own profile unless admin
-  if (auth.userId !== id && auth.role !== 'ADMIN') {
+  if (auth.userId !== id && auth.role !== Roles.ADMIN) {
     throw createError({ statusCode: 403, statusMessage: 'Заборонено' })
   }
 

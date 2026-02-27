@@ -90,7 +90,7 @@ export default defineEventHandler(async (event) => {
         name: googleUser.name,
         googleId: googleUser.sub,
         avatar: googleUser.picture ?? null,
-        role: 'CLIENT',
+        role: Roles.CLIENT,
         // password = null, Google-пользователи входят только через Google
       },
     })

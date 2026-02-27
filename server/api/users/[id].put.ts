@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   const data: any = {}
   if (name) data.name = name
   if (phone !== undefined) data.phone = phone
-  if (email && auth.role === 'ADMIN') data.email = email
+  if (email && auth.role === Roles.ADMIN) data.email = email
   if (avatar) data.avatar = avatar
   if (password) data.password = await bcrypt.hash(password, 12)
 

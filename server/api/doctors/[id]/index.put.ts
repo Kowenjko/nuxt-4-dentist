@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   if (!doctor) throw createError({ statusCode: 404, statusMessage: 'Лікар не знайдений' })
 
   // Only the doctor themselves or admin can update
-  if (doctor.userId !== auth.userId && auth.role !== 'ADMIN') {
+  if (doctor.userId !== auth.userId && auth.role !== Roles.ADMIN) {
     throw createError({ statusCode: 403, statusMessage: 'Доступ заборонено' })
   }
 
