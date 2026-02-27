@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
   const conflict = await prisma.appointment.findFirst({
     where: {
       doctorId,
-      status: { in: ['PENDING', 'CONFIRMED'] },
+      status: { in: [Status.PENDING, Status.CONFIRMED] },
       OR: [
         { startTime: { lte: start }, endTime: { gt: start } },
         { startTime: { lt: end }, endTime: { gte: end } },
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
       startTime: start,
       endTime: end,
       notes: notes || null,
-      status: 'PENDING',
+      status: Status.PENDING,
     },
     include: {
       client: { select: { id: true, name: true, email: true, phone: true, avatar: true } },

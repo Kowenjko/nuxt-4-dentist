@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
     where: {
       doctorId: id,
       startTime: { gte: dayStart, lte: dayEnd },
-      status: { in: ['PENDING', 'CONFIRMED'] },
+      status: { in: [Status.PENDING, Status.CONFIRMED] },
     },
     select: { startTime: true, endTime: true },
   })

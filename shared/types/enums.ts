@@ -4,4 +4,11 @@ export const Roles = {
   ADMIN: 'ADMIN',
 } as const
 
+export const Status = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+} as const
+
 export type Role = (typeof Roles)[keyof typeof Roles]
+export type AppointmentStatus = (typeof Status)[keyof typeof Status]

@@ -23,13 +23,13 @@ export default defineEventHandler(async (event) => {
 
   // Clients can only cancel their own appointments
   if (isClient && !isAdmin) {
-    if (body.status && body.status !== 'CANCELLED') {
+    if (body.status && body.status !== Status.CANCELLED) {
       throw createError({
         statusCode: 403,
         statusMessage: 'Клієнти можуть скасовувати лише свої записи',
       })
     }
-    if (body.status === 'CANCELLED') data.status = 'CANCELLED'
+    if (body.status === Status.CANCELLED) data.status = Status.CANCELLED
     if (body.notes !== undefined) data.notes = body.notes
   } else {
     // Doctors and admins can change status and notes
