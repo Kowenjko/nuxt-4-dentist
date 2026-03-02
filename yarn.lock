@@ -3874,6 +3874,11 @@ lru.min@^1.0.0, lru.min@^1.1.0:
   resolved "https://registry.npmjs.org/lru.min/-/lru.min-1.1.4.tgz"
   integrity sha512-DqC6n3QQ77zdFpCMASA1a3Jlb64Hv2N2DciFGkO/4L9+q/IpIAuRlKOvCXabtRW6cQf8usbmM6BE/TOPysCdIA==
 
+lucide-vue-next@^0.576.0:
+  version "0.576.0"
+  resolved "https://registry.yarnpkg.com/lucide-vue-next/-/lucide-vue-next-0.576.0.tgz#c0e49aaec9010fdff2d4156889250f8a5678473e"
+  integrity sha512-qX3m7wWjOcDk89LkbwYc+KdQt8+kX3VhKObYs8SfycHBcDjSTXmQKKHFKvt/+x90z3S7KhAnuS+51cK7bJcI8A==
+
 magic-regexp@^0.10.0:
   version "0.10.0"
   resolved "https://registry.npmjs.org/magic-regexp/-/magic-regexp-0.10.0.tgz"

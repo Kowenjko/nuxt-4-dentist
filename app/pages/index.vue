@@ -1,7 +1,223 @@
+<script setup lang="ts">
+// ── State ─────────────────────────────────────
+const mounted = ref(false)
+
+const selSlot = ref('')
+const loadingSvc = ref(true)
+const loadingDoc = ref(true)
+const yr = new Date().getFullYear()
+
+// ── Data ──────────────────────────────────────
+const services = ref<any[]>([])
+const doctors = ref<any[]>([])
+
+const iconMap: [string, string][] = [
+  ['стоматол', '🦷'],
+  ['кардіол', '🫀'],
+  ['невролог', '🧠'],
+  ['офтальмол', '👁'],
+  ['узд', '🩻'],
+  ['терап', '💊'],
+  ['хірург', '🔬'],
+  ['ортопед', '🦴'],
+  ['гінекол', '🌸'],
+  ['педіатр', '👶'],
+  ['уролог', '💧'],
+  ['ендокринол', '⚗️'],
+  ['дерматол', '🧴'],
+  ['алергол', '🌿'],
+  ['психіатр', '🕊️'],
+]
+const svcIcon = (n: string) => {
+  const l = n.toLowerCase()
+  return iconMap.find(([k]) => l.includes(k))?.[1] ?? '🏥'
+}
+
+const fallbackSvcs = [
+  { icon: '🦷', name: 'Стоматологія', duration: 60, price: 'від 800 ₴' },
+  { icon: '🫀', name: 'Кардіологія', duration: 45, price: 'від 700 ₴' },
+  { icon: '🧠', name: 'Неврологія', duration: 45, price: 'від 650 ₴' },
+  { icon: '👁', name: 'Офтальмологія', duration: 30, price: 'від 600 ₴' },
+  { icon: '🩻', name: 'УЗД', duration: 30, price: 'від 500 ₴' },
+  { icon: '💊', name: 'Терапія', duration: 30, price: 'від 400 ₴' },
+]
+const fallbackDocs = [
+  {
+    id: '',
+    name: 'Олена Савченко',
+    specialty: 'Терапевт · Кардіолог',
+    bio: '10 років досвіду, кандидат медичних наук',
+    tags: ['Терапія', 'ЕКГ', 'Холтер'],
+  },
+  {
+    id: '',
+    name: 'Микола Бондар',
+    specialty: 'Невролог',
+    bio: 'Спеціаліст з болей у спині та головних болях',
+    tags: ['Неврологія', 'МРТ'],
+  },
+  {
+    id: '',
+    name: 'Ірина Коваль',
+    specialty: 'Стоматолог',
+    bio: 'Естетична та відновлювальна стоматологія',
+    tags: ['Лікування', 'Вибілення'],
+  },
+  {
+    id: '',
+    name: 'Андрій Мельник',
+    specialty: 'Ортопед',
+    bio: 'Операції та консервативне лікування суглобів',
+    tags: ['Суглоби', 'УЗД'],
+  },
+]
+
+const displaySvcs = computed(() =>
+  services.value.length
+    ? services.value.slice(0, 6).map((s) => ({
+        icon: svcIcon(s.name),
+        name: s.name,
+        duration: s.duration,
+        price: `${Number(s.price).toLocaleString('uk-UA')} ₴`,
+      }))
+    : fallbackSvcs
+)
+const displayDocs = computed(() =>
+  doctors.value.length
+    ? doctors.value.slice(0, 4).map((d) => ({
+        id: d.id,
+        name: d.user?.name || '—',
+        specialty: d.specialty,
+        bio: d.bio || '',
+        tags: (d.services || []).slice(0, 3).map((s: any) => s.name),
+      }))
+    : fallbackDocs
+)
+
+const ini = (n: string) =>
+  (n || '??')
+    .split(' ')
+    .map((x: string) => x[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+
+const trusts = [
+  { icon: '🏥', label: 'Ліцензована клініка' },
+  { icon: '👨‍⚕️', label: 'Сертифіковані лікарі' },
+  { icon: '🔒', label: 'Конфіденційність даних' },
+  { icon: '⏱', label: 'Запис за 2 хвилини' },
+  { icon: '💬', label: 'Онлайн-нагадування' },
+  { icon: '🌐', label: 'Доступно 24/7' },
+]
+
+const steps = [
+  {
+    icon: '👤',
+    title: 'Створіть акаунт',
+    desc: "Реєстрація займає менше хвилини. Лише ваше ім'я та email — і ви в системі.",
+  },
+  {
+    icon: '📅',
+    title: 'Оберіть лікаря та час',
+    desc: 'Перегляньте профілі лікарів, знайдіть вільний слот і виберіть зручний час для візиту.',
+  },
+  {
+    icon: '✅',
+    title: 'Отримайте підтвердження',
+    desc: 'Запис підтверджується миттєво. Ми надішлемо нагадування за день до прийому.',
+  },
+]
+
+const reviews = [
+  {
+    stars: 5,
+    text: 'Записалась за 3 хвилини, лікар прийняв вчасно. Дуже зручно, що бачиш весь розклад онлайн.',
+    name: 'Оксана М.',
+    role: 'Пацієнт · Кардіологія',
+  },
+  {
+    stars: 5,
+    text: 'Нарешті не треба дзвонити! Обрала час, прийшла — і все чітко за розкладом. Рекомендую.',
+    name: 'Андрій В.',
+    role: 'Пацієнт · Терапія',
+  },
+  {
+    stars: 5,
+    text: 'Відмінна клініка. Уважні лікарі, чисто, сучасне обладнання. Приводжу всю родину.',
+    name: 'Марія Л.',
+    role: 'Пацієнт · Стоматологія',
+  },
+  {
+    stars: 5,
+    text: 'Зручно, що вся історія записів зберігається в акаунті. Більше не треба тримати папірці.',
+    name: 'Ігор К.',
+    role: 'Пацієнт · Ортопедія',
+  },
+  {
+    stars: 5,
+    text: 'Чудовий сервіс! Дитяча терапевт дуже уважна. Запис пройшов швидко та без нервів.',
+    name: 'Наталя Р.',
+    role: 'Пацієнт · Педіатрія',
+  },
+  {
+    stars: 5,
+    text: 'Сучасна система запису, ввічливий персонал, лікарі пояснюють все детально. Дякую!',
+    name: 'Сергій Д.',
+    role: 'Пацієнт · Неврологія',
+  },
+]
+
+// ── Helpers ───────────────────────────────────
+const go = (id: string) => {
+  // menu.value = false
+  nextTick(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }))
+}
+
+// ── Lifecycle ─────────────────────────────────
+onMounted(async () => {
+  // initTheme()
+  // applyFor('client')
+  mounted.value = true
+
+  // window.addEventListener(
+  //   'scroll',
+  //   () => {
+  //     scrolled.value = window.scrollY > 50
+  //   },
+  //   { passive: true }
+  // )
+
+  // Intersection Observer for reveal animations
+  const io = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((e) => {
+        if (e.isIntersecting) e.target.classList.add('in')
+      }),
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+  )
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
+
+  // Fetch data
+  try {
+    services.value = (await $fetch('/api/services')) as any[]
+  } catch {}
+  loadingSvc.value = false
+
+  try {
+    doctors.value = (await $fetch('/api/doctors')) as any[]
+  } catch {}
+  loadingDoc.value = false
+
+  // Re-observe after data loads
+  await nextTick()
+  document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el))
+})
+</script>
 <template>
   <div class="root">
     <!-- ─── NAV ─────────────────────────────────────── -->
-    <header class="nav" :class="{ stuck: scrolled }">
+    <!-- <header class="nav" :class="{ stuck: scrolled }">
       <div class="nav-wrap">
         <NuxtLink to="/" class="brand">
           <svg class="brand-cross" viewBox="0 0 24 24" fill="none" width="22" height="22">
@@ -52,7 +268,7 @@
           </div>
         </div>
       </Transition>
-    </header>
+    </header> -->
 
     <!-- ─── HERO ─────────────────────────────────────── -->
     <section class="hero">
@@ -371,235 +587,6 @@
     </footer>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({ layout: false })
-
-// ── Theme ─────────────────────────────────────
-const { isDark, toggle: toggleTheme, init: initTheme, applyFor } = useTheme('client')
-
-// ── Auth ──────────────────────────────────────
-const { isAuthenticated } = useAuth()
-const isAuth = computed(() => isAuthenticated.value)
-
-// ── State ─────────────────────────────────────
-const scrolled = ref(false)
-const mounted = ref(false)
-const menu = ref(false)
-const selSlot = ref('')
-const loadingSvc = ref(true)
-const loadingDoc = ref(true)
-const yr = new Date().getFullYear()
-
-// ── Data ──────────────────────────────────────
-const services = ref<any[]>([])
-const doctors = ref<any[]>([])
-
-const iconMap: [string, string][] = [
-  ['стоматол', '🦷'],
-  ['кардіол', '🫀'],
-  ['невролог', '🧠'],
-  ['офтальмол', '👁'],
-  ['узд', '🩻'],
-  ['терап', '💊'],
-  ['хірург', '🔬'],
-  ['ортопед', '🦴'],
-  ['гінекол', '🌸'],
-  ['педіатр', '👶'],
-  ['уролог', '💧'],
-  ['ендокринол', '⚗️'],
-  ['дерматол', '🧴'],
-  ['алергол', '🌿'],
-  ['психіатр', '🕊️'],
-]
-const svcIcon = (n: string) => {
-  const l = n.toLowerCase()
-  return iconMap.find(([k]) => l.includes(k))?.[1] ?? '🏥'
-}
-
-const fallbackSvcs = [
-  { icon: '🦷', name: 'Стоматологія', duration: 60, price: 'від 800 ₴' },
-  { icon: '🫀', name: 'Кардіологія', duration: 45, price: 'від 700 ₴' },
-  { icon: '🧠', name: 'Неврологія', duration: 45, price: 'від 650 ₴' },
-  { icon: '👁', name: 'Офтальмологія', duration: 30, price: 'від 600 ₴' },
-  { icon: '🩻', name: 'УЗД', duration: 30, price: 'від 500 ₴' },
-  { icon: '💊', name: 'Терапія', duration: 30, price: 'від 400 ₴' },
-]
-const fallbackDocs = [
-  {
-    id: '',
-    name: 'Олена Савченко',
-    specialty: 'Терапевт · Кардіолог',
-    bio: '10 років досвіду, кандидат медичних наук',
-    tags: ['Терапія', 'ЕКГ', 'Холтер'],
-  },
-  {
-    id: '',
-    name: 'Микола Бондар',
-    specialty: 'Невролог',
-    bio: 'Спеціаліст з болей у спині та головних болях',
-    tags: ['Неврологія', 'МРТ'],
-  },
-  {
-    id: '',
-    name: 'Ірина Коваль',
-    specialty: 'Стоматолог',
-    bio: 'Естетична та відновлювальна стоматологія',
-    tags: ['Лікування', 'Вибілення'],
-  },
-  {
-    id: '',
-    name: 'Андрій Мельник',
-    specialty: 'Ортопед',
-    bio: 'Операції та консервативне лікування суглобів',
-    tags: ['Суглоби', 'УЗД'],
-  },
-]
-
-const displaySvcs = computed(() =>
-  services.value.length
-    ? services.value
-        .slice(0, 6)
-        .map((s) => ({
-          icon: svcIcon(s.name),
-          name: s.name,
-          duration: s.duration,
-          price: `${Number(s.price).toLocaleString('uk-UA')} ₴`,
-        }))
-    : fallbackSvcs
-)
-const displayDocs = computed(() =>
-  doctors.value.length
-    ? doctors.value.slice(0, 4).map((d) => ({
-        id: d.id,
-        name: d.user?.name || '—',
-        specialty: d.specialty,
-        bio: d.bio || '',
-        tags: (d.services || []).slice(0, 3).map((s: any) => s.name),
-      }))
-    : fallbackDocs
-)
-
-const ini = (n: string) =>
-  (n || '??')
-    .split(' ')
-    .map((x: string) => x[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-
-const trusts = [
-  { icon: '🏥', label: 'Ліцензована клініка' },
-  { icon: '👨‍⚕️', label: 'Сертифіковані лікарі' },
-  { icon: '🔒', label: 'Конфіденційність даних' },
-  { icon: '⏱', label: 'Запис за 2 хвилини' },
-  { icon: '💬', label: 'Онлайн-нагадування' },
-  { icon: '🌐', label: 'Доступно 24/7' },
-]
-
-const steps = [
-  {
-    icon: '👤',
-    title: 'Створіть акаунт',
-    desc: "Реєстрація займає менше хвилини. Лише ваше ім'я та email — і ви в системі.",
-  },
-  {
-    icon: '📅',
-    title: 'Оберіть лікаря та час',
-    desc: 'Перегляньте профілі лікарів, знайдіть вільний слот і виберіть зручний час для візиту.',
-  },
-  {
-    icon: '✅',
-    title: 'Отримайте підтвердження',
-    desc: 'Запис підтверджується миттєво. Ми надішлемо нагадування за день до прийому.',
-  },
-]
-
-const reviews = [
-  {
-    stars: 5,
-    text: 'Записалась за 3 хвилини, лікар прийняв вчасно. Дуже зручно, що бачиш весь розклад онлайн.',
-    name: 'Оксана М.',
-    role: 'Пацієнт · Кардіологія',
-  },
-  {
-    stars: 5,
-    text: 'Нарешті не треба дзвонити! Обрала час, прийшла — і все чітко за розкладом. Рекомендую.',
-    name: 'Андрій В.',
-    role: 'Пацієнт · Терапія',
-  },
-  {
-    stars: 5,
-    text: 'Відмінна клініка. Уважні лікарі, чисто, сучасне обладнання. Приводжу всю родину.',
-    name: 'Марія Л.',
-    role: 'Пацієнт · Стоматологія',
-  },
-  {
-    stars: 5,
-    text: 'Зручно, що вся історія записів зберігається в акаунті. Більше не треба тримати папірці.',
-    name: 'Ігор К.',
-    role: 'Пацієнт · Ортопедія',
-  },
-  {
-    stars: 5,
-    text: 'Чудовий сервіс! Дитяча терапевт дуже уважна. Запис пройшов швидко та без нервів.',
-    name: 'Наталя Р.',
-    role: 'Пацієнт · Педіатрія',
-  },
-  {
-    stars: 5,
-    text: 'Сучасна система запису, ввічливий персонал, лікарі пояснюють все детально. Дякую!',
-    name: 'Сергій Д.',
-    role: 'Пацієнт · Неврологія',
-  },
-]
-
-// ── Helpers ───────────────────────────────────
-const go = (id: string) => {
-  menu.value = false
-  nextTick(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }))
-}
-
-// ── Lifecycle ─────────────────────────────────
-onMounted(async () => {
-  initTheme()
-  applyFor('client')
-  mounted.value = true
-
-  window.addEventListener(
-    'scroll',
-    () => {
-      scrolled.value = window.scrollY > 50
-    },
-    { passive: true }
-  )
-
-  // Intersection Observer for reveal animations
-  const io = new IntersectionObserver(
-    (entries) =>
-      entries.forEach((e) => {
-        if (e.isIntersecting) e.target.classList.add('in')
-      }),
-    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-  )
-  document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
-
-  // Fetch data
-  try {
-    services.value = (await $fetch('/api/services')) as any[]
-  } catch {}
-  loadingSvc.value = false
-
-  try {
-    doctors.value = (await $fetch('/api/doctors')) as any[]
-  } catch {}
-  loadingDoc.value = false
-
-  // Re-observe after data loads
-  await nextTick()
-  document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el))
-})
-</script>
 
 <style>
 /* Стилі визначені в main.css */

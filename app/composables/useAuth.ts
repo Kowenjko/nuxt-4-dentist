@@ -25,12 +25,10 @@ export const useAuth = () => {
 
   // Загрузить текущего пользователя по токену
   const fetchUser = async () => {
-    if (!token.value) {
-      usersStore.user = null
-      return
-    }
+    console.log('fetchUser called with token:', token.value)
+
     try {
-      usersStore.user = authAPI.me() as unknown as UserI
+      usersStore.user = (await authAPI.me()) as unknown as UserI
     } catch {
       token.value = null
       usersStore.user = null
@@ -49,13 +47,14 @@ export const useAuth = () => {
     window.location.href = `/api/auth/google?${params}`
   }
 
-  const logout = () => {
+  const logout = async () => {
+    await authAPI.logout()
     token.value = null
     usersStore.user = null
     navigateTo(LOGIN_LINK)
   }
 
-  const isAuthenticated = computed(() => !!token.value && !!usersStore.user)
+  const isAuthenticated = computed(() => !!usersStore.user)
   const isAdmin = computed(() => usersStore.user?.role === Roles.ADMIN)
   const isDoctor = computed(() => usersStore.user?.role === Roles.DOCTOR)
   const isClient = computed(() => usersStore.user?.role === Roles.CLIENT)

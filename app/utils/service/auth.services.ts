@@ -4,6 +4,11 @@ export const authAPI = {
     return await $api<UserResponseI>(API + AUTH + LOGIN, { method: 'POST', body })
   },
 
+  async logout() {
+    const { $api } = useNuxtApp()
+    return await $api<UserResponseI>(API + AUTH + LOGOUT, { method: 'POST' })
+  },
+
   async register(body: RegisterI) {
     const { $api } = useNuxtApp()
     return await $api<UserResponseI>(API + AUTH + REGISTER, { method: 'POST', body })
@@ -11,6 +16,6 @@ export const authAPI = {
 
   async me() {
     const { $api } = useNuxtApp()
-    return await $api<UserI>(API + AUTH + ME)
+    return await $api<UserI>(API + AUTH + ME, { credentials: 'include' })
   },
 }

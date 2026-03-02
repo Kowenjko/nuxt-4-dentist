@@ -1,11 +1,12 @@
-interface GoogleTokens {
+interface GoogleTokenResponse {
   access_token: string
   id_token: string
+  token_type: string
   expires_in: number
 }
 
-interface GoogleUser {
-  sub: string // уникальный Google ID
+interface GoogleUserInfo {
+  sub: string // Google user ID
   email: string
   name: string
   picture?: string
@@ -13,7 +14,7 @@ interface GoogleUser {
 }
 
 // GET /api/auth/google/callback
-// Google редиректит сюда после того как пользователь выбрал аккаунт
+// Google redirects here after user grants permission.
 export default defineEventHandler(async (event) => {
   const {
     appBaseUrl,
@@ -24,13 +25,17 @@ export default defineEventHandler(async (event) => {
   const { code, state, error } = getQuery(event)
   const appUrl = appBaseUrl || 'http://localhost:3000'
 
-  // Пользователь нажал "Отмена" на странице Google
-  if (error || !code) {
+  // User denied access
+  if (error) {
     return sendRedirect(event, `${appUrl}/login?error=google_denied`, 302)
   }
 
-  // Шаг 1: меняем code на access_token
-  let tokens: GoogleTokens
+  if (!code) {
+    return sendRedirect(event, `${appUrl}/login?error=missing_code`, 302)
+  }
+
+  // Exchange authorization code for tokens
+  let tokens: GoogleTokenResponse
   try {
     const res = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
@@ -44,14 +49,14 @@ export default defineEventHandler(async (event) => {
       }),
     })
     tokens = await res.json()
-    if (!tokens.access_token) throw new Error('No access_token')
+    if (!tokens.access_token) throw new Error('No access_token in response')
   } catch (e) {
-    console.error('[Google OAuth] Token exchange failed:', e)
-    return sendRedirect(event, `${appUrl}/login?error=token_failed`, 302)
+    console.error('Google token exchange failed:', e)
+    return sendRedirect(event, `${appUrl}/login?error=token_exchange_failed`, 302)
   }
 
-  // Шаг 2: получаем профиль пользователя из Google
-  let googleUser: GoogleUser
+  // Fetch user info from Google
+  let googleUser: GoogleUserInfo
   try {
     const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
@@ -59,12 +64,11 @@ export default defineEventHandler(async (event) => {
     googleUser = await res.json()
     if (!googleUser.email_verified) throw new Error('Email not verified')
   } catch (e) {
-    console.error('[Google OAuth] Userinfo failed:', e)
+    console.error('Google userinfo failed:', e)
     return sendRedirect(event, `${appUrl}/login?error=userinfo_failed`, 302)
   }
 
-  // Шаг 3: upsert пользователя в БД
-  // Ищем сначала по googleId, потом по email (мог уже зарегистрироваться через email)
+  // Upsert user: find by googleId or email, then link/create
   let user = await prisma.user.findFirst({
     where: {
       OR: [{ googleId: googleUser.sub }, { email: googleUser.email }],
@@ -72,7 +76,7 @@ export default defineEventHandler(async (event) => {
   })
 
   if (user) {
-    // Привязываем Google к существующему email-аккаунту
+    // Link Google account if user registered via email before
     if (!user.googleId) {
       user = await prisma.user.update({
         where: { id: user.id },
@@ -83,7 +87,7 @@ export default defineEventHandler(async (event) => {
       })
     }
   } else {
-    // Новый пользователь — создаём с ролью CLIENT
+    // New user — register automatically as CLIENT
     user = await prisma.user.create({
       data: {
         email: googleUser.email,
@@ -96,13 +100,25 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Шаг 4: выдаём JWT и редиректим на фронтенд
+  // Issue JWT
   const token = signToken({ userId: user.id, role: user.role })
-  const redirectTo = state ? decodeURIComponent(state as string) : '/'
 
+  // Встановлюємо httpOnly cookie прямо на сервері —
+  // безпечніше ніж передавати токен у URL (захист від referer leakage)
+  setCookie(event, 'auth_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 7, // 7 днів
+    path: '/',
+  })
+
+  // Редиректимо на /auth/callback БЕЗ токена в URL
+  // callback.vue побачить відсутність ?error і просто зробить fetchUser() + navigateTo
+  const redirectTo = state ? decodeURIComponent(state as string) : '/'
   return sendRedirect(
     event,
-    `${appUrl}/auth/callback?token=${token}&redirect=${encodeURIComponent(redirectTo)}`,
+    `${appUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
     302
   )
 })

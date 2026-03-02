@@ -1,12 +1,19 @@
 <script lang="ts" setup>
-const { isDark, toggle, init, applyFor } = useTheme('client')
-onMounted(() => {
+const { init, applyFor } = useTheme('client')
+const { token, fetchUser, isAuthenticated } = useAuth()
+
+onMounted(async () => {
   init()
   applyFor('client')
+  // Загружаем пользователя если токен есть но user ещё не загружен
+  if (!isAuthenticated.value) {
+    await fetchUser()
+  }
 })
 </script>
 
 <template>
+  <Header />
   <main>
     <slot />
   </main>
