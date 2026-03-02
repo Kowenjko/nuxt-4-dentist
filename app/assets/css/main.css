@@ -1,44 +1,25 @@
 @import 'vue-sonner/style.css';
 
-:root {
-  /* Основные цвета */
-  --color-primary: #1a3a2a;
-  --color-primary-dark: #152e21;
-  --color-primary-light: #2e7d52;
+/* ═══════════════════════════════════════════════════════════════════════════
+   main.css — Глобальні стилі та CSS-змінні
+   КлінікаПлюс — Client + Admin panel
+   ═══════════════════════════════════════════════════════════════════════════
 
-  /* Фоновые цвета */
-  --bg-page: #f5f4f0;
-  --bg-card: #ffffff;
-  --bg-google-btn: #ffffff;
-  --bg-google-btn-hover: #fafaf8;
-  --bg-error: #fdf0ee;
+   Структура:
+   1. Шрифти (Google Fonts)
+   2. Скидання
+   3. Токени (незмінні: шрифти, радіуси, тіні, анімації)
+   4. Тема клієнта — light  [data-theme="client-light"]
+   5. Тема клієнта — dark   [data-theme="client-dark"]
+   6. Тема адмінки — dark   [data-theme="admin-dark"]   (default для admin)
+   7. Тема адмінки — light  [data-theme="admin-light"]
+   8. Семантичні аліаси (спільні для всіх компонентів)
+   9. Базові HTML-стилі
+   10. Toggle-кнопка теми
+   11. Утиліти
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-  /* Цвета границ */
-  --border-light: #e4e2dc;
-  --border-error: #f0b8b0;
-  --border-google-btn: #e4e2dc;
-  --border-google-btn-hover: #bbbbbb;
-
-  /* Цвета текста */
-  --text-primary: #1a1917;
-  --text-secondary: #7a7872;
-  --text-muted: #aaaaaa;
-  --text-body: #555555;
-  --text-error: #c0392b;
-  --text-brand: #1a3a2a;
-  --text-brand-cross: #2e7d52;
-
-  /* Цвета кнопок */
-  --btn-primary-bg: #1a3a2a;
-  --btn-primary-text: #ffffff;
-  --btn-primary-bg-hover: #152e21;
-
-  /* Тени */
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --shadow-card-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --shadow-google-btn: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
+/* ── 2. Скидання ───────────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -46,7 +27,885 @@
   margin: 0;
   padding: 0;
 }
+a {
+  text-decoration: none;
+  color: inherit;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+ul,
+ol {
+  list-style: none;
+}
+
+/* ── 3. Незмінні токени (не залежать від теми) ─────────────────────────── */
+:root {
+  /* Шрифти */
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans: 'Outfit', sans-serif;
+  --font-admin: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Радіуси */
+  --radius-xs: 4px;
+  --radius-sm: 7px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Ширина сайдбару (адмін) */
+  --sidebar-w: 220px;
+
+  /* Анімації */
+  --ease: cubic-bezier(0.22, 0.68, 0, 1.2);
+  --ease-out: cubic-bezier(0, 0.55, 0.45, 1);
+  --duration-fast: 0.15s;
+  --duration-base: 0.25s;
+  --duration-slow: 0.4s;
+
+  /* Z-index шарів */
+  --z-dropdown: 100;
+  --z-modal-bg: 800;
+  --z-modal: 900;
+  --z-drawer: 750;
+  --z-toast: 1000;
+  --z-nav: 300;
+
+  /* Тіні (нейтральні) */
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.16);
+
+  /* Зелений акцент (клієнтська частина) — незмінний */
+  --green-50: #f0faf4;
+  --green-100: #dcf0e6;
+  --green-200: #b8e0c8;
+  --green-300: #7ec9a0;
+  --green-400: #4aad77;
+  --green-500: #2a8a53;
+  --green-600: #1d6b3e;
+  --green-700: #16502f;
+  --green-800: #103d24;
+  --green-900: #0a2817;
+
+  /* Золотий (рейтинг, акценти) */
+  --gold: #c49a3c;
+
+  /* Статуси (семантичні, однакові в обох темах) */
+  --status-pending-color: #b07d0a;
+  --status-confirmed-color: #16502f;
+  --status-cancelled-color: #c53030;
+  --status-completed-color: #6b6459;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. КЛІЄНТСЬКА ТЕМА — LIGHT  (default)
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root,
+[data-theme='client-light'] {
+  color-scheme: light;
+
+  /* Фони */
+  --bg: #faf9f6;
+  --bg-2: #f3f0ea;
+  --bg-3: #e8e3d9;
+  --surface: #ffffff;
+  --surface-2: #faf9f6;
+  --surface-3: #f3f0ea;
+
+  /* Бордери */
+  --border: #e8e3d9;
+  --border-2: #d5cec0;
+  --border-focus: var(--green-700);
+
+  /* Текст */
+  --text: #181613;
+  --text-2: #3d3930;
+  --text-3: #6b6459;
+  --text-4: #9c9589;
+  --text-inv: #ffffff;
+
+  /* Акцент (зелений) */
+  --accent: var(--green-700);
+  --accent-2: var(--green-600);
+  --accent-3: var(--green-500);
+  --accent-bg: var(--green-50);
+  --accent-light: var(--green-100);
+
+  /* Семантика статусів */
+  --status-pending-bg: #fff8e6;
+  --status-confirmed-bg: #ebf6ef;
+  --status-cancelled-bg: #fef2f2;
+  --status-completed-bg: #f3f0ea;
+
+  /* Небезпека / помилка */
+  --danger: #d03030;
+  --danger-bg: #fef2f2;
+  --danger-border: #fcc;
+
+  /* Успіх */
+  --success: var(--green-700);
+  --success-bg: var(--green-50);
+
+  /* Попередження */
+  --warning: #b07d0a;
+  --warning-bg: #fff8e6;
+
+  /* Інфо */
+  --info: #1a6fa8;
+  --info-bg: #e8f4fd;
+
+  /* Тіні (light — тонші) */
+  --shadow-accent: 0 4px 20px rgba(22, 80, 47, 0.2);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 16px 64px rgba(0, 0, 0, 0.14);
+
+  /* Nav */
+  --nav-bg: rgba(250, 249, 246, 0.88);
+  --nav-border: #e8e3d9;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. КЛІЄНТСЬКА ТЕМА — DARK
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme='client-dark'] {
+  color-scheme: dark;
+
+  /* Фони */
+  --bg: #111210;
+  --bg-2: #171714;
+  --bg-3: #1e1d1a;
+  --surface: #1e1d1a;
+  --surface-2: #252420;
+  --surface-3: #2e2c27;
+
+  /* Бордери */
+  --border: #2e2c27;
+  --border-2: #3d3b35;
+  --border-focus: var(--green-400);
+
+  /* Текст */
+  --text: #f0ede8;
+  --text-2: #c8c4bc;
+  --text-3: #8a8378;
+  --text-4: #5a554d;
+  --text-inv: #111210;
+
+  /* Акцент (зелений — яскравіший на темному) */
+  --accent: #4aad77;
+  --accent-2: #3d9968;
+  --accent-3: var(--green-500);
+  --accent-bg: rgba(74, 173, 119, 0.12);
+  --accent-light: rgba(74, 173, 119, 0.2);
+
+  /* Семантика статусів */
+  --status-pending-bg: rgba(176, 125, 10, 0.15);
+  --status-confirmed-bg: rgba(74, 173, 119, 0.13);
+  --status-cancelled-bg: rgba(197, 48, 48, 0.13);
+  --status-completed-bg: rgba(90, 85, 77, 0.2);
+
+  /* Небезпека */
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.12);
+  --danger-border: rgba(248, 113, 113, 0.3);
+
+  /* Успіх */
+  --success: #4aad77;
+  --success-bg: rgba(74, 173, 119, 0.12);
+
+  /* Попередження */
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+
+  /* Інфо */
+  --info: #60a5fa;
+  --info-bg: rgba(96, 165, 250, 0.12);
+
+  /* Тіні */
+  --shadow-accent: 0 4px 20px rgba(74, 173, 119, 0.22);
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.28);
+  --shadow-modal: 0 20px 80px rgba(0, 0, 0, 0.55);
+
+  /* Nav */
+  --nav-bg: rgba(17, 18, 16, 0.88);
+  --nav-border: #2e2c27;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. АДМІНКА — DARK  (default для адмінки)
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme='admin-dark'] {
+  color-scheme: dark;
+
+  /* Фони */
+  --bg: #0d0f12;
+  --bg-2: #13161b;
+  --bg-3: #1a1e25;
+  --surface: #13161b;
+  --surface-2: #1a1e25;
+  --surface-3: #252932;
+
+  /* Бордери */
+  --border: #252932;
+  --border-2: #2e3440;
+  --border-focus: #3ddc84;
+
+  /* Текст */
+  --text: #e8eaf0;
+  --text-2: #8b92a5;
+  --text-3: #555d70;
+  --text-4: #363d4e;
+  --text-inv: #0d0f12;
+
+  /* Акцент (зелений неон) */
+  --accent: #3ddc84;
+  --accent-2: #2fc070;
+  --accent-3: #26a660;
+  --accent-bg: #0d2419;
+  --accent-light: #1a4d35;
+
+  /* Семантика статусів */
+  --status-pending-bg: #2a2010;
+  --status-confirmed-bg: #0d2419;
+  --status-cancelled-bg: #2a1212;
+  --status-completed-bg: #1a1e25;
+
+  /* Небезпека */
+  --danger: #ff5c5c;
+  --danger-bg: #2a1212;
+  --danger-border: rgba(255, 92, 92, 0.3);
+
+  /* Успіх */
+  --success: #3ddc84;
+  --success-bg: #0d2419;
+
+  /* Попередження */
+  --warning: #ffb830;
+  --warning-bg: #2a2010;
+
+  /* Інфо */
+  --info: #5b9cf6;
+  --info-bg: #0f1e3d;
+
+  /* Тіні */
+  --shadow-accent: 0 4px 20px rgba(61, 220, 132, 0.18);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --shadow-modal: 0 20px 80px rgba(0, 0, 0, 0.6);
+
+  /* Nav/sidebar */
+  --nav-bg: #13161b;
+  --nav-border: #252932;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. АДМІНКА — LIGHT
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme='admin-light'] {
+  color-scheme: light;
+
+  /* Фони */
+  --bg: #f4f6f9;
+  --bg-2: #edf0f4;
+  --bg-3: #e2e6ec;
+  --surface: #ffffff;
+  --surface-2: #f8f9fb;
+  --surface-3: #f0f2f5;
+
+  /* Бордери */
+  --border: #e2e6ec;
+  --border-2: #c8cdd6;
+  --border-focus: #1a7d4a;
+
+  /* Текст */
+  --text: #0f1117;
+  --text-2: #3a4155;
+  --text-3: #6b7385;
+  --text-4: #9ba3b5;
+  --text-inv: #ffffff;
+
+  /* Акцент (темно-зелений для light) */
+  --accent: #1a7d4a;
+  --accent-2: #156640;
+  --accent-3: #115534;
+  --accent-bg: #eaf5ef;
+  --accent-light: #d0eadb;
+
+  /* Семантика статусів */
+  --status-pending-bg: #fef8e6;
+  --status-confirmed-bg: #eaf5ef;
+  --status-cancelled-bg: #fef2f2;
+  --status-completed-bg: #f0f2f5;
+
+  /* Небезпека */
+  --danger: #c53030;
+  --danger-bg: #fef2f2;
+  --danger-border: #fcc;
+
+  /* Успіх */
+  --success: #1a7d4a;
+  --success-bg: #eaf5ef;
+
+  /* Попередження */
+  --warning: #a16207;
+  --warning-bg: #fefce8;
+
+  /* Інфо */
+  --info: #1d6fa6;
+  --info-bg: #e8f3fd;
+
+  /* Тіні */
+  --shadow-accent: 0 4px 20px rgba(26, 125, 74, 0.2);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 16px 60px rgba(0, 0, 0, 0.14);
+
+  /* Nav/sidebar */
+  --nav-bg: #ffffff;
+  --nav-border: #e2e6ec;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   8. Семантичні аліаси — спільні для всіх компонентів
+   Компоненти використовують ЛИШЕ ці змінні
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root,
+[data-theme] {
+  /* ── Client component aliases (BookingModal, DoctorCard, AppointmentsList) ── */
+  --bm-f0: var(--bg);
+  --bm-f1: var(--bg-2);
+  --bm-f2: var(--border);
+  --bm-f3: var(--border-2);
+  --bm-ink: var(--text);
+  --bm-i2: var(--text-2);
+  --bm-i3: var(--text-3);
+  --bm-i4: var(--text-4);
+  --bm-g: var(--accent);
+  --bm-g1: var(--accent-2);
+  --bm-g2: var(--accent-3);
+  --bm-gl: var(--accent-light);
+  --bm-gx: var(--accent-bg);
+  --bm-red: var(--danger);
+  --bm-redbg: var(--danger-bg);
+  --bm-sans: var(--font-sans);
+  --bm-serif: var(--font-serif);
+  --bm-mono: var(--font-mono);
+  --bm-ease: var(--ease);
+
+  /* ── Landing page aliases ── */
+  --f0: var(--bg);
+  --f1: var(--bg-2);
+  --f2: var(--border);
+  --f3: var(--border-2);
+  --ink: var(--text);
+  --i2: var(--text-2);
+  --i3: var(--text-3);
+  --i4: var(--text-4);
+  --g: var(--accent);
+  --g1: var(--accent-2);
+  --g2: var(--accent-3);
+  --gl: var(--accent-light);
+  --gx: var(--accent-bg);
+  --gol: var(--gold);
+  --serif: var(--font-serif);
+  --sans: var(--font-sans);
+
+  /* ── Admin panel aliases ── */
+  --surface-alias: var(--surface);
+  --surface2: var(--surface-2);
+  --text-alias: var(--text);
+  --text-2-alias: var(--text-2);
+  --text-3-alias: var(--text-3);
+  --accent-alias: var(--accent);
+  --accent-dim: var(--accent-light);
+  --accent-bg-alias: var(--accent-bg);
+  --danger-alias: var(--danger);
+  --danger-bg-alias: var(--danger-bg);
+  --warning-alias: var(--warning);
+  --warning-bg-alias: var(--warning-bg);
+  --info-alias: var(--info);
+  --info-bg-alias: var(--info-bg);
+  --radius: var(--radius-sm);
+  --mono: var(--font-mono);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   9. Базові стилі HTML
+   ═══════════════════════════════════════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+}
+
+/* Admin body — Syne шрифт */
+body.admin,
+[data-theme='admin-dark'] body,
+[data-theme='admin-light'] body {
+  font-family: var(--font-admin);
+  font-size: 14px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-2);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-4);
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-light);
+  color: var(--text);
+}
+
+/* Focus outline */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   10. Кнопка перемикання теми (.theme-toggle)
+   Використовується в nav клієнта і в sidebar адміна
+   ═══════════════════════════════════════════════════════════════════════════ */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-3);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+/* Іконки всередині toggle */
+.theme-toggle .t-icon-light,
+.theme-toggle .t-icon-dark {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+/* Компактний варіант (лише іконка) */
+.theme-toggle.compact {
+  padding: 7px;
+  gap: 0;
+}
+.theme-toggle.compact .t-label {
+  display: none;
+}
+
+/* Трек перемикача (опційний варіант у вигляді switch) */
+.theme-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.theme-switch-track {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--border-2);
+  transition: background var(--duration-base);
+  flex-shrink: 0;
+}
+.theme-switch-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-base) var(--ease);
+}
+.theme-switch.dark .theme-switch-track {
+  background: var(--accent);
+}
+.theme-switch.dark .theme-switch-track::after {
+  transform: translateX(18px);
+}
+.theme-switch-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   11. Утиліти
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Контейнер */
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Текст */
+.text-accent {
+  color: var(--accent);
+}
+.text-muted {
+  color: var(--text-3);
+}
+.text-danger {
+  color: var(--danger);
+}
+.text-warning {
+  color: var(--warning);
+}
+.text-mono {
+  font-family: var(--font-mono);
+}
+.text-serif {
+  font-family: var(--font-serif);
+}
+
+/* Фони */
+.bg-surface {
+  background: var(--surface);
+}
+.bg-surface-2 {
+  background: var(--surface-2);
+}
+.bg-accent {
+  background: var(--accent-bg);
+}
+
+/* Бордери */
+.border {
+  border: 1px solid var(--border);
+}
+.border-2 {
+  border: 1px solid var(--border-2);
+}
+.border-accent {
+  border: 1px solid var(--accent-light);
+}
+
+/* Status badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.badge-pending {
+  background: var(--status-pending-bg);
+  color: var(--status-pending-color);
+}
+.badge-confirmed {
+  background: var(--status-confirmed-bg);
+  color: var(--status-confirmed-color);
+}
+.badge-cancelled {
+  background: var(--status-cancelled-bg);
+  color: var(--status-cancelled-color);
+}
+.badge-completed {
+  background: var(--status-completed-bg);
+  color: var(--status-completed-color);
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition:
+    border-color var(--duration-fast),
+    box-shadow var(--duration-fast),
+    transform var(--duration-fast);
+}
+.card:hover {
+  border-color: var(--accent-light);
+  box-shadow: var(--shadow-card);
+}
+
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-2) 25%, var(--bg-3) 50%, var(--bg-2) 75%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.6s linear infinite;
+  border-radius: var(--radius-md);
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Спінер */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--border-2);
+  border-top-color: var(--accent);
+  animation: spinner-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.spinner-sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+.spinner-lg {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+.spinner-inv {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+}
+@keyframes spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error block */
+.error-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 13.5px;
+  border: 1px solid var(--danger-border);
+}
+
+/* Вхідні поля */
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 10px 13px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color var(--duration-fast),
+    background var(--duration-fast);
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--border-focus);
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-4);
+}
+
+/* Кнопки */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--text-inv);
+  box-shadow: var(--shadow-accent);
+}
+.btn-primary:hover {
+  background: var(--accent-2);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.18);
+}
+.btn-secondary {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1.5px solid var(--accent-light);
+}
+.btn-secondary:hover {
+  background: var(--accent-light);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--text-3);
+  border: 1.5px solid var(--border);
+}
+.btn-outline:hover {
+  border-color: var(--border-2);
+  color: var(--text);
+}
+.btn-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1.5px solid var(--danger-border);
+}
+.btn-danger:hover {
+  background: var(--danger);
+  color: var(--text-inv);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 13px;
+}
+.btn-lg {
+  padding: 13px 28px;
+  font-size: 15.5px;
+}
+
+/* Eyebrow label */
+.eyebrow {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-bg);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* Truncate */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Анімації входу */
+.fade-in {
+  animation: fadeIn var(--duration-slow) var(--ease) both;
+}
+.slide-up {
+  animation: slideUp var(--duration-slow) var(--ease) both;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive helper */
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .container {
+    padding: 0 16px;
+  }
+}
+@media (min-width: 641px) {
+  .hide-desktop {
+    display: none !important;
+  }
 }

@@ -9,7 +9,7 @@ const formError = ref('')
 const handleRegister = async () => {
   formError.value = ''
   try {
-    await register({ ...formData, role: 'CLIENT' })
+    await register({ ...formData, role: Roles.DOCTOR })
     navigateTo(HOME_LINK)
   } catch (e: any) {
     formError.value = e?.data?.statusMessage || 'Помилка реєстрації'

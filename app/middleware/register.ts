@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Загружаем пользователя если токен есть но user ещё не загружен
   if (token.value && !isAuthenticated.value) {
-    await fetchUser()
+    //await fetchUser()
   }
 
   if (isAuthenticated.value) return navigateTo(HOME_LINK)

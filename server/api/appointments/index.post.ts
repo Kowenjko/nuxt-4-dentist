@@ -67,5 +67,31 @@ export default defineEventHandler(async (event) => {
     },
   })
 
+  // todo
+
+  // ── Сповіщення клієнту (Viber + Email) — не блокує відповідь ──
+  // Запускаємо у фоні: не await, щоб не затримувати API
+  // notifyAppointmentCreated({
+  //   client: {
+  //     name: appointment.client.name,
+  //     phone: appointment.client.phone,
+  //     email: appointment.client.email,
+  //   },
+  //   doctor: {
+  //     name: appointment.doctor.user.name,
+  //     specialty: appointment.doctor.specialty,
+  //   },
+  //   service: {
+  //     name: appointment.service.name,
+  //     duration: appointment.service.duration,
+  //     price: appointment.service.price,
+  //   },
+  //   appointment: {
+  //     id: appointment.id,
+  //     startTime: appointment.startTime,
+  //     endTime: appointment.endTime,
+  //   },
+  // }).catch((err) => console.error('[notify] Неочікувана помилка:', err))
+
   return appointment
 })

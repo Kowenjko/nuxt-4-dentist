@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
   ssr: true,
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/admin-pages.css', '~/assets/css/responsive.css'],
   modules: ['@nuxt/image', '@pinia/nuxt', '@nuxt/fonts'],
   components: [
     {
@@ -14,9 +14,17 @@ export default defineNuxtConfig({
   imports: { dirs: ['composables/**'] },
   pinia: { storesDirs: ['./stores/**'] },
   fonts: {
-    families: [{ name: 'DM Sans', provider: 'google' }],
+    families: [
+      { name: 'DM Sans', provider: 'google' },
+      { name: 'JetBrains Mono', provider: 'google' },
+      { name: 'Courier New', provider: 'google' },
+      { name: 'Syne', provider: 'google' },
+      { name: 'Outfit', provider: 'google' },
+      { name: 'DM Serif Display', provider: 'google' },
+      { name: 'Georgia', provider: 'google' },
+    ],
     defaults: {
-      weights: [400, 600, 700],
+      weights: [300, 400, 500, 600, 700],
       subsets: ['latin', 'cyrillic'],
     },
   },

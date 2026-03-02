@@ -1,0 +1,950 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   responsive.css — Адаптивні стилі
+   КлінікаПлюс — Client Landing + Admin Panel
+
+   Підключати ОСТАННІМ у nuxt.config.ts:
+     css: ['~/assets/styles/main.css', '~/assets/styles/admin-pages.css', '~/assets/styles/responsive.css']
+
+   Брейкпоінти:
+     --bp-xs:   360px  (дуже малі телефони)
+     --bp-sm:   480px  (телефони)
+     --bp-md:   640px  (великі телефони / малі планшети)
+     --bp-lg:   768px  (планшети)
+     --bp-xl:   980px  (великі планшети / малі ноутбуки)
+     --bp-2xl: 1200px  (ноутбуки)
+     --bp-3xl: 1400px  (великі монітори)
+
+   Порядок:
+   1.  Глобальні утиліти
+   2.  Клієнтська частина — Навігація
+   3.  Клієнтська частина — Hero секція
+   4.  Клієнтська частина — Секції (services, doctors, steps, reviews, CTA)
+   5.  Клієнтська частина — Footer
+   6.  Клієнтська частина — Auth (login / register / callback)
+   7.  Клієнтська частина — BookingModal
+   8.  Клієнтська частина — AppointmentsList drawer
+   9.  Клієнтська частина — DoctorCard
+   10. Адмін — Layout (sidebar → header на мобільному)
+   11. Адмін — Таблиці та картки
+   12. Адмін — Модальні вікна та форми
+   13. Великі екрани (1400px+)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Глобальні утиліти ─────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .hide-xs {
+    display: none !important;
+  }
+}
+@media (max-width: 640px) {
+  .hide-sm {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) {
+  .hide-md {
+    display: none !important;
+  }
+}
+@media (max-width: 980px) {
+  .hide-xl {
+    display: none !important;
+  }
+}
+@media (min-width: 481px) {
+  .show-xs {
+    display: none !important;
+  }
+}
+@media (min-width: 641px) {
+  .show-sm {
+    display: none !important;
+  }
+}
+@media (min-width: 769px) {
+  .show-md {
+    display: none !important;
+  }
+}
+@media (min-width: 981px) {
+  .show-xl {
+    display: none !important;
+  }
+}
+
+/* Touch-friendly minimum tap target */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role='button'] {
+    min-height: 40px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   2. КЛІЄНТ — Навігація
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 980px — ховаємо desktop nav, показуємо burger */
+@media (max-width: 980px) {
+  .nav-links,
+  .nav-end {
+    display: none !important;
+  }
+
+  .burger {
+    display: flex !important;
+  }
+
+  .nav-wrap {
+    justify-content: space-between;
+  }
+}
+
+/* 640px — мобільне меню ширше */
+@media (max-width: 640px) {
+  .nav {
+    padding: 0;
+  }
+  .nav-wrap {
+    height: 58px;
+    padding: 0 16px;
+  }
+  .mob-menu {
+    padding: 16px;
+    gap: 12px;
+  }
+  .mob-menu a {
+    font-size: 15px;
+    padding: 6px 0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   3. КЛІЄНТ — Hero
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  .hero {
+    padding: 96px 0 56px;
+    min-height: auto;
+  }
+  .hero-wrap {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .hero-right {
+    display: none;
+  }
+  .hero-left {
+    max-width: 600px;
+  }
+  .hero-h1 {
+    font-size: clamp(32px, 7vw, 52px);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 80px 0 48px;
+  }
+  .hero-h1 {
+    font-size: clamp(28px, 9vw, 40px);
+  }
+  .hero-sub {
+    font-size: 15px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .hero-actions a,
+  .hero-actions button {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  .hero-nums {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .hero-num {
+    min-width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-h1 {
+    font-size: 26px;
+  }
+  .hero-sub {
+    font-size: 14px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   4. КЛІЄНТ — Секції
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Загальне — padding секцій */
+@media (max-width: 768px) {
+  .sect {
+    padding: 72px 0;
+  }
+  .sect-hd {
+    margin-bottom: 40px;
+  }
+  .sect-h2 {
+    font-size: clamp(24px, 5vw, 36px);
+  }
+}
+
+@media (max-width: 480px) {
+  .sect {
+    padding: 56px 0;
+  }
+  .sect-hd {
+    margin-bottom: 32px;
+  }
+  .sect-h2 {
+    font-size: clamp(22px, 7vw, 30px);
+  }
+  .sect-desc,
+  .sect-p {
+    font-size: 14px;
+  }
+}
+
+/* sect-hd-split — горизонталь → вертикаль */
+@media (max-width: 768px) {
+  .sect-hd-split {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    text-align: left;
+  }
+  .sect-hd-split .sect-desc {
+    max-width: 100%;
+  }
+}
+
+/* Trust strip */
+@media (max-width: 768px) {
+  .trust-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px 24px;
+  }
+  .trust-item {
+    width: calc(50% - 12px);
+  }
+}
+
+@media (max-width: 480px) {
+  .trust-item {
+    width: 100%;
+  }
+}
+
+/* Services grid */
+@media (max-width: 980px) {
+  .svc-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .svc-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Doctors grid */
+@media (max-width: 980px) {
+  .doc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .doc-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Steps section */
+@media (max-width: 980px) {
+  .steps-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .steps-right {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .steps-inner {
+    gap: 32px;
+  }
+  .step {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Reviews grid */
+@media (max-width: 980px) {
+  .reviews-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CTA section */
+@media (max-width: 640px) {
+  .cta-sect {
+    padding: 56px 0;
+    text-align: center;
+  }
+  .cta-inner {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .cta-inner h2 {
+    font-size: clamp(22px, 6vw, 30px);
+  }
+  .cta-inner p {
+    font-size: 14px;
+  }
+  .cta-actions {
+    width: 100%;
+  }
+  .cta-actions a,
+  .cta-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   5. КЛІЄНТ — Footer
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .footer-wrap {
+    flex-direction: column;
+    gap: 32px;
+    padding: 48px 0 32px;
+  }
+  .footer-cols {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .footer-brand {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-wrap {
+    padding: 40px 0 28px;
+    gap: 28px;
+  }
+  .footer-cols {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .footer-copy {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   6. КЛІЄНТ — Auth (login / register / callback)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px 16px;
+    border-radius: 14px;
+    box-shadow: none;
+    border: 1px solid var(--border);
+  }
+  .auth-title {
+    font-size: 20px;
+  }
+  .auth-sub {
+    font-size: 12.5px;
+  }
+  .auth-row {
+    grid-template-columns: 1fr;
+  }
+  .auth-brand {
+    margin-bottom: 24px;
+  }
+
+  /* Full screen on very small */
+  .auth-page {
+    align-items: flex-start;
+    padding: 0;
+  }
+  .auth-card {
+    min-height: 100svh;
+    border-radius: 0;
+    border: none;
+    padding: 40px 20px 24px;
+    max-width: 100%;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   7. КЛІЄНТ — BookingModal
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* На планшеті — зменшуємо ширину панелі */
+@media (max-width: 640px) {
+  .bm-panel {
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    /* На мобільному вже bottom-sheet, але явно задаємо */
+    max-height: 92svh !important;
+  }
+  /* Прогрес — ховаємо текстові підписи, лишаємо тільки dots */
+  .bm-prog-label {
+    display: none;
+  }
+  .bm-prog-step {
+    flex: 0;
+  }
+
+  /* Часові слоти — 2 колонки замість 3 */
+  .bm-slots-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Крок з лікарями — менший відступ */
+  .bm-dr-item {
+    padding: 10px 12px;
+  }
+  .bm-dr-meta {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 360px) {
+  .bm-panel {
+    max-height: 96svh !important;
+  }
+  .bm-slots-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .bm-body {
+    padding: 14px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   8. КЛІЄНТ — AppointmentsList drawer
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  /* Drawer займає весь екран */
+  .ap-drawer {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .ap-card {
+    padding: 14px !important;
+  }
+  .ap-actions {
+    flex-wrap: wrap;
+  }
+  .ap-actions .ap-btn {
+    flex: 1;
+    min-width: calc(50% - 4px);
+    justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .ap-tabs {
+    gap: 2px;
+  }
+  .ap-tab {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   9. КЛІЄНТ — DoctorCard
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  /* Горизонтальний режим стає вертикальним */
+  .dc-horizontal {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .dc-horizontal .dc-avatar-wrap {
+    margin: 0 auto;
+  }
+
+  /* Expanded section — schedule grid 3 cols */
+  .dc-sched-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Services table у карточці — менший шрифт */
+  .dc-svc-table td {
+    font-size: 12px;
+    padding: 7px 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dc-sched-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .dc-chips {
+    gap: 3px;
+  }
+  .dc-chip {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   10. АДМІН — Layout: sidebar → top header на мобільному
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1024px: sidebar стискається ─────────────────────────────── */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-w: 200px;
+  }
+  .main {
+    padding: 22px 24px;
+  }
+}
+
+/* ── 768px: sidebar ховається, з'являється top header + overlay ── */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-w: 260px;
+  }
+
+  /* Shell без фіксованого сайдбару */
+  .shell {
+    flex-direction: column;
+  }
+
+  /* Сайдбар прихований зліва, виїжджає при .is-open */
+  .sidebar {
+    transform: translateX(-100%);
+    transition:
+      transform 0.28s cubic-bezier(0.22, 0.68, 0, 1.2),
+      box-shadow 0.28s;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .sidebar.is-open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-xl);
+  }
+
+  /* Top header */
+  .admin-topbar {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    height: 54px;
+    padding: 0 16px;
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--nav-border);
+    position: sticky;
+    top: 0;
+    /* Topbar нижче sidebar і overlay */
+    z-index: 180;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Overlay — між topbar і sidebar */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    /* 200 — нижче sidebar (400), вище контенту */
+    z-index: 200;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  /* Кнопка бургера для адмінки */
+  .admin-burger {
+    display: flex !important;
+    flex-direction: column;
+    gap: 4.5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background var(--duration-fast);
+  }
+  .admin-burger:hover {
+    background: var(--bg-2);
+  }
+  .admin-burger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition:
+      transform 0.2s,
+      opacity 0.2s;
+  }
+  .admin-burger.is-open span:nth-child(1) {
+    transform: rotate(45deg) translate(4.5px, 4.5px);
+  }
+  .admin-burger.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+  .admin-burger.is-open span:nth-child(3) {
+    transform: rotate(-45deg) translate(4.5px, -4.5px);
+  }
+
+  /* Логотип у topbar */
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .topbar-logo-icon {
+    font-size: 18px;
+    color: var(--accent);
+  }
+
+  /* Main — без margin-left */
+  .main {
+    margin-left: 0 !important;
+    padding: 20px 16px;
+  }
+
+  /* Dashboard stats — 2 cols */
+  .stats {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .dash-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── 480px: sidebar ширина ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  :root {
+    --sidebar-w: 80vw;
+  }
+  .main {
+    padding: 16px 12px;
+  }
+
+  /* Stats — 1 col */
+  .stats {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Ховаємо topbar та burger на desktop ─────────────────────── */
+/* sidebar-overlay керується через v-if в admin.vue */
+.admin-topbar,
+.admin-burger {
+  display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   11. АДМІН — Таблиці та картки
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 980px — таблиця горизонтально скролиться, toolbar на 2 рядки */
+@media (max-width: 980px) {
+  .card-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .toolbar-left {
+    flex-wrap: wrap;
+  }
+  .toolbar-right {
+    justify-content: flex-end;
+  }
+  .inp-search {
+    max-width: none;
+    flex: 1;
+  }
+  .inp {
+    flex: 1;
+    min-width: 140px;
+  }
+}
+
+/* 768px — деякі колонки таблиці ховаємо */
+@media (max-width: 768px) {
+  /* Загальна таблиця */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    min-width: 560px;
+  }
+  th,
+  td {
+    padding: 10px 12px;
+  }
+  th {
+    font-size: 10px;
+  }
+  td {
+    font-size: 12.5px;
+  }
+
+  /* Page header */
+  .page-hd {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .page-hd .btn {
+    align-self: flex-start;
+  }
+
+  /* Pagination */
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Stat cards */
+  .stat-val {
+    font-size: 22px;
+  }
+}
+
+/* 480px — ховаємо другорядні колонки таблиці  */
+@media (max-width: 480px) {
+  /* Ховаємо телефон у users, кількість записів у doctors/services */
+  .col-phone,
+  .col-count,
+  .col-date {
+    display: none;
+  }
+
+  /* Дії — тільки іконки */
+  .actions .btn-sm .btn-label {
+    display: none;
+  }
+
+  /* Таблиця — мінімальна ширина */
+  table {
+    min-width: 420px;
+  }
+  th,
+  td {
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   12. АДМІН — Модальні вікна та форми
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  /* Модальне — знизу, як bottom sheet */
+  .modal,
+  .modal-sm,
+  .modal-lg {
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0;
+    max-height: 92svh;
+    animation: adm-sheet-in 0.3s cubic-bezier(0.22, 0.68, 0, 1.2) both;
+  }
+  @keyframes adm-sheet-in {
+    from {
+      transform: translateY(100%);
+      opacity: 0.8;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-hd {
+    padding: 14px 16px 12px;
+  }
+  .modal-body {
+    padding: 16px;
+    gap: 12px;
+  }
+  .modal-ft {
+    padding: 12px 16px;
+  }
+
+  /* Форма — 2 колонки → 1 */
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Schedule modal — часи під днями */
+  .sched-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .sched-times {
+    width: 100%;
+  }
+  .time-inp {
+    flex: 1;
+    width: auto;
+  }
+
+  /* Сервіс-список в лікарях */
+  .svc-list {
+    max-height: 160px;
+  }
+  .svc-price {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .modal-body {
+    padding: 12px;
+  }
+  .modal-ft {
+    gap: 6px;
+  }
+  .modal-ft .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .fi {
+    font-size: 13px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   13. ВЕЛИКІ ЕКРАНИ (1400px+)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Клієнт — ширша сітка */
+@media (min-width: 1400px) {
+  .svc-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .doc-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .reviews-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .hero-h1 {
+    font-size: 64px;
+  }
+  .wrap {
+    max-width: 1280px;
+  }
+}
+
+/* Адмін — ширший сайдбар і більше колонок */
+@media (min-width: 1400px) {
+  :root {
+    --sidebar-w: 240px;
+  }
+  .main {
+    padding: 32px 40px;
+  }
+  .stats {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+  .dash-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --sidebar-w: 260px;
+  }
+  .main {
+    padding: 36px 48px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PRINT — базові стилі для друку
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  .sidebar,
+  .admin-topbar,
+  .nav,
+  .burger,
+  .btn,
+  .modal,
+  .overlay {
+    display: none !important;
+  }
+
+  .main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .shell {
+    display: block;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+  table {
+    min-width: auto !important;
+  }
+  .table-wrap {
+    overflow: visible !important;
+  }
+}

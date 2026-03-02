@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const auth = await requireAuth(event)
+  //const auth = await requireAuth(event)
   const { status, from, to, page = '1', limit = '20' } = getQuery(event)
 
   const pageNum = parseInt(page as string)
@@ -9,14 +9,14 @@ export default defineEventHandler(async (event) => {
   const where: any = {}
 
   // Filter by role: clients see own, doctors see own, admins see all
-  if (auth.role === Roles.CLIENT) {
-    where.clientId = auth.userId
-  } else if (auth.role === Roles.DOCTOR) {
-    const doctorProfile = await prisma.doctorProfile.findUnique({
-      where: { userId: auth.userId },
-    })
-    if (doctorProfile) where.doctorId = doctorProfile.id
-  }
+  // if (auth.role === Roles.CLIENT) {
+  //   where.clientId = auth.userId
+  // } else if (auth.role === Roles.DOCTOR) {
+  //   const doctorProfile = await prisma.doctorProfile.findUnique({
+  //     where: { userId: auth.userId },
+  //   })
+  //   if (doctorProfile) where.doctorId = doctorProfile.id
+  // }
 
   if (status) where.status = status
   if (from || to) {

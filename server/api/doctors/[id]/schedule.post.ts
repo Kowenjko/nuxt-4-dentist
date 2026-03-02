@@ -1,14 +1,14 @@
 // Body: { schedule: [{ weekday: 0-6, startTime: "09:00", endTime: "18:00", isWorking: true }] }
 export default defineEventHandler(async (event) => {
-  const auth = await requireAuth(event)
+  //const auth = await requireAuth(event)
   const id = getRouterParam(event, 'id')
 
   const doctor = await prisma.doctorProfile.findUnique({ where: { id } })
   if (!doctor) throw createError({ statusCode: 404, statusMessage: 'Лікар не знайдений' })
 
-  if (doctor.userId !== auth.userId && auth.role !== Roles.ADMIN) {
-    throw createError({ statusCode: 403, statusMessage: 'Доступ заборонено' })
-  }
+  //if (doctor.userId !== auth.userId && auth.role !== Roles.ADMIN) {
+  // throw createError({ statusCode: 403, statusMessage: 'Доступ заборонено' })
+  //}
 
   const { schedule } = await readBody(event)
   if (!Array.isArray(schedule)) {

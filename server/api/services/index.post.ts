@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  await requireRole(event, [Roles.ADMIN])
+  //await requireRole(event, [Roles.ADMIN])
 
   const body = await readBody(event)
   const { name, duration, price } = body
