@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
 
   // Пользователь нажал "Отмена" на странице Google
   if (error || !code) {
-    return sendRedirect(event, `${appUrl}/auth/login?error=google_denied`, 302)
+    return sendRedirect(event, `${appUrl}/login?error=google_denied`, 302)
   }
 
   // Шаг 1: меняем code на access_token
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     if (!tokens.access_token) throw new Error('No access_token')
   } catch (e) {
     console.error('[Google OAuth] Token exchange failed:', e)
-    return sendRedirect(event, `${appUrl}/auth/login?error=token_failed`, 302)
+    return sendRedirect(event, `${appUrl}/login?error=token_failed`, 302)
   }
 
   // Шаг 2: получаем профиль пользователя из Google
@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
     if (!googleUser.email_verified) throw new Error('Email not verified')
   } catch (e) {
     console.error('[Google OAuth] Userinfo failed:', e)
-    return sendRedirect(event, `${appUrl}/auth/login?error=userinfo_failed`, 302)
+    return sendRedirect(event, `${appUrl}/login?error=userinfo_failed`, 302)
   }
 
   // Шаг 3: upsert пользователя в БД
