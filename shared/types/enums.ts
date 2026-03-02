@@ -8,6 +8,7 @@ export const Status = {
   PENDING: 'PENDING',
   CONFIRMED: 'CONFIRMED',
   CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED',
 } as const
 
 export type Role = (typeof Roles)[keyof typeof Roles]
