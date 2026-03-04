@@ -3,15 +3,15 @@
 </template>
 <style scoped>
 .spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--border-light);
-  border-top-color: var(--color-primary);
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  animation: auth-spin 0.7s linear infinite;
+  flex-shrink: 0;
 }
-
-@keyframes spin {
+@keyframes auth-spin {
   to {
     transform: rotate(360deg);
   }

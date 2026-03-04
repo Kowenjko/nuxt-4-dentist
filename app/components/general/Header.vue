@@ -9,6 +9,10 @@ const { y: scrollY } = useWindowScroll()
 const menu = shallowRef(false)
 const menuRef = useTemplateRef('menuRef')
 
+const route = useRoute()
+
+const hideNav = computed(() => [LOGIN_LINK.name, REGISTER_LINK.name].includes(route.name as any))
+
 onClickOutside(menuRef, () => (menu.value = false))
 
 const openPanel = () => {
@@ -50,13 +54,13 @@ const logoutUser = () => {
     <div class="nav-wrap container">
       <BrandButton :is-dark-text="isDark && scrolled" />
 
-      <nav class="nav-links">
+      <nav class="nav-links" v-if="!hideNav">
         <a v-for="item in navigation" @click.prevent="go(item.id)" :key="item.id">{{
           item.name
         }}</a>
       </nav>
 
-      <div class="nav-end">
+      <div class="nav-end" v-if="!hideNav">
         <Button v-if="isAuth" @click="openPanel">Мої записи</Button>
         <Button @click="openBooking">Записатись →</Button>
 

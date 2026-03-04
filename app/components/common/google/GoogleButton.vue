@@ -16,23 +16,23 @@ const { text = 'Увійти через Google' } = defineProps<{ text?: string 
   justify-content: center;
   gap: 10px;
   padding: 10px 16px;
-  border: 1.5px solid var(--border-google-btn);
-  border-radius: 8px;
-  background: var(--bg-google-btn);
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--duration-fast);
 }
 .btn-google:hover:not(:disabled) {
-  border-color: var(--border-google-btn-hover);
-  background: var(--bg-google-btn-hover);
-  box-shadow: var(--shadow-google-btn);
+  border-color: var(--border-2);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-sm);
 }
 .btn-google:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 </style>

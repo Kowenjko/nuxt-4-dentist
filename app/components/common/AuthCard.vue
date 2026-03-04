@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+const { isDark, toggle: toggleTheme } = useTheme('client')
+
 interface Props {
   title: string
   description: string
@@ -19,6 +21,7 @@ const emit = defineEmits<{
     <div class="auth-brand">
       <span class="brand-cross">✚</span>
       <span>{{ COMPANY_NAME }}</span>
+      <ThemeButton :isDark="isDark" @click="toggleTheme" class="auth-theme-btn" />
     </div>
 
     <h1 class="auth-title">{{ title }}</h1>
@@ -27,75 +30,110 @@ const emit = defineEmits<{
     <!-- Google button -->
     <GoogleButton @click="emit('clickGoogle')" :disabled="loading" :text="textGoogle" />
 
-    <div class="divider"><span>або</span></div>
-    <div v-if="formError" class="alert alert-error">{{ formError }}</div>
+    <div class="auth-divider"><span>або</span></div>
+    <div v-if="formError" class="auth-alert">{{ formError }}</div>
 
     <slot />
+    <p class="auth-footer">
+      <slot name="footer" />
+    </p>
   </div>
 </template>
 <style scoped>
 .auth-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   padding: 40px;
   width: 100%;
   max-width: 400px;
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-modal);
+  transition:
+    background var(--duration-base),
+    border-color var(--duration-base);
 }
 
 .auth-brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--text);
   margin-bottom: 32px;
 }
 .brand-cross {
   font-size: 20px;
-  color: var(--color-primary-light);
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .auth-title {
   font-size: 22px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
 }
 .auth-sub {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--text-3);
   margin-top: 4px;
   margin-bottom: 24px;
 }
 
-.divider {
+.auth-theme-btn {
+  margin-left: auto;
+}
+
+.auth-divider {
   display: flex;
   align-items: center;
   gap: 12px;
   margin: 20px 0;
 }
-.divider::before,
-.divider::after {
+.auth-divider::before,
+.auth-divider::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border-light);
+  background: var(--border);
 }
-.divider span {
+.auth-divider span {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-4);
 }
 
-.alert {
+.auth-alert {
   padding: 10px 14px;
-  border-radius: 7px;
+  border-radius: 8px;
   font-size: 13px;
+  font-weight: 500;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
   margin-bottom: 16px;
+  line-height: 1.5;
 }
-.alert-error {
-  background: var(--bg-error);
-  color: var(--text-error);
+
+.auth-footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3);
+  margin-top: 20px;
+}
+.auth-footer :deep(a) {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.auth-footer :deep(a):hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 28px 20px;
+    border-radius: 12px;
+  }
 }
 </style>

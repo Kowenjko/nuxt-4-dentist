@@ -21,12 +21,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const attrs = useAttrs()
-const inputClasses = computed(() => ['form-input', props.error ? 'is-error' : ''])
+const inputClasses = computed(() => ['auth-fi', props.error ? 'is-error' : ''])
 </script>
 
 <template>
-  <div class="form-group">
-    <label v-if="label" class="form-label">
+  <div class="auth-fg">
+    <label v-if="label" class="auth-fl">
       {{ label }}
       <span v-if="required" class="required">*</span>
     </label>
@@ -60,44 +60,66 @@ const inputClasses = computed(() => ['form-input', props.error ? 'is-error' : ''
   </div>
 </template>
 <style scoped>
-.form-group {
+.auth-fg {
   margin-bottom: 14px;
 }
-.form-label {
+.auth-fl {
   display: block;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
   margin-bottom: 6px;
+  /* text-transform: uppercase; */
+  letter-spacing: 0.06em;
 }
 
 .required {
-  color: var(--text-error);
+  color: var(--danger);
   margin-left: 2px;
 }
-.form-input {
+.auth-fg {
+  margin-bottom: 14px;
+}
+.auth-fl {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.auth-fi {
   width: 100%;
-  padding: 9px 12px;
-  border: 1px solid var(--border-light);
-  border-radius: 7px;
+  height: 40px;
+  padding: 0 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg-2);
+  color: var(--text);
   font-family: inherit;
   font-size: 14px;
-  color: var(--text-primary);
   outline: none;
-  transition: border-color 0.15s;
+  transition:
+    border-color var(--duration-fast),
+    background var(--duration-fast);
 }
-.form-input:focus {
-  border-color: var(--color-primary);
+.auth-fi:focus {
+  border-color: var(--border-focus);
+  background: var(--surface);
+}
+.auth-fi::placeholder {
+  color: var(--text-4);
 }
 
-.form-input.is-error {
-  border-color: var(--text-error);
-  background: var(--bg-error);
+.auth-fi.is-error {
+  border-color: var(--danger);
+  background: var(--bg-danger);
 }
 
 .input-error {
   font-size: 12px;
-  color: var(--text-error);
+  color: var(--danger);
   margin-top: 4px;
 }
 </style>
