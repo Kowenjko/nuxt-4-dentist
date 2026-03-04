@@ -17,6 +17,7 @@ onMounted(async () => {
   <main>
     <slot />
   </main>
+  <Footer />
   <BookingModal />
   <AppointmentsList />
 </template>

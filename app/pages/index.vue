@@ -5,7 +5,6 @@ const mounted = ref(false)
 const selSlot = ref('')
 const loadingSvc = ref(true)
 const loadingDoc = ref(true)
-const yr = new Date().getFullYear()
 
 // ── Data ──────────────────────────────────────
 const services = ref<any[]>([])
@@ -30,7 +29,7 @@ const iconMap: [string, string][] = [
 ]
 const svcIcon = (n: string) => {
   const l = n.toLowerCase()
-  return iconMap.find(([k]) => l.includes(k))?.[1] ?? '🏥'
+  return iconMap.find(([k]) => l.includes(k))?.[1] ?? '🦷'
 }
 
 const fallbackSvcs = [
@@ -168,25 +167,9 @@ const reviews = [
   },
 ]
 
-// ── Helpers ───────────────────────────────────
-const go = (id: string) => {
-  // menu.value = false
-  nextTick(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }))
-}
-
 // ── Lifecycle ─────────────────────────────────
 onMounted(async () => {
-  // initTheme()
-  // applyFor('client')
   mounted.value = true
-
-  // window.addEventListener(
-  //   'scroll',
-  //   () => {
-  //     scrolled.value = window.scrollY > 50
-  //   },
-  //   { passive: true }
-  // )
 
   // Intersection Observer for reveal animations
   const io = new IntersectionObserver(
@@ -216,60 +199,6 @@ onMounted(async () => {
 </script>
 <template>
   <div class="root">
-    <!-- ─── NAV ─────────────────────────────────────── -->
-    <!-- <header class="nav" :class="{ stuck: scrolled }">
-      <div class="nav-wrap">
-        <NuxtLink to="/" class="brand">
-          <svg class="brand-cross" viewBox="0 0 24 24" fill="none" width="22" height="22">
-            <rect x="10" y="2" width="4" height="20" rx="2" fill="currentColor" />
-            <rect x="2" y="10" width="20" height="4" rx="2" fill="currentColor" />
-          </svg>
-          <span>Клініка<em>Плюс</em></span>
-        </NuxtLink>
-
-        <nav class="nav-links">
-          <a @click.prevent="go('services')">Послуги</a>
-          <a @click.prevent="go('doctors')">Лікарі</a>
-          <a @click.prevent="go('steps')">Як записатись</a>
-          <a @click.prevent="go('reviews')">Відгуки</a>
-        </nav>
-
-        <div class="nav-end">
-          <button
-            class="theme-toggle compact"
-            @click="toggleTheme"
-            :title="isDark ? 'Світла тема' : 'Темна тема'"
-          >
-            <span class="t-icon-light" v-if="isDark">☀️</span>
-            <span class="t-icon-dark" v-else>🌙</span>
-          </button>
-          <NuxtLink to="/login" class="btn-line">Увійти</NuxtLink>
-          <NuxtLink to="/register" class="btn-solid">Записатись →</NuxtLink>
-        </div>
-
-        <button class="burger" :class="{ open: menu }" @click="menu = !menu" aria-label="Меню">
-          <span /><span /><span />
-        </button>
-      </div>
-
-      <Transition name="slide">
-        <div v-if="menu" class="mob-menu">
-          <a @click="go('services')">Послуги</a>
-          <a @click="go('doctors')">Лікарі</a>
-          <a @click="go('steps')">Як записатись</a>
-          <a @click="go('reviews')">Відгуки</a>
-          <div class="mob-btns">
-            <NuxtLink to="/login" class="btn-line">Увійти</NuxtLink>
-            <NuxtLink to="/register" class="btn-solid">Записатись</NuxtLink>
-            <button class="theme-toggle mob-theme-toggle" @click="toggleTheme">
-              <span v-if="isDark">☀️</span><span v-else>🌙</span>
-              <span class="t-label">{{ isDark ? 'Світла тема' : 'Темна тема' }}</span>
-            </button>
-          </div>
-        </div>
-      </Transition>
-    </header> -->
-
     <!-- ─── HERO ─────────────────────────────────────── -->
     <section class="hero">
       <div class="hero-noise"></div>
@@ -305,7 +234,7 @@ onMounted(async () => {
                 <path d="M4 10h12m-5-5 5 5-5 5" />
               </svg>
             </NuxtLink>
-            <a @click.prevent="go('steps')" class="btn-text">
+            <a @click.prevent="scrollToId('steps')" class="btn-text">
               <span class="btn-text-circle">▶</span>
               Як це працює
             </a>
@@ -541,50 +470,6 @@ onMounted(async () => {
         </div>
       </div>
     </section>
-
-    <!-- ─── FOOTER ────────────────────────────────────── -->
-    <footer class="footer">
-      <div class="wrap footer-wrap">
-        <div class="footer-brand">
-          <NuxtLink to="/" class="brand footer-brand-link">
-            <svg class="brand-cross" viewBox="0 0 24 24" fill="none" width="18" height="18">
-              <rect x="10" y="2" width="4" height="20" rx="2" fill="currentColor" />
-              <rect x="2" y="10" width="20" height="4" rx="2" fill="currentColor" />
-            </svg>
-            <span>Клініка<em>Плюс</em></span>
-          </NuxtLink>
-          <p class="footer-tagline">Сучасна медицина<br />поруч із вами</p>
-        </div>
-
-        <div class="footer-cols">
-          <div class="footer-col">
-            <div class="footer-col-hd">Клініка</div>
-            <a @click.prevent="go('services')">Послуги</a>
-            <a @click.prevent="go('doctors')">Лікарі</a>
-            <a @click.prevent="go('reviews')">Відгуки</a>
-          </div>
-          <div class="footer-col">
-            <div class="footer-col-hd">Акаунт</div>
-            <NuxtLink to="/login">Увійти</NuxtLink>
-            <NuxtLink to="/register">Реєстрація</NuxtLink>
-            <NuxtLink to="/appointments">Мої записи</NuxtLink>
-          </div>
-          <div class="footer-col">
-            <div class="footer-col-hd">Контакти</div>
-            <span>вул. Шевченка, 12</span>
-            <span>м. Київ, 01001</span>
-            <span>+380 44 000-00-00</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div class="wrap footer-bottom-wrap">
-          <span>© {{ yr }} КлінікаПлюс. Всі права захищено.</span>
-          <span>Пн–Сб&nbsp;08:00–20:00</span>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -1523,80 +1408,6 @@ onMounted(async () => {
 }
 .btn-cta-ghost:hover {
   color: white;
-}
-
-/* ── Footer ─────────────────────────────────── */
-.footer {
-  background: var(--ink);
-}
-.footer-wrap {
-  display: flex;
-  gap: 60px;
-  justify-content: space-between;
-  padding-top: 60px;
-  padding-bottom: 48px;
-  flex-wrap: wrap;
-}
-.footer-brand {
-  flex-shrink: 0;
-}
-.footer-brand-link {
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 16px;
-}
-.footer-brand-link .brand-cross {
-  color: #4caf7d;
-}
-.footer-brand-link em {
-  color: #4caf7d;
-}
-.footer-tagline {
-  font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.4);
-  line-height: 1.7;
-}
-.footer-cols {
-  display: flex;
-  gap: 56px;
-  flex-wrap: wrap;
-}
-.footer-col {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.footer-col-hd {
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
-  margin-bottom: 4px;
-}
-.footer-col a,
-.footer-col span {
-  font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.55);
-  cursor: pointer;
-  transition: color 0.15s;
-}
-.footer-col a:hover {
-  color: white;
-}
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 18px 0;
-}
-.footer-bottom-wrap {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.3);
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 /* ── Reveal animations ──────────────────────── */
