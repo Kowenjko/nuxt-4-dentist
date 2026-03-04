@@ -9,8 +9,8 @@ export type ThemeMode = 'light' | 'dark'
 export type ThemeName = `${Panel}-${ThemeMode}`
 
 const STORAGE_KEYS: Record<Panel, string> = {
-  client: 'clinic-theme-client',
-  admin: 'clinic-theme-admin',
+  client: 'dentist-theme-client',
+  admin: 'dentist-theme-admin',
 }
 
 const DEFAULTS: Record<Panel, ThemeMode> = {
@@ -56,6 +56,8 @@ export const useTheme = (panel: Panel = 'client') => {
   const isDark = computed(() => mode.value === 'dark')
 
   const themeName = computed<ThemeName>(() => `${panel}-${mode.value}`)
+
+  const themeTitle = computed(() => (isDark.value ? 'Світла тема' : 'Темна тема'))
 
   // ── Toggle ───────────────────────────────────────────────────────────
   const toggle = () => setMode(panel === 'client' ? clientMode.value : adminMode.value, true)
@@ -117,6 +119,7 @@ export const useTheme = (panel: Panel = 'client') => {
     mode,
     isDark,
     themeName,
+    themeTitle,
     clientMode: readonly(clientMode),
     adminMode: readonly(adminMode),
 

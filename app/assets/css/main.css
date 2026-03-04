@@ -103,6 +103,9 @@ ol {
   --green-800: #103d24;
   --green-900: #0a2817;
 
+  --black-50: #181613;
+  --black-100: #111210;
+
   /* Золотий (рейтинг, акценти) */
   --gold: #c49a3c;
 
@@ -507,6 +510,9 @@ body.admin,
 .theme-toggle {
   display: flex;
   align-items: center;
+  justify-content: center;
+  height: 36px;
+  width: 36px;
   gap: 6px;
   padding: 7px 13px;
   border-radius: var(--radius-full);
@@ -785,9 +791,24 @@ body.admin,
   white-space: nowrap;
   user-select: none;
 }
+.btn svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+.btn span {
+  font-size: 16px;
+}
+.btn-line {
+  background: none;
+}
+
+.btn-line:hover {
+  color: var(--g1) !important;
+}
+
 .btn-primary {
   background: var(--accent);
-  color: var(--text-inv);
+  color: var(--green-50) !important;
   box-shadow: var(--shadow-accent);
 }
 .btn-primary:hover {

@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
   css: ['~/assets/css/main.css', '~/assets/css/admin-pages.css', '~/assets/css/responsive.css'],
-  modules: ['@nuxt/image', '@pinia/nuxt', '@nuxt/fonts'],
+  modules: ['@nuxt/image', '@pinia/nuxt', '@nuxt/fonts', '@vueuse/nuxt'],
   components: [
     {
       path: '~/components',
@@ -17,7 +17,6 @@ export default defineNuxtConfig({
     families: [
       { name: 'DM Sans', provider: 'google' },
       { name: 'JetBrains Mono', provider: 'google' },
-      { name: 'Courier New', provider: 'google' },
       { name: 'Syne', provider: 'google' },
       { name: 'Outfit', provider: 'google' },
       { name: 'DM Serif Display', provider: 'google' },

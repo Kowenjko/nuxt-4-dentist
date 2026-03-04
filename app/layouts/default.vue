@@ -5,7 +5,7 @@ const { token, fetchUser, isAuthenticated } = useAuth()
 onMounted(async () => {
   init()
   applyFor('client')
-  // Загружаем пользователя если токен есть но user ещё не загружен
+
   if (!isAuthenticated.value) {
     await fetchUser()
   }

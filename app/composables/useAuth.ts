@@ -51,7 +51,7 @@ export const useAuth = () => {
     await authAPI.logout()
     token.value = null
     usersStore.user = null
-    navigateTo(LOGIN_LINK)
+    navigateTo(HOME_LINK)
   }
 
   const isAuthenticated = computed(() => !!usersStore.user)

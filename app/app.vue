@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import { Toaster } from 'vue-sonner'
 
+const { htmlAttrs } = useTheme()
+
 useHead({
+  htmlAttrs: htmlAttrs.value,
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} - Dentist` : 'Dentist'
   },

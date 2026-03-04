@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: false })
+// definePageMeta({ layout: false })
 
 const { isDark, toggle: toggleTheme, init: initTheme, applyFor } = useTheme('client')
 onMounted(() => {
