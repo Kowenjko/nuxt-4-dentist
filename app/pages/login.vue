@@ -64,10 +64,8 @@ definePageMeta({ layout: 'auth' })
       </Button>
     </form>
 
-    <!-- s -->
-
     <template #footer>
-      Немає акаунту? <NuxtLink :to="REGISTER_LINK">Зареєструватися</NuxtLink></template
-    >
+      Немає акаунту? <NuxtLink :to="REGISTER_LINK">Зареєструватися</NuxtLink>
+    </template>
   </AuthCard>
 </template>
