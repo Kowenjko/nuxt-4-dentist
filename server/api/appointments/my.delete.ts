@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   // ── Auth ───────────────────────────────────────────────────────
   const auth = await requireAuth(event)
 
-  if (auth.role === 'ADMIN') {
+  if (auth.role === Roles.ADMIN) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Адміністратори використовують DELETE /api/appointments/:id',
@@ -33,15 +33,15 @@ export default defineEventHandler(async (event) => {
 
   // ── Body ───────────────────────────────────────────────────────
   const body = await readBody(event).catch(() => ({}))
-  const { ids, period = 'upcoming' } = body as {
+  const { ids, period = Periods.UPCOMING } = body as {
     ids?: string[]
-    period?: 'all' | 'upcoming'
+    period?: Period
   }
 
   // ── Resolve owner filter ────────────────────────────────────────
   let ownerWhere: Record<string, any>
 
-  if (auth.role === 'CLIENT') {
+  if (auth.role === Roles.CLIENT) {
     ownerWhere = { clientId: auth.userId }
   } else {
     // DOCTOR — знаходимо профіль
@@ -63,16 +63,16 @@ export default defineEventHandler(async (event) => {
     // і мають статус який можна скасувати
     where = {
       id: { in: ids },
-      status: { in: ['PENDING', 'CONFIRMED'] },
+      status: { in: [Status.PENDING, Status.CONFIRMED] },
       ...ownerWhere,
     }
   } else {
     // Скасовуємо всі активні записи (з урахуванням period)
     const now = new Date()
     where = {
-      status: { in: ['PENDING', 'CONFIRMED'] },
+      status: { in: [Status.PENDING, Status.CONFIRMED] },
       ...ownerWhere,
-      ...(period === 'upcoming' ? { startTime: { gte: now } } : {}),
+      ...(period === Periods.UPCOMING ? { startTime: { gte: now } } : {}),
     }
   }
 
@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
   // ── Bulk cancel ────────────────────────────────────────────────
   const result = await prisma.appointment.updateMany({
     where,
-    data: { status: 'CANCELLED' },
+    data: { status: Status.CANCELLED },
   })
 
   return {

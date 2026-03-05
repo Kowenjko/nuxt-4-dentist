@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   // ── Auth ───────────────────────────────────────────────────────
   const auth = await requireAuth(event)
 
-  if (auth.role === 'ADMIN') {
+  if (auth.role === Roles.ADMIN) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Адміністратори використовують /api/appointments з фільтрами',
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // ── Query params ───────────────────────────────────────────────
-  const { status, period = 'all', page = '1', limit = '20', sort = 'desc' } = getQuery(event)
+  const { status, period = Periods.ALL, page = '1', limit = '20', sort = 'desc' } = getQuery(event)
 
   const pageNum = Math.max(1, parseInt(page as string) || 1)
   const limitNum = Math.min(100, Math.max(1, parseInt(limit as string) || 20))
@@ -37,10 +37,10 @@ export default defineEventHandler(async (event) => {
   // ── Build where ────────────────────────────────────────────────
   const where: Record<string, any> = {}
 
-  if (auth.role === 'CLIENT') {
+  if (auth.role === Roles.CLIENT) {
     // Клієнт — бачить тільки свої записи
     where.clientId = auth.userId
-  } else if (auth.role === 'DOCTOR') {
+  } else if (auth.role === Roles.DOCTOR) {
     // Лікар — бачить записи до свого профілю
     const doctorProfile = await prisma.doctorProfile.findUnique({
       where: { userId: auth.userId },
@@ -56,19 +56,22 @@ export default defineEventHandler(async (event) => {
   }
 
   // Фільтр по статусу
-  if (status && ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status as string)) {
+  if (
+    status &&
+    [Status.PENDING, Status.CONFIRMED, Status.CANCELLED, Status.COMPLETED].includes(status as any)
+  ) {
     where.status = status
   }
 
   // Фільтр по часовому періоду
   const now = new Date()
-  if (period === 'upcoming') {
+  if (period === Periods.UPCOMING) {
     where.startTime = { gte: now }
     // Upcoming = тільки активні статуси
     if (!where.status) {
-      where.status = { in: ['PENDING', 'CONFIRMED'] }
+      where.status = { in: [Status.PENDING, Status.CONFIRMED] }
     }
-  } else if (period === 'past') {
+  } else if (period === Periods.PAST) {
     where.startTime = { lt: now }
   }
 
@@ -122,16 +125,20 @@ export default defineEventHandler(async (event) => {
   // ── Aggregate counts ───────────────────────────────────────────
   // Повертаємо кількість по кожному статусу для UI-табів (без доп. запитів не обійтись)
   const baseWhere =
-    auth.role === 'CLIENT' ? { clientId: auth.userId } : { doctorId: where.doctorId }
+    auth.role === Roles.CLIENT ? { clientId: auth.userId } : { doctorId: where.doctorId }
 
   const [countPending, countConfirmed, countCancelled, countCompleted, countUpcoming, countPast] =
     await Promise.all([
-      prisma.appointment.count({ where: { ...baseWhere, status: 'PENDING' } }),
-      prisma.appointment.count({ where: { ...baseWhere, status: 'CONFIRMED' } }),
-      prisma.appointment.count({ where: { ...baseWhere, status: 'CANCELLED' } }),
-      prisma.appointment.count({ where: { ...baseWhere, status: 'COMPLETED' } }),
+      prisma.appointment.count({ where: { ...baseWhere, status: Status.PENDING } }),
+      prisma.appointment.count({ where: { ...baseWhere, status: Status.CONFIRMED } }),
+      prisma.appointment.count({ where: { ...baseWhere, status: Status.CANCELLED } }),
+      prisma.appointment.count({ where: { ...baseWhere, status: Status.COMPLETED } }),
       prisma.appointment.count({
-        where: { ...baseWhere, status: { in: ['PENDING', 'CONFIRMED'] }, startTime: { gte: now } },
+        where: {
+          ...baseWhere,
+          status: { in: [Status.PENDING, Status.CONFIRMED] },
+          startTime: { gte: now },
+        },
       }),
       prisma.appointment.count({ where: { ...baseWhere, startTime: { lt: now } } }),
     ])

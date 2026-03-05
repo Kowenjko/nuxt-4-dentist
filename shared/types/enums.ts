@@ -1,5 +1,6 @@
 export const Periods = {
   ALL: 'all',
+  PAST: 'past',
   UPCOMING: 'upcoming',
 } as const
 
