@@ -18,3 +18,11 @@ export interface DoctorScheduleI {
   endTime: string // "18:00"
   isWorking: boolean // Выходной или рабочий день
 }
+
+export interface CreateScheduleI {
+  count: number
+}
+export interface DoctorSlotsI {
+  startTime: string
+  endTime: string
+}
