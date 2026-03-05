@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  //await requireRole(event, [Roles.ADMIN])
+  await requireRole(event, [Roles.ADMIN])
 
   const { page = '1', limit = '20', role, search } = getQuery(event)
 

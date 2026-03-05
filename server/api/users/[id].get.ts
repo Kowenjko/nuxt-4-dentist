@@ -1,11 +1,11 @@
 export default defineEventHandler(async (event) => {
-  //const auth = await requireAuth(event)
+  const auth = await requireAuth(event)
   const id = getRouterParam(event, 'id')
 
   // Users can only view their own profile unless admin
-  //if (auth.userId !== id && auth.role !== Roles.ADMIN) {
-  //  throw createError({ statusCode: 403, statusMessage: 'Заборонено' })
-  //}
+  if (auth.userId !== id && auth.role !== Roles.ADMIN) {
+    throw createError({ statusCode: 403, statusMessage: 'Заборонено' })
+  }
 
   const user = await prisma.user.findUnique({
     where: { id },
