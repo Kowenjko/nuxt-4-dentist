@@ -124,12 +124,12 @@ export default defineEventHandler(async (event) => {
   const baseWhere =
     auth.role === 'CLIENT' ? { clientId: auth.userId } : { doctorId: where.doctorId }
 
-  const [countPending, countConfirmed, countCancelled, countUpcoming, countPast] =
+  const [countPending, countConfirmed, countCancelled, countCompleted, countUpcoming, countPast] =
     await Promise.all([
       prisma.appointment.count({ where: { ...baseWhere, status: 'PENDING' } }),
       prisma.appointment.count({ where: { ...baseWhere, status: 'CONFIRMED' } }),
       prisma.appointment.count({ where: { ...baseWhere, status: 'CANCELLED' } }),
-      //prisma.appointment.count({ where: { ...baseWhere, status: 'COMPLETED' } }),
+      prisma.appointment.count({ where: { ...baseWhere, status: 'COMPLETED' } }),
       prisma.appointment.count({
         where: { ...baseWhere, status: { in: ['PENDING', 'CONFIRMED'] }, startTime: { gte: now } },
       }),
@@ -152,7 +152,7 @@ export default defineEventHandler(async (event) => {
       pending: countPending,
       confirmed: countConfirmed,
       cancelled: countCancelled,
-      //  completed: countCompleted,
+      completed: countCompleted,
     },
     meta: {
       userId: auth.userId,

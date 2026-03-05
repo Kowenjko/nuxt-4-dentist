@@ -9,6 +9,13 @@ export interface ServiceI {
   appointments: AppointmentI[]
 }
 
+export interface CreateAppointmentI {
+  doctorId: string
+  serviceId: string
+  startTime: string
+  notes: string
+}
+
 export interface AppointmentI {
   id: string
   startTime: string // Начало приема (хранить в UTC!)
@@ -23,4 +30,37 @@ export interface AppointmentI {
   service: ServiceI
   createdAt: string
   updatedAt: string
+}
+
+export interface AppointmentCountsI {
+  all: string
+  upcoming: string
+  past: string
+  pending: string
+  confirmed: string
+  cancelled: string
+  completed: string
+}
+
+export interface AppointmentCancelI {
+  ids?: string[]
+  period?: Period
+}
+export interface CancelResponseI {
+  cancelled: number
+  ids: string[]
+  message: string
+}
+export interface AppointmentMetaI {
+  userId: string
+  role: Role
+  period: string
+  sort: 'asc' | 'desc'
+}
+
+export interface AppointmentMyI {
+  data: AppointmentI
+  pagination: PaginationI
+  counts: AppointmentCountsI
+  meta: AppointmentMateI
 }

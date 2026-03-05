@@ -1,3 +1,8 @@
+export const Periods = {
+  ALL: 'all',
+  UPCOMING: 'upcoming',
+} as const
+
 export const Roles = {
   CLIENT: 'CLIENT',
   DOCTOR: 'DOCTOR',
@@ -11,5 +16,6 @@ export const Status = {
   COMPLETED: 'COMPLETED',
 } as const
 
+export type Period = (typeof Periods)[keyof typeof Periods]
 export type Role = (typeof Roles)[keyof typeof Roles]
 export type AppointmentStatus = (typeof Status)[keyof typeof Status]
