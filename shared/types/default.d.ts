@@ -9,3 +9,7 @@ export interface ApiResponseI<T> {
   data: T
   pagination?: PaginationI
 }
+
+export interface DeleteResponseI {
+  message: string
+}

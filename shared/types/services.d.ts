@@ -1,4 +1,4 @@
-export type AppointmentStatusT = 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+// export type AppointmentStatusT = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
 
 export interface ServiceI {
   id: string
@@ -13,7 +13,7 @@ export interface AppointmentI {
   id: string
   startTime: string // Начало приема (хранить в UTC!)
   endTime: string // Конец приема
-  status: AppointmentStatusT // PENDING, CONFIRMED, CANCELLED
+  status: AppointmentStatus // PENDING, CONFIRMED, CANCELLED, COMPLETED
   notes?: string
   clientId: string
   client: UserI

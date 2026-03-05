@@ -22,6 +22,7 @@ export interface DoctorScheduleI {
 export interface CreateScheduleI {
   count: number
 }
+
 export interface DoctorSlotsI {
   startTime: string
   endTime: string
