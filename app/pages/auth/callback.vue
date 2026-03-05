@@ -1,20 +1,3 @@
-<template>
-  <div class="auth-page">
-    <div v-if="errorMsg" class="callback-card">
-      <div class="cb-error-icon">✕</div>
-      <p class="cb-title">Помилка входу</p>
-      <p class="cb-text">{{ errorMsg }}</p>
-      <NuxtLink to="/login" class="cb-back">← Повернутись до входу</NuxtLink>
-    </div>
-
-    <!-- Завантаження -->
-    <div v-else class="callback-loading">
-      <div class="cb-spinner" />
-      <p class="cb-loading-text">Виконуємо вхід...</p>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 definePageMeta({ layout: false })
 
@@ -59,6 +42,23 @@ onMounted(async () => {
   await navigateTo(redirectTo, { replace: true })
 })
 </script>
+
+<template>
+  <div class="auth-page">
+    <div v-if="errorMsg" class="callback-card">
+      <div class="cb-error-icon">✕</div>
+      <p class="cb-title">Помилка входу</p>
+      <p class="cb-text">{{ errorMsg }}</p>
+      <NuxtLink to="/login" class="cb-back">← Повернутись до входу</NuxtLink>
+    </div>
+
+    <!-- Завантаження -->
+    <div v-else class="callback-loading">
+      <div class="cb-spinner" />
+      <p class="cb-loading-text">Виконуємо вхід...</p>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .auth-page {

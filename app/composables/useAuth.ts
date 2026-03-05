@@ -25,8 +25,6 @@ export const useAuth = () => {
 
   // Загрузить текущего пользователя по токену
   const fetchUser = async () => {
-    console.log('fetchUser called with token:', token.value)
-
     try {
       usersStore.user = (await authAPI.me()) as unknown as UserI
     } catch {

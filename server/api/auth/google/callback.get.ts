@@ -106,7 +106,7 @@ export default defineEventHandler(async (event) => {
   // Встановлюємо httpOnly cookie прямо на сервері —
   // безпечніше ніж передавати токен у URL (захист від referer leakage)
   setCookie(event, 'auth_token', token, {
-    httpOnly: true,
+    //httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 7, // 7 днів

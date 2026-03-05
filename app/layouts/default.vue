@@ -6,7 +6,7 @@ onMounted(async () => {
   init()
   applyFor('client')
 
-  if (!isAuthenticated.value) {
+  if (token.value && !isAuthenticated.value) {
     await fetchUser()
   }
 })
