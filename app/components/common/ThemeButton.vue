@@ -3,11 +3,11 @@ import { Moon, Sun } from 'lucide-vue-next'
 const {
   isDark,
   isLabel = false,
-  variant = 'line',
+  variant = 'ghost',
 } = defineProps<{
   isDark: boolean
   isLabel?: boolean
-  variant?: 'outline' | 'line'
+  variant?: 'outline' | 'ghost'
 }>()
 
 const title = computed(() => (isDark ? 'Світла тема' : 'Темна тема'))

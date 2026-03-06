@@ -1,13 +1,24 @@
 <script lang="ts" setup>
-const mounted = ref(false)
-const selSlot = ref('')
+import { MoveRightIcon, PlayIcon } from 'lucide-vue-next'
 
-onMounted(() => (mounted.value = true))
+const { open } = useBooking()
+const mounted = ref(false)
+
+const { data: doctors } = await useAPI<DoctorProfileI[]>(DOCTORS)
+// const { data: services } = useAPI(SERVICES)
+// const { data } = useAPI(DOCTORS + `/${doctors.value?.[0]?.id}` + SLOTS, {
+//   query: { date: '2024-03-06', serviceId: services.value?.[0]?.id },
+// })
+
+// console.log(doctors.value)
+
+onMounted(() => {
+  mounted.value = true
+})
 </script>
 
 <template>
   <section class="hero">
-    <div class="hero-noise"></div>
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
 
@@ -28,14 +39,12 @@ onMounted(() => (mounted.value = true))
         </p>
 
         <div class="hero-actions" :class="{ show: mounted }">
-          <NuxtLink to="/register" class="btn-hero">
+          <Button size="lg" is-animated-svg @click="open">
             Обрати лікаря
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="16">
-              <path d="M4 10h12m-5-5 5 5-5 5" />
-            </svg>
-          </NuxtLink>
+            <MoveRightIcon />
+          </Button>
           <a @click.prevent="scrollToId('steps')" class="btn-text">
-            <span class="btn-text-circle">▶</span>
+            <span class="btn-text-circle"><PlayIcon /></span>
             Як це працює
           </a>
         </div>
@@ -51,48 +60,11 @@ onMounted(() => (mounted.value = true))
 
       <div class="hero-right" :class="{ show: mounted }">
         <!-- Booking card -->
-        <div class="book-card">
-          <div class="book-card-top">
-            <div class="book-doc-av">ОС</div>
-            <div class="book-doc-info">
-              <div class="book-doc-name">Олена Савченко</div>
-              <div class="book-doc-spec">Терапевт · Кардіолог</div>
-            </div>
-            <div class="book-status">Вільна</div>
-          </div>
-          <div class="book-label">Оберіть час</div>
-          <div class="book-slots">
-            <button
-              v-for="t in ['09:00', '10:30', '14:00', '16:30']"
-              :key="t"
-              class="book-slot"
-              :class="{ sel: selSlot === t }"
-              @click="selSlot = t"
-            >
-              {{ t }}
-            </button>
-          </div>
-          <NuxtLink to="/register" class="book-cta" :class="{ active: selSlot }">
-            {{ selSlot ? `Записатись на ${selSlot}` : 'Оберіть час' }}
-          </NuxtLink>
-        </div>
+        <HeroSlides v-if="doctors" :doctors />
 
         <!-- Floating chips -->
-        <div class="chip chip-confirmed">
-          <span class="chip-icon">✓</span>
-          <div>
-            <div class="chip-title">Запис підтверджено</div>
-            <div class="chip-sub">Завтра 09:00 · Терапевт</div>
-          </div>
-        </div>
-
-        <div class="chip chip-rating">
-          <span class="chip-icon chip-star">★</span>
-          <div>
-            <div class="chip-title">4.9 з 5</div>
-            <div class="chip-sub">342 відгуки</div>
-          </div>
-        </div>
+        <Chip title="Запис підтверджено" sub="Завтра 09:00 · Стоматолог" />
+        <Chip title="4.9 з 5" sub="342 відгуки" type="rating" />
 
         <!-- Deco ring -->
         <div class="deco-ring"></div>
@@ -100,15 +72,11 @@ onMounted(() => (mounted.value = true))
     </div>
 
     <!-- Scroll hint -->
-    <div class="scroll-hint" :class="{ show: mounted }">
-      <div class="scroll-line"></div>
-      <span>гортайте</span>
-    </div>
+    <ScrollHint :class="{ show: mounted }" />
   </section>
 </template>
 
 <style scoped>
-/* ── HERO ───────────────────────────────────── */
 .hero {
   position: relative;
   overflow: hidden;
@@ -119,15 +87,22 @@ onMounted(() => (mounted.value = true))
   background: var(--f0);
 }
 
-.hero-noise {
+/* noise через ::after на .hero — без окремого div */
+.hero::after {
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  opacity: 0.6;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0),
+    radial-gradient(circle at 3px 3px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
+  background-size:
+    4px 4px,
+    6px 6px;
+  mix-blend-mode: multiply;
 }
+
 .hero-orb {
   position: absolute;
   border-radius: 50%;
@@ -138,7 +113,7 @@ onMounted(() => (mounted.value = true))
 .hero-orb-1 {
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, #b8e0c8 0%, transparent 70%);
+  background: radial-gradient(circle, #73d299 0%, transparent 70%);
   top: -200px;
   right: -150px;
   opacity: 0.5;
@@ -147,7 +122,7 @@ onMounted(() => (mounted.value = true))
 .hero-orb-2 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, #e4d9c4 0%, transparent 70%);
+  background: radial-gradient(circle, #75cc94 0%, transparent 70%);
   bottom: -100px;
   left: -80px;
   opacity: 0.45;
@@ -274,32 +249,6 @@ onMounted(() => (mounted.value = true))
   transform: translateY(0);
 }
 
-.btn-hero {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
-  border-radius: 10px;
-  background: var(--g);
-  color: white;
-  font-family: var(--sans);
-  font-size: 15.5px;
-  font-weight: 600;
-  box-shadow: 0 6px 28px rgba(22, 80, 47, 0.28);
-  transition: all 0.2s;
-}
-.btn-hero:hover {
-  background: var(--g1);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 36px rgba(22, 80, 47, 0.33);
-}
-.btn-hero svg {
-  transition: transform 0.2s;
-}
-.btn-hero:hover svg {
-  transform: translateX(4px);
-}
-
 .btn-text {
   display: flex;
   align-items: center;
@@ -325,8 +274,13 @@ onMounted(() => (mounted.value = true))
   font-size: 10px;
   color: var(--g1);
   transition:
-    border-color 0.15s,
-    background 0.15s;
+    border-color 0.3s,
+    background 0.3s;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 .btn-text:hover .btn-text-circle {
   border-color: var(--g1);
@@ -352,11 +306,11 @@ onMounted(() => (mounted.value = true))
   flex-direction: column;
 }
 .num-item b {
-  font-family: var(--serif);
+  font-family: var(--font-sans);
   font-size: 28px;
   letter-spacing: -0.03em;
   color: var(--ink);
-  font-weight: 400;
+  font-weight: 500;
 }
 .num-item span {
   font-size: 12.5px;
@@ -390,9 +344,10 @@ onMounted(() => (mounted.value = true))
   width: 360px;
   height: 360px;
   border-radius: 50%;
-  border: 1px dashed var(--f2);
+  border: 1px dashed var(--f3);
   top: 50%;
   left: 50%;
+
   transform: translate(-50%, -50%);
   animation: spin-slow 30s linear infinite;
 }
@@ -400,190 +355,5 @@ onMounted(() => (mounted.value = true))
   to {
     transform: translate(-50%, -50%) rotate(360deg);
   }
-}
-
-.book-card {
-  position: absolute;
-  top: 24px;
-  left: 30px;
-  right: 30px;
-  background: white;
-  border: 1px solid var(--f2);
-  border-radius: 18px;
-  padding: 22px 22px 18px;
-  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.09);
-}
-.book-card-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.book-doc-av {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: var(--gx);
-  color: var(--g);
-  font-family: var(--serif);
-  font-size: 15px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.book-doc-name {
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.book-doc-spec {
-  font-size: 12px;
-  color: var(--i4);
-  margin-top: 2px;
-}
-.book-status {
-  margin-left: auto;
-  padding: 3px 10px;
-  border-radius: 20px;
-  background: var(--gx);
-  color: var(--g1);
-  font-size: 11.5px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-.book-label {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--i4);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 10px;
-}
-.book-slots {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-  margin-bottom: 14px;
-}
-.book-slot {
-  padding: 8px 4px;
-  border-radius: 8px;
-  border: 1.5px solid var(--f2);
-  background: none;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  color: var(--i3);
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
-}
-.book-slot:hover {
-  border-color: var(--g1);
-  color: var(--g1);
-  background: var(--gx);
-}
-.book-slot.sel {
-  background: var(--g);
-  border-color: var(--g);
-  color: white;
-}
-.book-cta {
-  display: block;
-  text-align: center;
-  padding: 11px;
-  border-radius: 9px;
-  font-size: 14px;
-  font-weight: 600;
-  background: var(--f1);
-  color: var(--i3);
-  transition: all 0.2s;
-}
-.book-cta.active {
-  background: var(--g);
-  color: white;
-}
-.book-cta.active:hover {
-  background: var(--g1);
-}
-
-.chip {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  background: white;
-  border: 1px solid var(--f2);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-}
-.chip-confirmed {
-  bottom: 80px;
-  left: -10px;
-  animation: bob 5s ease-in-out infinite;
-}
-.chip-rating {
-  bottom: 14px;
-  right: 0;
-  animation: bob 5s ease-in-out infinite 2.5s;
-}
-@keyframes bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-7px);
-  }
-}
-.chip-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.chip-star {
-  color: var(--gol);
-}
-.chip-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.chip-sub {
-  font-size: 11.5px;
-  color: var(--i4);
-  margin-top: 1px;
-}
-
-/* ── Trust bar ──────────────────────────────── */
-.trust-bar {
-  background: var(--g);
-  padding: 16px 0;
-  overflow: hidden;
-}
-.trust-wrap {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 28px;
-  display: flex;
-  gap: 0;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-}
-.trust-icon {
-  font-size: 18px;
-}
-.trust-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  white-space: nowrap;
 }
 </style>

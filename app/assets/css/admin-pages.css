@@ -239,7 +239,7 @@ tbody tr:hover {
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────────── */
-.btn {
+.admin-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -257,56 +257,56 @@ tbody tr:hover {
   user-select: none;
   line-height: 1;
 }
-.btn svg {
+.admin-btn svg {
   flex-shrink: 0;
   width: 15px;
   height: 15px;
 }
 
-.btn-primary {
+.admin-btn-primary {
   background: var(--accent);
   color: var(--text-inv);
 }
-.btn-primary:hover:not(:disabled) {
+.admin-btn-primary:hover:not(:disabled) {
   background: var(--accent-2);
   transform: translateY(-1px);
   box-shadow: var(--shadow-accent);
 }
 
-.btn-ghost {
+.admin-btn-ghost {
   background: transparent;
   color: var(--text-2);
   border: 1px solid var(--border);
 }
-.btn-ghost:hover:not(:disabled) {
+.admin-btn-ghost:hover:not(:disabled) {
   color: var(--text);
   border-color: var(--border-2);
   background: var(--bg-2);
 }
 
-.btn-danger {
+.admin-btn-danger {
   background: var(--danger-bg);
   color: var(--danger);
   border: 1px solid var(--danger-border);
 }
-.btn-danger:hover:not(:disabled) {
+.admin-btn-danger:hover:not(:disabled) {
   background: var(--danger);
   color: var(--text-inv);
   border-color: var(--danger);
 }
 
-.btn-sm {
+.admin-btn-sm {
   height: 28px;
   padding: 0 10px;
   font-size: 12.5px;
 }
-.btn-lg {
+.admin-btn-lg {
   height: 40px;
   padding: 0 20px;
   font-size: 14px;
 }
 
-.btn:disabled {
+.admin-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none !important;

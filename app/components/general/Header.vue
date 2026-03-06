@@ -61,15 +61,15 @@ const logoutUser = () => {
       </nav>
 
       <div class="nav-end" v-if="!hideNav">
-        <Button v-if="isAuth" @click="openPanel">Мої записи</Button>
-        <Button @click="openBooking">Записатись →</Button>
+        <Button v-if="isAuth" @click="openPanel" size="sm">Мої записи</Button>
+        <Button @click="openBooking" size="sm">Записатись →</Button>
 
-        <ThemeButton :isDark="isDark" @click="toggleTheme" />
+        <ThemeButton :isDark="isDark" @click="toggleTheme" size="sm" />
 
-        <Button v-if="isAuth" variant="line" @click="logout" title="Вихід">
+        <Button v-if="isAuth" variant="ghost" @click="logout" title="Вихід">
           <LogOutIcon />
         </Button>
-        <Button v-else :to="LOGIN_LINK" variant="line" title="Вхід"> <LogInIcon /></Button>
+        <Button v-else :to="LOGIN_LINK" variant="ghost" title="Вхід"> <LogInIcon /></Button>
       </div>
 
       <BurgerButton :menu @click="menu = !menu" />
@@ -152,6 +152,10 @@ const logoutUser = () => {
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.3s;
+  &:hover {
+    color: var(--g2);
+  }
 }
 .mob-btns {
   display: flex;

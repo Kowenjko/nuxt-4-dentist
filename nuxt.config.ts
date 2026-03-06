@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
   css: ['~/assets/css/main.css', '~/assets/css/admin-pages.css', '~/assets/css/responsive.css'],
-  modules: ['@nuxt/image', '@pinia/nuxt', '@nuxt/fonts', '@vueuse/nuxt'],
+  modules: ['@nuxt/image', '@pinia/nuxt', '@nuxt/fonts', '@vueuse/nuxt', 'nuxt-swiper'],
   components: [
     {
       path: '~/components',
