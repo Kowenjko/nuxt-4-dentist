@@ -161,12 +161,26 @@
                 class="time-inp"
                 :disabled="!day.isWorking"
               />
-              <span style="color: var(--text-3)">—</span>
+              <span class="sched-sep">—</span>
               <input
                 type="time"
                 v-model="day.endTime"
                 class="time-inp"
                 :disabled="!day.isWorking"
+              />
+              <span class="sched-lunch-label" v-if="day.isWorking">Обід:</span>
+              <input
+                v-if="day.isWorking"
+                type="time"
+                v-model="day.lunchStart"
+                class="time-inp time-inp-lunch"
+              />
+              <span class="sched-sep" v-if="day.isWorking">—</span>
+              <input
+                v-if="day.isWorking"
+                type="time"
+                v-model="day.lunchEnd"
+                class="time-inp time-inp-lunch"
               />
             </div>
           </div>
@@ -184,6 +198,9 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'admin', middleware: 'admin' })
+
+// ── Theme ──────────────────────────────────
+// Тема керується в layouts/admin.vue через useTheme('admin')
 
 const doctors = ref<any[]>([])
 const filtered = ref<any[]>([])
@@ -204,6 +221,8 @@ const sched = ref(
     weekday: i,
     startTime: '09:00',
     endTime: '18:00',
+    lunchStart: null as string | null,
+    lunchEnd: null as string | null,
     isWorking: i >= 1 && i <= 5,
   }))
 )
@@ -264,17 +283,41 @@ const openSched = (d: any) => {
   sched.value = Array.from({ length: 7 }, (_, i) => {
     const f = ex.find((s: any) => s.weekday === i)
     return f
-      ? { weekday: i, startTime: f.startTime, endTime: f.endTime, isWorking: f.isWorking }
-      : { weekday: i, startTime: '09:00', endTime: '18:00', isWorking: i >= 1 && i <= 5 }
+      ? {
+          weekday: i,
+          startTime: f.startTime,
+          endTime: f.endTime,
+          isWorking: f.isWorking,
+          lunchStart: f.lunchStart || null,
+          lunchEnd: f.lunchEnd || null,
+        }
+      : {
+          weekday: i,
+          startTime: '09:00',
+          endTime: '18:00',
+          lunchStart: null,
+          lunchEnd: null,
+          isWorking: i >= 1 && i <= 5,
+        }
   })
   schedModal.value = true
 }
+// Якщо один з полів обіду очищено — очищаємо обидва (API вимагає пару або нічого)
+// очищення неповної пари обіду — в saveSched
+
 const saveSched = async () => {
   saving.value = true
   try {
+    const payload = sched.value.map((d) => {
+      const lunchStart = d.lunchStart || null
+      const lunchEnd = d.lunchEnd || null
+      const lunch =
+        lunchStart && lunchEnd ? { lunchStart, lunchEnd } : { lunchStart: null, lunchEnd: null }
+      return { ...d, ...lunch }
+    })
     await $fetch(`/api/doctors/${schedDoc.value.id}/schedule`, {
       method: 'POST',
-      body: { schedule: sched.value },
+      body: { schedule: payload },
     })
     schedModal.value = false
     load()
@@ -287,3 +330,22 @@ const saveSched = async () => {
 
 onMounted(load)
 </script>
+
+<style scoped>
+/* Спільні стилі адмін-сторінок — в assets/styles/admin-pages.css */
+
+.sched-lunch-label {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+  padding-left: 6px;
+}
+.time-inp-lunch {
+  width: 88px;
+  opacity: 0.85;
+}
+.sched-sep {
+  color: var(--text-3);
+  padding: 0 2px;
+}
+</style>

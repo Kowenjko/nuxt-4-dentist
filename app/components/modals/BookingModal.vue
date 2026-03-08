@@ -381,6 +381,16 @@
                       </button>
                     </div>
                   </div>
+
+                  <!-- Lunch break divider -->
+                  <div v-if="lunchBreak" class="lunch-divider">
+                    <div class="lunch-line" />
+                    <span class="lunch-label">
+                      🍽 Обід {{ lunchBreak.start }}–{{ lunchBreak.end }}
+                    </span>
+                    <div class="lunch-line" />
+                  </div>
+
                   <!-- Afternoon -->
                   <div v-if="afternoonSlots.length" class="slots-group">
                     <div class="slots-group-label"><span class="sg-icon">☀️</span> День</div>
@@ -583,6 +593,7 @@ const {
   morningSlots,
   afternoonSlots,
   eveningSlots,
+  lunchBreak,
   calYear,
   calMonth,
   calDays,
@@ -1750,6 +1761,30 @@ onMounted(() => {
 .bm-hdr-t-leave-to {
   opacity: 0;
   transform: translateY(4px);
+}
+
+/* ── Lunch break divider ─────────────────────────────────────── */
+.lunch-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 0;
+}
+.lunch-line {
+  flex: 1;
+  height: 1px;
+  background: var(--bm-f2);
+  border-radius: 1px;
+}
+.lunch-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--bm-i4);
+  white-space: nowrap;
+  padding: 4px 10px;
+  background: var(--bm-f1);
+  border-radius: 20px;
+  border: 1px solid var(--bm-f2);
 }
 
 /* ── Responsive ──────────────────────────────────────────────── */

@@ -103,9 +103,11 @@ export const DoctorScheduleScalarFieldEnum = {
   id: 'id',
   doctorId: 'doctorId',
   weekday: 'weekday',
+  isWorking: 'isWorking',
   startTime: 'startTime',
   endTime: 'endTime',
-  isWorking: 'isWorking'
+  lunchStart: 'lunchStart',
+  lunchEnd: 'lunchEnd'
 } as const
 
 export type DoctorScheduleScalarFieldEnum = (typeof DoctorScheduleScalarFieldEnum)[keyof typeof DoctorScheduleScalarFieldEnum]

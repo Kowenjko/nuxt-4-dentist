@@ -1,5 +1,11 @@
 <script lang="ts" setup>
-const { name } = defineProps<{ name: string }>()
+const { doctor } = defineProps<{ doctor: DoctorProfileI }>()
+
+const { data: slots } = useAPI(DOCTORS + `/${doctor?.id}` + SLOTS, {
+  params: { date: '2026-03-10', serviceId: doctor.services?.[0]?.id },
+})
+
+console.log(slots.value)
 
 const selSlot = ref('')
 </script>
@@ -9,21 +15,23 @@ const selSlot = ref('')
     <div class="book-card-top">
       <div class="book-doc-av">ОС</div>
       <div class="book-doc-info">
-        <div class="book-doc-name">{{ name }}</div>
-        <div class="book-doc-spec">Терапевт · Кардіолог</div>
+        <div class="book-doc-name">{{ doctor.user.name }}</div>
+        <div class="book-doc-spec">{{ doctor.specialty }}</div>
+        <div class="book-doc-spec">{{ doctor.services?.[0]?.name }}</div>
       </div>
+
       <div class="book-status">Вільна</div>
     </div>
     <div class="book-label">Оберіть час</div>
     <div class="book-slots">
       <button
-        v-for="t in ['09:00', '10:30', '14:00', '16:30']"
-        :key="t"
+        v-for="slot in slots.slots"
+        :key="slot.time"
         class="book-slot"
-        :class="{ sel: selSlot === t }"
-        @click="selSlot = t"
+        :class="{ sel: selSlot === slot }"
+        @click="selSlot = slot"
       >
-        {{ t }}
+        {{ slot.time }}
       </button>
     </div>
     <NuxtLink to="/register" class="book-cta" :class="{ active: selSlot }">

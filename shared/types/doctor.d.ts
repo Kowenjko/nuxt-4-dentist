@@ -24,6 +24,25 @@ export interface CreateScheduleI {
 }
 
 export interface DoctorSlotsI {
-  startTime: string
-  endTime: string
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  avatar: string | null
+}
+
+export interface TimeSlotClientI {
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  avatar: string | null
+}
+
+export interface TimeSlot {
+  time: string // "09:00"
+  datetime: string // "2026-03-10T09:00:00"
+  available: boolean
+  period: 'morning' | 'afternoon' | 'evening'
+  bookedBy: TimeSlotClientI | null // null якщо вільний
 }

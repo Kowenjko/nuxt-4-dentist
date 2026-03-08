@@ -35,11 +35,20 @@ export interface BookingService {
   price: number | string
 }
 
+export interface TimeSlotClient {
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  avatar: string | null
+}
+
 export interface TimeSlot {
   time: string // "09:00"
   datetime: string // "2026-03-10T09:00:00"
   available: boolean
   period: 'morning' | 'afternoon' | 'evening'
+  bookedBy: TimeSlotClient | null // null якщо вільний
 }
 
 export interface MyAppointment {
@@ -78,6 +87,7 @@ const bookedId = ref('')
 // Data
 const allDoctors = ref<BookingDoctor[]>([])
 const slots = ref<TimeSlot[]>([])
+const lunchBreak = ref<{ start: string; end: string } | null>(null)
 
 // Calendar
 const _today = new Date()
@@ -215,15 +225,20 @@ export const useBooking = () => {
     slots.value = []
     error.value = ''
     try {
-      const raw = await $fetch<{ time: string; available: boolean }[]>(
-        `/api/doctors/${selDoctor.value.id}/slots?date=${selDate.value}`
-      )
-      slots.value = raw.map((s) => ({
-        time: s.time,
-        datetime: `${selDate.value}T${s.time}:00`,
-        available: s.available,
-        period: slotPeriod(s.time),
-      }))
+      // API повертає { meta, slots }
+      const res = await $fetch<{
+        meta: {
+          date: string
+          workStart: string
+          workEnd: string
+          lunchBreak: { start: string; end: string } | null
+        }
+        slots: TimeSlot[]
+      }>(`/api/doctors/${selDoctor.value.id}/slots`, {
+        params: { date: selDate.value, serviceId: selService.value?.id },
+      })
+      slots.value = res.slots
+      lunchBreak.value = res.meta.lunchBreak
     } catch {
       // Fallback: generate from doctor's schedule
       const dow = new Date(`${selDate.value}T12:00:00`).getDay()
@@ -375,6 +390,7 @@ export const useBooking = () => {
     bookedId.value = ''
     error.value = ''
     slots.value = []
+    lunchBreak.value = null
     calYear.value = _today.getFullYear()
     calMonth.value = _today.getMonth()
   }
@@ -474,6 +490,7 @@ export const useBooking = () => {
     morningSlots,
     afternoonSlots,
     eveningSlots,
+    lunchBreak,
     // calendar
     calYear,
     calMonth,

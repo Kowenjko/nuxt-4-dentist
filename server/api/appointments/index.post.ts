@@ -27,7 +27,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Доктор не надає цю послугу' })
   }
 
-  const start = new Date(startTime)
+  // Явно додаємо 'Z' якщо рядок без timezone — щоб Node.js завжди
+  // трактував як UTC, а не local time (інакше в БД буде зсув)
+  const startIso =
+    typeof startTime === 'string' && !startTime.endsWith('Z') && !startTime.includes('+')
+      ? startTime.replace(' ', 'T') + 'Z'
+      : startTime
+  const start = new Date(startIso)
   const end = new Date(start.getTime() + service.duration * 60 * 1000)
 
   // Check for conflicts (unique constraint will also catch this, but gives better error)
@@ -48,7 +54,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Clients book for themselves; admins can specify clientId
-  const clientId = auth.role === Roles.ADMIN && body.clientId ? body.clientId : auth.userId
+  const clientId = auth.role === 'ADMIN' && body.clientId ? body.clientId : auth.userId
 
   const appointment = await prisma.appointment.create({
     data: {

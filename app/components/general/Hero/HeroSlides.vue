@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const props = defineProps<{ doctors: DoctorProfileI[] }>()
+const { doctors } = defineProps<{ doctors: DoctorProfileI[] }>()
 
 const offset = ref(0)
 const paused = ref(false)
@@ -9,11 +9,11 @@ const speed = 0.4
 const cardHeight = 138 // висота картки (120) + gap (18)
 
 const loopDoctors = computed(() => {
-  if (!props.doctors.length) return []
-  return [...props.doctors, ...props.doctors]
+  if (!doctors.length) return []
+  return [...doctors, ...doctors]
 })
 
-const totalHeight = computed(() => props.doctors.length * cardHeight)
+const totalHeight = computed(() => doctors.length * cardHeight)
 
 // tick визначена як стрілка всередині onMounted — не доступна під час SSR
 onMounted(() => {
@@ -32,11 +32,11 @@ onMounted(() => {
   }
 
   // Стартуємо одразу якщо дані є, або чекаємо поки прийдуть
-  if (props.doctors.length) {
+  if (doctors.length) {
     start()
   } else {
     const stop = watch(
-      () => props.doctors.length,
+      () => doctors.length,
       (len) => {
         if (len > 0) {
           start()
@@ -64,12 +64,7 @@ onUnmounted(() => {
 
     <template v-else>
       <div class="carousel" :style="{ transform: `translateY(-${offset}px)` }">
-        <HeroDoctorCard
-          v-for="(doc, i) in loopDoctors"
-          :key="i"
-          :name="doc.user.name"
-          class="carousel-card"
-        />
+        <HeroDoctorCard v-for="(doctor, i) in loopDoctors" :key="i" :doctor class="carousel-card" />
       </div>
     </template>
 

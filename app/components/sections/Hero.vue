@@ -5,12 +5,6 @@ const { open } = useBooking()
 const mounted = ref(false)
 
 const { data: doctors } = await useAPI<DoctorProfileI[]>(DOCTORS)
-// const { data: services } = useAPI(SERVICES)
-// const { data } = useAPI(DOCTORS + `/${doctors.value?.[0]?.id}` + SLOTS, {
-//   query: { date: '2024-03-06', serviceId: services.value?.[0]?.id },
-// })
-
-// console.log(doctors.value)
 
 onMounted(() => {
   mounted.value = true

@@ -4,6 +4,12 @@ export const Periods = {
   UPCOMING: 'upcoming',
 } as const
 
+export const TimeSlotPeriods = {
+  MORNING: 'morning',
+  AFTERNOON: 'afternoon',
+  EVENING: 'evening',
+} as const
+
 export const Roles = {
   CLIENT: 'CLIENT',
   DOCTOR: 'DOCTOR',

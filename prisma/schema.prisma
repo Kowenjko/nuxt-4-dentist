@@ -58,13 +58,18 @@ model DoctorProfile {
 }
 
 model DoctorSchedule {
-  id        String   @id @default(uuid())
-  doctorId  String
-  doctor    DoctorProfile @relation(fields: [doctorId], references: [id])
-  weekday   Int      // 0-6
-  startTime String // "09:00"
-  endTime   String // "18:00"
-  isWorking Boolean  @default(true) // Выходной или рабочий день
+  id         String  @id @default(uuid())
+  doctorId   String
+  weekday    Int     // 0=Sun ... 6=Sat
+  isWorking  Boolean @default(true)
+  startTime  String  // "09:00"
+  endTime    String  // "18:00"
+  lunchStart String? // "13:00" — null якщо перерви немає
+  lunchEnd   String? // "14:00" — null якщо перерви немає
+
+  doctor DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, weekday])
 }
 
 model Service {
