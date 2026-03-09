@@ -2,6 +2,7 @@
 import { MoveRightIcon, PlayIcon } from 'lucide-vue-next'
 
 const { open } = useBooking()
+const usersStore = useUsersStore()
 const mounted = ref(false)
 
 const { data: doctors, refresh } = useAPI<DoctorProfileI[]>(DOCTORS)
@@ -61,7 +62,11 @@ onMounted(() => {
         <HeroSlides v-if="doctors" :doctors @select-slot="refreshDoctors" />
 
         <!-- Floating chips -->
-        <Chip title="Запис підтверджено" sub="Завтра 09:00 · Стоматолог" />
+        <Chip
+          v-if="usersStore.myBooking"
+          title="Запис підтверджено"
+          :sub="`${usersStore.dateBooking?.date}, ${usersStore.dateBooking?.time} · ${usersStore.myBooking?.doctor?.user?.name}`"
+        />
         <Chip title="4.9 з 5" sub="342 відгуки" type="rating" />
 
         <!-- Deco ring -->

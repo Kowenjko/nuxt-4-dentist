@@ -40,31 +40,7 @@ const cancellingId = ref<string | null>(null)
 // ── Composable ────────────────────────────────────────────────────────
 
 export const useBooking = () => {
-  // ── Formatters ─────────────────────────────────────────────────────
-
-  // const fmtPrice = (p: number | string) => Number(p).toLocaleString('uk-UA') + ' ₴'
-
-  // const fmtDate = (d: string) =>
-  //   new Date(`${d}T12:00:00`).toLocaleDateString('uk-UA', {
-  //     weekday: 'long',
-  //     day: 'numeric',
-  //     month: 'long',
-  //   })
-
-  // const fmtDateShort = (d: string) =>
-  //   new Date(`${d}T12:00:00`).toLocaleDateString('uk-UA', {
-  //     day: 'numeric',
-  //     month: 'long',
-  //   })
-
-  // const fmtDateTime = (iso: string) =>
-  //   new Date(iso).toLocaleDateString('uk-UA', {
-  //     day: 'numeric',
-  //     month: 'short',
-  //     year: 'numeric',
-  //     hour: '2-digit',
-  //     minute: '2-digit',
-  //   })
+  const usersStore = useUsersStore()
 
   // ── Calendar ───────────────────────────────────────────────────────
 
@@ -217,7 +193,7 @@ export const useBooking = () => {
     error.value = ''
     try {
       const token = useCookie('auth_token').value
-      const res = await $fetch<{ id: string }>('/api/appointments', {
+      const res = await $fetch<MyAppointment>('/api/appointments', {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: {
@@ -229,6 +205,7 @@ export const useBooking = () => {
       })
       bookedId.value = res.id
       step.value = 'success'
+      usersStore.myBooking = res
       // Refresh appointments list if open
       if (apptPanelOpen.value) await loadMyAppointments()
     } catch (e: any) {
