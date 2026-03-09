@@ -71,7 +71,7 @@
               >
                 <!-- Card header -->
                 <div class="apc-top">
-                  <div class="apc-av">{{ ini(a.doctor?.user?.name) }}</div>
+                  <div class="apc-av">{{ iniAvatar(a.doctor?.user?.name) }}</div>
                   <div class="apc-info">
                     <div class="apc-name">{{ a.doctor?.user?.name }}</div>
                     <div class="apc-spec">{{ a.doctor?.specialty }}</div>
@@ -172,8 +172,6 @@
 </template>
 
 <script setup lang="ts">
-import type { MyAppointment } from '~/composables/useBooking'
-
 const {
   apptPanelOpen,
   myAppointments,
@@ -183,9 +181,7 @@ const {
   loadMyAppointments,
   cancelAppointment,
   open,
-  ini,
-  fmtPrice,
-  fmtDateTime,
+
   statusLabel,
   statusColor,
   canCancel,

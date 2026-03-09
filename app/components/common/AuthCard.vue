@@ -30,7 +30,7 @@ const emit = defineEmits<{
     <!-- Google button -->
     <GoogleButton @click="emit('clickGoogle')" :disabled="loading" :text="textGoogle" />
 
-    <div class="auth-divider"><span>або</span></div>
+    <Divider>або</Divider>
     <div v-if="formError" class="auth-alert">{{ formError }}</div>
 
     <slot />
@@ -83,24 +83,6 @@ const emit = defineEmits<{
 
 .auth-theme-btn {
   margin-left: auto;
-}
-
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-}
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-.auth-divider span {
-  font-size: 12px;
-  color: var(--text-4);
 }
 
 .auth-alert {

@@ -1,3 +1,131 @@
+<script setup lang="ts">
+const {
+  isOpen,
+  step,
+  loading,
+  submitting,
+  error,
+  selDoctor,
+  selService,
+  selDate,
+  selSlot,
+  notes,
+  bookedId,
+  allDoctors,
+  slots,
+  morningSlots,
+  afternoonSlots,
+  eveningSlots,
+  lunchBreak,
+  calYear,
+  calMonth,
+  calDays,
+  calTitle,
+  prevMonth,
+  nextMonth,
+  open,
+  close,
+  pickDoctor,
+  pickService,
+  pickDate,
+  pickSlot,
+  goBack,
+  submitBooking,
+  openApptPanel,
+  stepIndex,
+  STEPS,
+  STEP_LABELS,
+} = useBooking()
+
+const docSearch = ref('')
+const transitDir = ref<'fwd' | 'bwd'>('fwd')
+
+// ── Doctor search ────────────────────────────────────────────────
+const filteredDoctors = computed(() => {
+  const q = docSearch.value.toLowerCase()
+  if (!q) return allDoctors.value
+  return allDoctors.value.filter(
+    (d) =>
+      d.user?.name?.toLowerCase().includes(q) ||
+      d.specialty?.toLowerCase().includes(q) ||
+      d.services?.some((s) => s.name.toLowerCase().includes(q))
+  )
+})
+
+const workDays = (d: BookingDoctor) => d.doctorSchedule?.filter((s) => s.isWorking).length ?? 5
+
+const dayNames = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+const workingDaysList = computed(() => {
+  const days = selDoctor.value?.doctorSchedule?.filter((s) => s.isWorking) ?? []
+  return days.map((d) => dayNames[d.weekday]).join(', ') || 'Пн–Пт'
+})
+
+// ── Slot display ─────────────────────────────────────────────────
+const fmtSlotDisplay = (sl: TimeSlot) => {
+  if (!selDate.value) return sl.time
+  const d = new Date(`${selDate.value}T${sl.time}:00`)
+  return (
+    d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' }) +
+    ', ' +
+    sl.time
+  )
+}
+
+// ── Can proceed guard ────────────────────────────────────────────
+const canProceed = computed(() => {
+  switch (step.value) {
+    case 'doctor':
+      return !!selDoctor.value
+    case 'service':
+      return !!selService.value
+    case 'date':
+      return !!selDate.value
+    case 'time':
+      return !!selSlot.value
+    default:
+      return true
+  }
+})
+
+// ── Navigation ───────────────────────────────────────────────────
+const doPick = async (type: string, val: any) => {
+  transitDir.value = 'fwd'
+  if (type === 'doctor') {
+    pickDoctor(val as BookingDoctor)
+    docSearch.value = ''
+  }
+  if (type === 'service') pickService(val as BookingService)
+  if (type === 'date') await pickDate(val as string)
+  if (type === 'slot') pickSlot(val as TimeSlot)
+}
+
+const doNext = async () => {
+  transitDir.value = 'fwd'
+  if (step.value === 'date' && selDate.value) await pickDate(selDate.value)
+  else if (canProceed.value) {
+    const NEXT_MAP: Record<string, string> = {
+      doctor: 'service',
+      service: 'date',
+      date: 'time',
+      time: 'confirm',
+    }
+    if (NEXT_MAP[step.value]) step.value = NEXT_MAP[step.value] as any
+  }
+}
+
+const doBack = () => {
+  transitDir.value = 'bwd'
+  goBack()
+}
+
+// ── Escape key ───────────────────────────────────────────────────
+onMounted(() => {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen.value) close()
+  })
+})
+</script>
+
 <template>
   <Teleport to="body">
     <!-- ── OVERLAY ─────────────────────────────────────── -->
@@ -70,7 +198,7 @@
             <!-- Doctor info once selected -->
             <Transition name="bm-hdr-t" mode="out-in">
               <div v-if="selDoctor" key="doc" class="bm-hdr-doc">
-                <div class="bm-hdr-av">{{ ini(selDoctor.user?.name) }}</div>
+                <div class="bm-hdr-av">{{ iniAvatar(selDoctor.user?.name) }}</div>
                 <div class="bm-hdr-info">
                   <div class="bm-hdr-name">{{ selDoctor.user?.name }}</div>
                   <div class="bm-hdr-spec">{{ selDoctor.specialty }}</div>
@@ -166,7 +294,7 @@
                     class="doc-row"
                     @click="doPick('doctor', d)"
                   >
-                    <div class="dr-av">{{ ini(d.user?.name) }}</div>
+                    <div class="dr-av">{{ iniAvatar(d.user?.name) }}</div>
                     <div class="dr-info">
                       <div class="dr-name">{{ d.user?.name }}</div>
                       <div class="dr-spec">{{ d.specialty }}</div>
@@ -572,140 +700,6 @@
     </Transition>
   </Teleport>
 </template>
-
-<script setup lang="ts">
-import type { BookingDoctor, BookingService, TimeSlot } from '~/composables/useBooking'
-
-const {
-  isOpen,
-  step,
-  loading,
-  submitting,
-  error,
-  selDoctor,
-  selService,
-  selDate,
-  selSlot,
-  notes,
-  bookedId,
-  allDoctors,
-  slots,
-  morningSlots,
-  afternoonSlots,
-  eveningSlots,
-  lunchBreak,
-  calYear,
-  calMonth,
-  calDays,
-  calTitle,
-  prevMonth,
-  nextMonth,
-  ini,
-  fmtPrice,
-  fmtDate,
-  fmtDateShort,
-  open,
-  close,
-  pickDoctor,
-  pickService,
-  pickDate,
-  pickSlot,
-  goBack,
-  submitBooking,
-  openApptPanel,
-  stepIndex,
-  STEPS,
-  STEP_LABELS,
-} = useBooking()
-
-const docSearch = ref('')
-const transitDir = ref<'fwd' | 'bwd'>('fwd')
-
-// ── Doctor search ────────────────────────────────────────────────
-const filteredDoctors = computed(() => {
-  const q = docSearch.value.toLowerCase()
-  if (!q) return allDoctors.value
-  return allDoctors.value.filter(
-    (d) =>
-      d.user?.name?.toLowerCase().includes(q) ||
-      d.specialty?.toLowerCase().includes(q) ||
-      d.services?.some((s) => s.name.toLowerCase().includes(q))
-  )
-})
-
-const workDays = (d: BookingDoctor) => d.doctorSchedule?.filter((s) => s.isWorking).length ?? 5
-
-const dayNames = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
-const workingDaysList = computed(() => {
-  const days = selDoctor.value?.doctorSchedule?.filter((s) => s.isWorking) ?? []
-  return days.map((d) => dayNames[d.weekday]).join(', ') || 'Пн–Пт'
-})
-
-// ── Slot display ─────────────────────────────────────────────────
-const fmtSlotDisplay = (sl: TimeSlot) => {
-  if (!selDate.value) return sl.time
-  const d = new Date(`${selDate.value}T${sl.time}:00`)
-  return (
-    d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' }) +
-    ', ' +
-    sl.time
-  )
-}
-
-// ── Can proceed guard ────────────────────────────────────────────
-const canProceed = computed(() => {
-  switch (step.value) {
-    case 'doctor':
-      return !!selDoctor.value
-    case 'service':
-      return !!selService.value
-    case 'date':
-      return !!selDate.value
-    case 'time':
-      return !!selSlot.value
-    default:
-      return true
-  }
-})
-
-// ── Navigation ───────────────────────────────────────────────────
-const doPick = async (type: string, val: any) => {
-  transitDir.value = 'fwd'
-  if (type === 'doctor') {
-    pickDoctor(val as BookingDoctor)
-    docSearch.value = ''
-  }
-  if (type === 'service') pickService(val as BookingService)
-  if (type === 'date') await pickDate(val as string)
-  if (type === 'slot') pickSlot(val as TimeSlot)
-}
-
-const doNext = async () => {
-  transitDir.value = 'fwd'
-  if (step.value === 'date' && selDate.value) await pickDate(selDate.value)
-  else if (canProceed.value) {
-    const NEXT_MAP: Record<string, string> = {
-      doctor: 'service',
-      service: 'date',
-      date: 'time',
-      time: 'confirm',
-    }
-    if (NEXT_MAP[step.value]) step.value = NEXT_MAP[step.value] as any
-  }
-}
-
-const doBack = () => {
-  transitDir.value = 'bwd'
-  goBack()
-}
-
-// ── Escape key ───────────────────────────────────────────────────
-onMounted(() => {
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isOpen.value) close()
-  })
-})
-</script>
 
 <style>
 /* ── CSS vars (inherit from global or define fallbacks) ──────── */

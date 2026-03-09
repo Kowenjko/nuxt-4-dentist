@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
   if (!service) throw createError({ statusCode: 404, statusMessage: 'Service not found' })
 
   const daySchedule = doctor.doctorSchedule[0]
-  if (!daySchedule) return [] // лікар не працює в цей день
+  if (!daySchedule) return { slots: [], meta: null } // лікар не працює в цей день
 
   // ── Розраховуємо всі слоти дня ──────────────────────────────────────
 

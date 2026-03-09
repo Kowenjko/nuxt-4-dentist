@@ -6,7 +6,7 @@ const paused = ref(false)
 let rafId = 0 // звичайна змінна, не ref — rAF id не потребує реактивності
 
 const speed = 0.4
-const cardHeight = 138 // висота картки (120) + gap (18)
+const cardHeight = 300 // висота картки (120) + gap (18)
 
 const loopDoctors = computed(() => {
   if (!doctors.length) return []
@@ -56,6 +56,7 @@ onUnmounted(() => {
 <template>
   <div class="hero-carousel" @mouseenter="paused = true" @mouseleave="paused = false">
     <!-- Skeleton поки немає даних -->
+
     <template v-if="!doctors.length">
       <div class="carousel-skeleton">
         <div v-for="n in 3" :key="n" class="skeleton-card" />

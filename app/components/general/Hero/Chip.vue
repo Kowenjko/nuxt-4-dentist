@@ -61,7 +61,7 @@ const {
 .chip-title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--black-50);
 }
 .chip-sub {
   font-size: 11.5px;

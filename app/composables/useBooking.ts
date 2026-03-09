@@ -4,71 +4,7 @@
 // Підтримує: запис, перегляд своїх записів, скасування
 // ─────────────────────────────────────────────────────────────────────
 
-// ── Types ─────────────────────────────────────────────────────────────
-
-export interface BookingDoctor {
-  id: string
-  specialty: string
-  bio?: string
-  user: {
-    id: string
-    name: string
-    email: string
-    avatar?: string
-  }
-  services?: BookingService[]
-  doctorSchedule?: ScheduleDay[]
-  _count?: { appointments: number }
-}
-
-export interface ScheduleDay {
-  weekday: number // 0 Sun … 6 Sat
-  isWorking: boolean
-  startTime: string // "09:00"
-  endTime: string // "18:00"
-}
-
-export interface BookingService {
-  id: string
-  name: string
-  duration: number
-  price: number | string
-}
-
-export interface TimeSlotClient {
-  id: string
-  name: string
-  email: string | null
-  phone: string | null
-  avatar: string | null
-}
-
-export interface TimeSlot {
-  time: string // "09:00"
-  datetime: string // "2026-03-10T09:00:00"
-  available: boolean
-  period: 'morning' | 'afternoon' | 'evening'
-  bookedBy: TimeSlotClient | null // null якщо вільний
-}
-
-export interface MyAppointment {
-  id: string
-  startTime: string
-  endTime: string
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
-  notes?: string
-  doctor: {
-    id: string
-    specialty: string
-    user: { name: string; email: string; avatar?: string }
-  }
-  service: { id: string; name: string; duration: number; price: number }
-}
-
-export type BookingStep = 'doctor' | 'service' | 'date' | 'time' | 'confirm' | 'success'
-
 // ── Module-level singletons ────────────────────────────────────────────
-
 // Modal
 const isOpen = ref(false)
 const step = ref<BookingStep>('doctor')
@@ -106,38 +42,29 @@ const cancellingId = ref<string | null>(null)
 export const useBooking = () => {
   // ── Formatters ─────────────────────────────────────────────────────
 
-  const ini = (name?: string | null) =>
-    (name || '??')
-      .trim()
-      .split(/\s+/)
-      .map((w) => w[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase()
+  // const fmtPrice = (p: number | string) => Number(p).toLocaleString('uk-UA') + ' ₴'
 
-  const fmtPrice = (p: number | string) => Number(p).toLocaleString('uk-UA') + ' ₴'
+  // const fmtDate = (d: string) =>
+  //   new Date(`${d}T12:00:00`).toLocaleDateString('uk-UA', {
+  //     weekday: 'long',
+  //     day: 'numeric',
+  //     month: 'long',
+  //   })
 
-  const fmtDate = (d: string) =>
-    new Date(`${d}T12:00:00`).toLocaleDateString('uk-UA', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-    })
+  // const fmtDateShort = (d: string) =>
+  //   new Date(`${d}T12:00:00`).toLocaleDateString('uk-UA', {
+  //     day: 'numeric',
+  //     month: 'long',
+  //   })
 
-  const fmtDateShort = (d: string) =>
-    new Date(`${d}T12:00:00`).toLocaleDateString('uk-UA', {
-      day: 'numeric',
-      month: 'long',
-    })
-
-  const fmtDateTime = (iso: string) =>
-    new Date(iso).toLocaleDateString('uk-UA', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+  // const fmtDateTime = (iso: string) =>
+  //   new Date(iso).toLocaleDateString('uk-UA', {
+  //     day: 'numeric',
+  //     month: 'short',
+  //     year: 'numeric',
+  //     hour: '2-digit',
+  //     minute: '2-digit',
+  //   })
 
   // ── Calendar ───────────────────────────────────────────────────────
 
@@ -357,7 +284,13 @@ export const useBooking = () => {
 
   // ── Flow ───────────────────────────────────────────────────────────
 
-  const open = (opts?: { doctor?: BookingDoctor; service?: BookingService }) => {
+  const open = (opts?: {
+    doctor?: BookingDoctor
+    service?: BookingService
+    date?: string
+    slot?: TimeSlot
+  }) => {
+    console.log(opts)
     _reset()
     if (opts?.doctor) {
       selDoctor.value = opts.doctor
@@ -365,8 +298,16 @@ export const useBooking = () => {
     if (opts?.service) {
       selService.value = opts.service
     }
+    if (opts?.date) {
+      selDate.value = opts.date
+    }
+    if (opts?.date) {
+      selSlot.value = opts.slot
+    }
 
-    if (opts?.doctor && opts?.service) step.value = 'date'
+    if (opts?.doctor && opts?.service && opts?.date && opts?.slot) step.value = 'confirm'
+    else if (opts?.doctor && opts?.service && opts?.date) pickDate(opts?.date)
+    else if (opts?.doctor && opts?.service) step.value = 'date'
     else if (opts?.doctor) step.value = 'service'
     else {
       step.value = 'doctor'
@@ -517,11 +458,10 @@ export const useBooking = () => {
     cancelAppointment,
     loadMyAppointments,
     // helpers
-    ini,
-    fmtPrice,
-    fmtDate,
-    fmtDateShort,
-    fmtDateTime,
+    // fmtPrice,
+    // fmtDate,
+    // fmtDateShort,
+    // fmtDateTime,
     statusLabel,
     statusColor,
     canCancel,

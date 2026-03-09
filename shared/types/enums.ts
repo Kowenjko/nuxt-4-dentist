@@ -23,6 +23,7 @@ export const Status = {
   COMPLETED: 'COMPLETED',
 } as const
 
+export type TimeSlotPeriod = (typeof TimeSlotPeriods)[keyof typeof TimeSlotPeriods]
 export type Period = (typeof Periods)[keyof typeof Periods]
 export type Role = (typeof Roles)[keyof typeof Roles]
 export type AppointmentStatus = (typeof Status)[keyof typeof Status]

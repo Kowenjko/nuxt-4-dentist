@@ -64,3 +64,5 @@ export interface AppointmentMyI {
   counts: AppointmentCountsI
   meta: AppointmentMateI
 }
+
+export type BookingStep = 'doctor' | 'service' | 'date' | 'time' | 'confirm' | 'success'

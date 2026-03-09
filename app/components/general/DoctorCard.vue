@@ -12,7 +12,7 @@
 
     <!-- Online dot (on avatar) -->
     <div class="dc-av-area">
-      <div class="dc-av">{{ ini(doctor.user?.name) }}</div>
+      <div class="dc-av">{{ iniAvatar(doctor.user?.name) }}</div>
       <div class="dc-av-ring"></div>
       <div v-if="showOnline" class="dc-online" :title="showOnline ? 'Вільна' : 'Зайнята'"></div>
     </div>
@@ -137,8 +137,6 @@
 </template>
 
 <script setup lang="ts">
-import type { BookingDoctor, BookingService } from '~/composables/useBooking'
-
 const props = withDefaults(
   defineProps<{
     doctor: BookingDoctor & { _count?: { appointments: number } }
@@ -155,7 +153,7 @@ const props = withDefaults(
   }
 )
 
-const { open: openModal, ini, fmtPrice } = useBooking()
+const { open: openModal } = useBooking()
 const expanded = ref(false)
 
 // ── Computed ──────────────────────────────────────────────────────

@@ -1,42 +1,70 @@
 <script lang="ts" setup>
 const { doctor } = defineProps<{ doctor: DoctorProfileI }>()
 
-const { data: slots } = useAPI(DOCTORS + `/${doctor?.id}` + SLOTS, {
-  params: { date: '2026-03-10', serviceId: doctor.services?.[0]?.id },
+const nowDate = new Date().toISOString()?.slice(0, 10)
+
+const { data } = useAPI<DoctorSlotsI>(DOCTORS + `/${doctor?.id}` + SLOTS, {
+  query: { date: nowDate, serviceId: doctor.services?.[0]?.id },
+})
+const selSlot = ref<any>(null)
+
+const { open } = useBooking()
+
+const morningSlots = computed(() => {
+  if (!data.value?.slots) return []
+  return data.value?.slots.filter((s) => s.period === TimeSlotPeriods.MORNING)
+})
+const afternoonSlots = computed(() => {
+  if (!data.value?.slots) return []
+  return data.value?.slots.filter((s) => s.period === TimeSlotPeriods.AFTERNOON)
+})
+const eveningSlots = computed(() => {
+  if (!data.value?.slots) return []
+  return data.value?.slots.filter((s) => s.period === TimeSlotPeriods.EVENING)
 })
 
-console.log(slots.value)
+const isAvailable = computed(() => {
+  return data.value?.slots.every((s) => !s.available)
+})
+console.log(data.value)
+const lunchBreak = computed(() => data.value?.meta?.lunchBreak ?? null)
 
-const selSlot = ref('')
+const openModal = () => {
+  open({ doctor: doctor, service: doctor.services?.[0], date: nowDate, slot: selSlot.value })
+  selSlot.value = null
+}
 </script>
 
 <template>
   <div class="book-card">
     <div class="book-card-top">
-      <div class="book-doc-av">ОС</div>
+      <div class="book-doc-av">{{ iniAvatar(doctor.user.name) }}</div>
       <div class="book-doc-info">
         <div class="book-doc-name">{{ doctor.user.name }}</div>
         <div class="book-doc-spec">{{ doctor.specialty }}</div>
-        <div class="book-doc-spec">{{ doctor.services?.[0]?.name }}</div>
+        <div class="book-doc-service">{{ doctor.services?.[0]?.name }}</div>
       </div>
 
-      <div class="book-status">Вільна</div>
+      <div class="book-status free" v-if="data?.slots && data.slots.length > 0 && !isAvailable">
+        Вільний
+      </div>
+      <div class="book-status busy" v-else>Зайнятий</div>
     </div>
-    <div class="book-label">Оберіть час</div>
-    <div class="book-slots">
-      <button
-        v-for="slot in slots.slots"
-        :key="slot.time"
-        class="book-slot"
-        :class="{ sel: selSlot === slot }"
-        @click="selSlot = slot"
-      >
-        {{ slot.time }}
-      </button>
-    </div>
-    <NuxtLink to="/register" class="book-cta" :class="{ active: selSlot }">
-      {{ selSlot ? `Записатись на ${selSlot}` : 'Оберіть час' }}
-    </NuxtLink>
+    <div class="book-label">Оберіть час - <span> сьогодні</span></div>
+
+    <Slots v-if="morningSlots" :slots="morningSlots!" :selSlot @select-slot="selSlot = $event" />
+    <Divider v-if="lunchBreak">Обід {{ lunchBreak.start }} - {{ lunchBreak.end }}</Divider>
+    <Slots
+      v-if="afternoonSlots"
+      :slots="afternoonSlots!"
+      :selSlot
+      @select-slot="selSlot = $event"
+    />
+    <Slots v-if="eveningSlots" :slots="eveningSlots!" :selSlot @select-slot="selSlot = $event" />
+
+    <a @click="openModal" class="book-cta" :class="{ active: selSlot?.time || '' }">
+      {{ selSlot?.time ? `Записатись на ${selSlot.time}` : 'Оберіть час' }}
+    </a>
   </div>
 </template>
 <style scoped>
@@ -74,22 +102,35 @@ const selSlot = ref('')
 .book-doc-name {
   font-size: 14.5px;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--black-50);
 }
 .book-doc-spec {
   font-size: 12px;
   color: var(--i4);
+
+  margin-top: 2px;
+}
+.book-doc-service {
+  font-size: 13px;
+  color: var(--i4);
+  font-weight: 700;
   margin-top: 2px;
 }
 .book-status {
   margin-left: auto;
   padding: 3px 10px;
   border-radius: 20px;
-  background: var(--gx);
-  color: var(--g1);
   font-size: 11.5px;
   font-weight: 600;
   flex-shrink: 0;
+  &.free {
+    background: var(--gx);
+    color: var(--g1);
+  }
+  &.busy {
+    background: var(--bm-redbg);
+    color: var(--danger-alias);
+  }
 }
 .book-label {
   font-size: 11.5px;
@@ -98,35 +139,12 @@ const selSlot = ref('')
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 10px;
+  span {
+    text-transform: capitalize;
+    color: var(--black-50);
+  }
 }
-.book-slots {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-  margin-bottom: 14px;
-}
-.book-slot {
-  padding: 8px 4px;
-  border-radius: 8px;
-  border: 1.5px solid var(--f2);
-  background: none;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  color: var(--i3);
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
-}
-.book-slot:hover {
-  border-color: var(--g1);
-  color: var(--g1);
-  background: var(--gx);
-}
-.book-slot.sel {
-  background: var(--g);
-  border-color: var(--g);
-  color: white;
-}
+
 .book-cta {
   display: block;
   text-align: center;
