@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const props = defineProps<{ slots: TimeSlot[]; selSlot: TimeSlot }>()
+const props = defineProps<{ slots: TimeSlot[]; selSlot: TimeSlot | null }>()
 
 const emit = defineEmits<{ selectSlot: [slot: TimeSlot] }>()
 </script>
@@ -27,28 +27,50 @@ const emit = defineEmits<{ selectSlot: [slot: TimeSlot] }>()
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 7px;
-  margin-bottom: 14px;
 }
-.book-slot {
-  padding: 8px 4px;
-  border-radius: 8px;
-  border: 1.5px solid var(--f2);
-  background: none;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  color: var(--i3);
+.slot-btn {
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1.5px solid var(--accent-light);
+  background: var(--accent-bg);
+  font-family: var(--bm-mono);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--accent);
   cursor: pointer;
   transition: all 0.15s;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
-.book-slot:hover {
-  border-color: var(--g1);
-  color: var(--g1);
-  background: var(--gx);
+.slot-btn:hover:not(:disabled) {
+  border-color: var(--bm-g);
+  color: var(--bm-g);
+  background: var(--bm-gx);
 }
-.book-slot.sel {
-  background: var(--g);
-  border-color: var(--g);
-  color: white;
+.slot-sel {
+  background: var(--bm-g) !important;
+  border-color: var(--bm-g) !important;
+  color: white !important;
+  box-shadow: 0 3px 12px rgba(22, 80, 47, 0.28);
+}
+.slot-busy {
+  opacity: 0.7;
+  cursor: not-allowed;
+  border: 1.5px solid var(--danger-border);
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.slot-busy-x {
+  font-family: var(--bm-sans);
+  font-size: 9px;
+  color: var(--danger);
+  font-weight: 400;
+}
+@media (max-width: 400px) {
+  .slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 </style>

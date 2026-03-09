@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { doctor } = defineProps<{ doctor: DoctorProfileI }>()
+const emit = defineEmits<{ selectSlot: [] }>()
 
 const nowDate = new Date().toISOString()?.slice(0, 10)
 
@@ -7,36 +8,34 @@ const { data } = useAPI<DoctorSlotsI>(DOCTORS + `/${doctor?.id}` + SLOTS, {
   query: { date: nowDate, serviceId: doctor.services?.[0]?.id },
 })
 const selSlot = ref<any>(null)
+const bookCard = shallowRef(false)
 
+const bookCardRef = useTemplateRef('bookCardRef')
 const { open } = useBooking()
 
-const morningSlots = computed(() => {
-  if (!data.value?.slots) return []
-  return data.value?.slots.filter((s) => s.period === TimeSlotPeriods.MORNING)
-})
-const afternoonSlots = computed(() => {
-  if (!data.value?.slots) return []
-  return data.value?.slots.filter((s) => s.period === TimeSlotPeriods.AFTERNOON)
-})
-const eveningSlots = computed(() => {
-  if (!data.value?.slots) return []
-  return data.value?.slots.filter((s) => s.period === TimeSlotPeriods.EVENING)
-})
+onClickOutside(bookCardRef, () => (selSlot.value = null))
 
-const isAvailable = computed(() => {
-  return data.value?.slots.every((s) => !s.available)
-})
-console.log(data.value)
+const filterSlots = (period: TimeSlotPeriod) => {
+  if (!data.value?.slots) return []
+  return data.value?.slots.filter((s) => s.period === period)
+}
+
+const morningSlots = computed(() => filterSlots(TimeSlotPeriods.MORNING))
+const afternoonSlots = computed(() => filterSlots(TimeSlotPeriods.AFTERNOON))
+const eveningSlots = computed(() => filterSlots(TimeSlotPeriods.EVENING))
+
+const isAvailable = computed(() => data.value?.slots.every((s) => !s.available))
 const lunchBreak = computed(() => data.value?.meta?.lunchBreak ?? null)
 
 const openModal = () => {
   open({ doctor: doctor, service: doctor.services?.[0], date: nowDate, slot: selSlot.value })
+  emit('selectSlot')
   selSlot.value = null
 }
 </script>
 
 <template>
-  <div class="book-card">
+  <div class="book-card" ref="bookCardRef">
     <div class="book-card-top">
       <div class="book-doc-av">{{ iniAvatar(doctor.user.name) }}</div>
       <div class="book-doc-info">
@@ -107,12 +106,11 @@ const openModal = () => {
 .book-doc-spec {
   font-size: 12px;
   color: var(--i4);
-
   margin-top: 2px;
 }
 .book-doc-service {
   font-size: 13px;
-  color: var(--i4);
+  color: var(--accent);
   font-weight: 700;
   margin-top: 2px;
 }
@@ -148,6 +146,7 @@ const openModal = () => {
 .book-cta {
   display: block;
   text-align: center;
+  cursor: pointer;
   padding: 11px;
   border-radius: 9px;
   font-size: 14px;
@@ -155,6 +154,7 @@ const openModal = () => {
   background: var(--f1);
   color: var(--i3);
   transition: all 0.2s;
+  margin-top: 14px;
 }
 .book-cta.active {
   background: var(--g);

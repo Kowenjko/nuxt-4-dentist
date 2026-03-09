@@ -91,7 +91,12 @@ export const useBooking = () => {
 
     for (let d = 1; d <= last.getDate(); d++) {
       const dt = new Date(calYear.value, calMonth.value, d)
-      const iso = dt.toISOString().slice(0, 10)
+      // НЕ використовуємо toISOString() — вона конвертує в UTC і при UTC+2/+3
+      // дата зсувається на попередній день (напр. 12 берез. → "2026-03-11")
+      const y = dt.getFullYear()
+      const mo = String(dt.getMonth() + 1).padStart(2, '0')
+      const dy = String(dt.getDate()).padStart(2, '0')
+      const iso = `${y}-${mo}-${dy}`
       const dow = dt.getDay()
       cells.push({
         date: iso,

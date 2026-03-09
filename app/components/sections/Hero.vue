@@ -4,7 +4,11 @@ import { MoveRightIcon, PlayIcon } from 'lucide-vue-next'
 const { open } = useBooking()
 const mounted = ref(false)
 
-const { data: doctors } = await useAPI<DoctorProfileI[]>(DOCTORS)
+const { data: doctors, refresh } = useAPI<DoctorProfileI[]>(DOCTORS)
+
+const refreshDoctors = async () => {
+  await refresh()
+}
 
 onMounted(() => {
   mounted.value = true
@@ -54,7 +58,7 @@ onMounted(() => {
 
       <div class="hero-right" :class="{ show: mounted }">
         <!-- Booking card -->
-        <HeroSlides v-if="doctors" :doctors />
+        <HeroSlides v-if="doctors" :doctors @select-slot="refreshDoctors" />
 
         <!-- Floating chips -->
         <Chip title="Запис підтверджено" sub="Завтра 09:00 · Стоматолог" />
@@ -320,7 +324,7 @@ onMounted(() => {
 /* Hero right */
 .hero-right {
   position: relative;
-  height: 460px;
+  height: 550px;
   opacity: 0;
   transform: translateX(32px) scale(0.97);
   transition:

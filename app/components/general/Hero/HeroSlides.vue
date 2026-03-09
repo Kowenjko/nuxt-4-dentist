@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 const { doctors } = defineProps<{ doctors: DoctorProfileI[] }>()
+const emit = defineEmits<{ selectSlot: [] }>()
 
 const offset = ref(0)
 const paused = ref(false)
 let rafId = 0 // звичайна змінна, не ref — rAF id не потребує реактивності
 
-const speed = 0.4
-const cardHeight = 300 // висота картки (120) + gap (18)
+const speed = 0.7
+const cardHeight = 380 // висота картки (120) + gap (18)
 
 const loopDoctors = computed(() => {
   if (!doctors.length) return []
@@ -65,7 +66,13 @@ onUnmounted(() => {
 
     <template v-else>
       <div class="carousel" :style="{ transform: `translateY(-${offset}px)` }">
-        <HeroDoctorCard v-for="(doctor, i) in loopDoctors" :key="i" :doctor class="carousel-card" />
+        <HeroDoctorCard
+          v-for="(doctor, i) in loopDoctors"
+          :key="i"
+          :doctor
+          class="carousel-card"
+          @select-slot="emit('selectSlot')"
+        />
       </div>
     </template>
 
@@ -76,7 +83,7 @@ onUnmounted(() => {
 
 <style scoped>
 .hero-carousel {
-  height: 420px;
+  height: 100%;
   overflow: hidden;
   position: relative;
   border-radius: 30px;
@@ -93,15 +100,15 @@ onUnmounted(() => {
 .carousel-card {
   position: relative !important;
   transform: scale(0.92);
-  opacity: 0.75;
+  opacity: 0.9;
   transition: all 0.3s ease;
 }
 
 /* Центральна картка (~4-та в списку) */
-.carousel-card:nth-child(4) {
+/* .carousel-card:nth-child(4) {
   transform: scale(1);
   opacity: 1;
-}
+} */
 
 .carousel-card:hover {
   transform: scale(1) translateY(-2px) !important;

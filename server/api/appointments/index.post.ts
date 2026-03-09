@@ -27,13 +27,19 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Доктор не надає цю послугу' })
   }
 
-  // Явно додаємо 'Z' якщо рядок без timezone — щоб Node.js завжди
-  // трактував як UTC, а не local time (інакше в БД буде зсув)
-  const startIso =
-    typeof startTime === 'string' && !startTime.endsWith('Z') && !startTime.includes('+')
-      ? startTime.replace(' ', 'T') + 'Z'
-      : startTime
-  const start = new Date(startIso)
+  // startTime надходить як київський час без timezone: "2026-03-15T09:00:00"
+  // Конвертуємо в UTC через реальний DST-offset Europe/Kiev
+  const rawTime = (startTime as string).replace(' ', 'T').replace(/Z$/, '')
+  const naiveUtc = new Date(rawTime + 'Z') // тимчасово як UTC щоб отримати offset
+  const kyivHour = parseInt(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Kiev',
+      hour: 'numeric',
+      hour12: false,
+    }).format(naiveUtc)
+  )
+  const offsetMs = (kyivHour - naiveUtc.getUTCHours()) * 60 * 60 * 1000
+  const start = new Date(naiveUtc.getTime() - offsetMs) // київський → UTC
   const end = new Date(start.getTime() + service.duration * 60 * 1000)
 
   // Check for conflicts (unique constraint will also catch this, but gives better error)

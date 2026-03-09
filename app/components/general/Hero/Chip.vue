@@ -23,6 +23,7 @@ const {
 <style scoped>
 .chip {
   position: absolute;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 11px;

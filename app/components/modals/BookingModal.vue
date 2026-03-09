@@ -492,22 +492,12 @@ onMounted(() => {
                   <!-- Morning -->
                   <div v-if="morningSlots.length" class="slots-group">
                     <div class="slots-group-label"><span class="sg-icon">🌅</span> Ранок</div>
-                    <div class="slots-grid">
-                      <button
-                        v-for="sl in morningSlots"
-                        :key="sl.time"
-                        class="slot-btn"
-                        :class="{
-                          'slot-sel': selSlot?.time === sl.time,
-                          'slot-busy': !sl.available,
-                        }"
-                        :disabled="!sl.available"
-                        @click="doPick('slot', sl)"
-                      >
-                        {{ sl.time }}
-                        <span v-if="!sl.available" class="slot-busy-x">зайнято</span>
-                      </button>
-                    </div>
+                    <Slots
+                      v-if="morningSlots"
+                      :slots="morningSlots!"
+                      :selSlot
+                      @select-slot="doPick('slot', $event)"
+                    />
                   </div>
 
                   <!-- Lunch break divider -->
@@ -522,42 +512,22 @@ onMounted(() => {
                   <!-- Afternoon -->
                   <div v-if="afternoonSlots.length" class="slots-group">
                     <div class="slots-group-label"><span class="sg-icon">☀️</span> День</div>
-                    <div class="slots-grid">
-                      <button
-                        v-for="sl in afternoonSlots"
-                        :key="sl.time"
-                        class="slot-btn"
-                        :class="{
-                          'slot-sel': selSlot?.time === sl.time,
-                          'slot-busy': !sl.available,
-                        }"
-                        :disabled="!sl.available"
-                        @click="doPick('slot', sl)"
-                      >
-                        {{ sl.time }}
-                        <span v-if="!sl.available" class="slot-busy-x">зайнято</span>
-                      </button>
-                    </div>
+                    <Slots
+                      v-if="afternoonSlots"
+                      :slots="afternoonSlots!"
+                      :selSlot
+                      @select-slot="doPick('slot', $event)"
+                    />
                   </div>
                   <!-- Evening -->
                   <div v-if="eveningSlots.length" class="slots-group">
                     <div class="slots-group-label"><span class="sg-icon">🌆</span> Вечір</div>
-                    <div class="slots-grid">
-                      <button
-                        v-for="sl in eveningSlots"
-                        :key="sl.time"
-                        class="slot-btn"
-                        :class="{
-                          'slot-sel': selSlot?.time === sl.time,
-                          'slot-busy': !sl.available,
-                        }"
-                        :disabled="!sl.available"
-                        @click="doPick('slot', sl)"
-                      >
-                        {{ sl.time }}
-                        <span v-if="!sl.available" class="slot-busy-x">зайнято</span>
-                      </button>
-                    </div>
+                    <Slots
+                      v-if="eveningSlots"
+                      :slots="eveningSlots!"
+                      :selSlot
+                      @select-slot="doPick('slot', $event)"
+                    />
                   </div>
                 </div>
               </div>
@@ -1268,48 +1238,6 @@ onMounted(() => {
 .sg-icon {
   font-size: 14px;
 }
-.slots-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-}
-.slot-btn {
-  padding: 10px 6px;
-  border-radius: 10px;
-  border: 1.5px solid var(--bm-f2);
-  background: white;
-  font-family: var(--bm-mono);
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--bm-ink);
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.slot-btn:hover:not(:disabled) {
-  border-color: var(--bm-g);
-  color: var(--bm-g);
-  background: var(--bm-gx);
-}
-.slot-sel {
-  background: var(--bm-g) !important;
-  border-color: var(--bm-g) !important;
-  color: white !important;
-  box-shadow: 0 3px 12px rgba(22, 80, 47, 0.28);
-}
-.slot-busy {
-  opacity: 0.38;
-  cursor: not-allowed;
-}
-.slot-busy-x {
-  font-family: var(--bm-sans);
-  font-size: 9px;
-  color: var(--bm-i4);
-  font-weight: 400;
-}
 
 .btn-back-date {
   margin-top: 12px;
@@ -1783,9 +1711,6 @@ onMounted(() => {
 
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 400px) {
-  .slots-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .bm-prog-label {
     display: none;
   }
