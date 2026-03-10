@@ -125,7 +125,7 @@ const reviews = [
 .review-name {
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--black-50);
 }
 .review-role {
   font-size: 12px;

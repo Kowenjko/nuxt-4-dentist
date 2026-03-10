@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// ── Lifecycle ─────────────────────────────────
 onMounted(async () => {
   // Intersection Observer for reveal animations
   const io = new IntersectionObserver(
@@ -23,21 +22,7 @@ onMounted(async () => {
     <Doctors />
     <Steps />
     <Reviews />
-
-    <!-- ─── CTA ───────────────────────────────────────── -->
-    <section class="cta-sect">
-      <div class="cta-noise"></div>
-      <div class="cta-orb-1"></div>
-      <div class="cta-orb-2"></div>
-      <div class="container cta-inner">
-        <h2 class="cta-h2">Готові розпочати?</h2>
-        <p class="cta-p">Запишіться онлайн за 2 хвилини — без черг і телефонних дзвінків.</p>
-        <div class="cta-btns">
-          <NuxtLink to="/register" class="btn-cta-main">Створити акаунт безкоштовно</NuxtLink>
-          <NuxtLink to="/login" class="btn-cta-ghost">Вже маєте акаунт →</NuxtLink>
-        </div>
-      </div>
-    </section>
+    <Cta />
   </div>
 </template>
 
@@ -91,93 +76,6 @@ onMounted(async () => {
   margin: 12px auto 0;
 }
 
-/* ── CTA section ────────────────────────────── */
-.cta-sect {
-  position: relative;
-  overflow: hidden;
-  background: var(--g);
-  padding: 96px 0;
-}
-.cta-noise {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-  opacity: 0.5;
-}
-.cta-orb-1,
-.cta-orb-2 {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-}
-.cta-orb-1 {
-  width: 500px;
-  height: 500px;
-  background: rgba(255, 255, 255, 0.06);
-  top: -150px;
-  right: 50px;
-}
-.cta-orb-2 {
-  width: 300px;
-  height: 300px;
-  background: rgba(255, 255, 255, 0.04);
-  bottom: -80px;
-  left: 80px;
-}
-.cta-inner {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-}
-.cta-h2 {
-  font-family: var(--serif);
-  font-size: clamp(28px, 4vw, 48px);
-  color: white;
-  margin-bottom: 14px;
-  letter-spacing: -0.02em;
-  font-weight: 400;
-}
-.cta-p {
-  font-size: 17px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 40px;
-  line-height: 1.7;
-}
-.cta-btns {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-.btn-cta-main {
-  display: inline-flex;
-  align-items: center;
-  padding: 15px 36px;
-  border-radius: 10px;
-  background: white;
-  color: var(--g);
-  font-family: var(--sans);
-  font-size: 15.5px;
-  font-weight: 700;
-  transition: all 0.2s;
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.2);
-}
-.btn-cta-main:hover {
-  background: var(--f1);
-  transform: translateY(-2px);
-}
-.btn-cta-ghost {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.65);
-  transition: color 0.15s;
-}
-.btn-cta-ghost:hover {
-  color: white;
-}
-
 /* ── Reveal animations ──────────────────────── */
 .reveal {
   opacity: 0;
@@ -190,8 +88,6 @@ onMounted(async () => {
   opacity: 1;
   transform: translateY(0);
 }
-
-/* ── Responsive ─────────────────────────────── */
 /* ── Адаптив перенесено в responsive.css ── */
 /* Тут лишаємо лише специфічні для index.vue правила */
 @media (max-width: 980px) {

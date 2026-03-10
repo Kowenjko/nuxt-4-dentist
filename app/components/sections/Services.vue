@@ -64,7 +64,7 @@ const parseServices = computed(() =>
         <div v-for="i in 6" :key="i" class="skel"></div>
       </div>
 
-      <div v-else class="svc-grid">
+      <div class="svc-grid">
         <div
           v-for="(s, i) in parseServices"
           :key="i"
