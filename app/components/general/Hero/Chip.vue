@@ -55,6 +55,7 @@ const {
 .chip-icon {
   font-size: 20px;
   flex-shrink: 0;
+  color: var(--black-50);
 }
 .chip-star {
   color: var(--gol);
@@ -68,5 +69,11 @@ const {
   font-size: 11.5px;
   color: var(--i4);
   margin-top: 1px;
+}
+
+@media (max-width: 980px) {
+  .chip {
+    display: none;
+  }
 }
 </style>
