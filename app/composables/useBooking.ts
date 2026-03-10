@@ -104,6 +104,7 @@ export const useBooking = () => {
   const eveningSlots = computed(() => slots.value.filter((s) => s.period === 'evening'))
 
   const slotPeriod = (time: string): TimeSlot['period'] => {
+    // @ts-ignore
     const h = parseInt(time.split(':')[0])
     if (h < 13) return 'morning'
     if (h < 18) return 'afternoon'
@@ -147,43 +148,44 @@ export const useBooking = () => {
       })
       slots.value = res.slots
       lunchBreak.value = res.meta.lunchBreak
-    } catch {
+    } catch (err) {
+      console.log(err)
       // Fallback: generate from doctor's schedule
-      const dow = new Date(`${selDate.value}T12:00:00`).getDay()
-      const sched = selDoctor.value.doctorSchedule?.find((s) => s.weekday === dow)
-      const dur = selService.value?.duration ?? 30
-      slots.value = _genSlots(
-        selDate.value,
-        sched?.startTime ?? '09:00',
-        sched?.endTime ?? '18:00',
-        dur
-      )
+      // const dow = new Date(`${selDate.value}T12:00:00`).getDay()
+      // const sched = selDoctor.value.doctorSchedule?.find((s) => s.weekday === dow)
+      // const dur = selService.value?.duration ?? 30
+      // slots.value = _genSlots(
+      //   selDate.value,
+      //   sched?.startTime ?? '09:00',
+      //   sched?.endTime ?? '18:00',
+      //   dur
+      // )
     } finally {
       loading.value = false
     }
   }
 
-  const _genSlots = (date: string, start: string, end: string, dur: number): TimeSlot[] => {
-    const result: TimeSlot[] = []
-    let [h, m] = start.split(':').map(Number)
-    const [eh, em] = end.split(':').map(Number)
-    const endMin = eh * 60 + em
-    while (h * 60 + m + dur <= endMin) {
-      const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-      result.push({
-        time,
-        datetime: `${date}T${time}:00`,
-        available: Math.random() > 0.3,
-        period: slotPeriod(time),
-      })
-      m += dur
-      if (m >= 60) {
-        h += Math.floor(m / 60)
-        m %= 60
-      }
-    }
-    return result
-  }
+  // const _genSlots = (date: string, start: string, end: string, dur: number): TimeSlot[] => {
+  //   const result: TimeSlot[] = []
+  //   let [h, m] = start.split(':').map(Number)
+  //   const [eh, em] = end.split(':').map(Number)
+  //   const endMin = eh! * 60 + em!
+  //   while (h! * 60 + m! + dur <= endMin) {
+  //     const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+  //     result.push({
+  //       time,
+  //       datetime: `${date}T${time}:00`,
+  //       available: Math.random() > 0.3,
+  //       period: slotPeriod(time),
+  //     })
+  //     m += dur
+  //     if (m >= 60) {
+  //       h += Math.floor(m / 60)
+  //       m %= 60
+  //     }
+  //   }
+  //   return result
+  // }
 
   // ── API: Submit booking ────────────────────────────────────────────
 
@@ -272,7 +274,6 @@ export const useBooking = () => {
     date?: string
     slot?: TimeSlot
   }) => {
-    console.log(opts)
     _reset()
     if (opts?.doctor) {
       selDoctor.value = opts.doctor
@@ -284,6 +285,7 @@ export const useBooking = () => {
       selDate.value = opts.date
     }
     if (opts?.date) {
+      //@ts-ignore
       selSlot.value = opts.slot
     }
 

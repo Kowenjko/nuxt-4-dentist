@@ -1,3 +1,50 @@
+<script setup lang="ts">
+const props = withDefaults(
+  defineProps<{
+    doctor: BookingDoctor & { _count?: { appointments: number } }
+    compact?: boolean
+    featured?: boolean
+    horizontal?: boolean
+    online?: boolean | null
+  }>(),
+  {
+    compact: false,
+    featured: false,
+    horizontal: false,
+    online: null,
+  }
+)
+
+const { open: openModal } = useBooking()
+const expanded = ref(false)
+
+// ── Computed ──────────────────────────────────────────────────────
+const showOnline = computed(() => (props.online !== null ? props.online : Math.random() > 0.5))
+
+const workDays = computed(
+  () => (props.doctor.doctorSchedule ?? []).filter((s) => s.isWorking).length || '5'
+)
+
+const DAY_NAMES = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+const weekSchedule = computed(() =>
+  // Show Mon–Sun (1–0 shifted)
+  [1, 2, 3, 4, 5, 6, 0].map((dow) => {
+    const sc = props.doctor.doctorSchedule?.find((s) => s.weekday === dow)
+    return {
+      dow,
+      label: DAY_NAMES[dow],
+      working: sc?.isWorking ?? (dow >= 1 && dow <= 5),
+      start: sc?.startTime ?? '09:00',
+      end: sc?.endTime ?? '18:00',
+    }
+  })
+)
+
+// ── Actions ───────────────────────────────────────────────────────
+const openBooking = () => openModal({ doctor: props.doctor })
+const openWithService = (svc: BookingService) => openModal({ doctor: props.doctor, service: svc })
+</script>
+
 <template>
   <div
     class="dc"
@@ -14,7 +61,9 @@
     <div class="dc-av-area">
       <div class="dc-av">{{ iniAvatar(doctor.user?.name) }}</div>
       <div class="dc-av-ring"></div>
-      <div v-if="showOnline" class="dc-online" :title="showOnline ? 'Вільна' : 'Зайнята'"></div>
+      <ClientOnly
+        ><div v-if="showOnline" class="dc-online" :title="showOnline ? 'Вільний' : 'Зайнятий'"></div
+      ></ClientOnly>
     </div>
 
     <!-- Info -->
@@ -60,6 +109,13 @@
 
     <!-- Actions -->
     <div class="dc-actions">
+      <button class="dc-btn-book" @click="openBooking">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" width="12">
+          <rect x="1" y="2" width="12" height="11" rx="1.5" />
+          <path d="M4 1v2M10 1v2M1 6h12" />
+        </svg>
+        Записатись
+      </button>
       <button v-if="!compact && !horizontal" class="dc-btn-expand" @click="expanded = !expanded">
         <svg
           viewBox="0 0 14 14"
@@ -72,13 +128,6 @@
           <path d="M3 5l4 4 4-4" />
         </svg>
         {{ expanded ? 'Приховати' : 'Детально' }}
-      </button>
-      <button class="dc-btn-book" @click="openBooking">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" width="12">
-          <rect x="1" y="2" width="12" height="11" rx="1.5" />
-          <path d="M4 1v2M10 1v2M1 6h12" />
-        </svg>
-        Записатись
       </button>
     </div>
 
@@ -135,53 +184,6 @@
     </Transition>
   </div>
 </template>
-
-<script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    doctor: BookingDoctor & { _count?: { appointments: number } }
-    compact?: boolean
-    featured?: boolean
-    horizontal?: boolean
-    online?: boolean | null
-  }>(),
-  {
-    compact: false,
-    featured: false,
-    horizontal: false,
-    online: null,
-  }
-)
-
-const { open: openModal } = useBooking()
-const expanded = ref(false)
-
-// ── Computed ──────────────────────────────────────────────────────
-const showOnline = computed(() => (props.online !== null ? props.online : Math.random() > 0.5))
-
-const workDays = computed(
-  () => (props.doctor.doctorSchedule ?? []).filter((s) => s.isWorking).length || '5'
-)
-
-const DAY_NAMES = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
-const weekSchedule = computed(() =>
-  // Show Mon–Sun (1–0 shifted)
-  [1, 2, 3, 4, 5, 6, 0].map((dow) => {
-    const sc = props.doctor.doctorSchedule?.find((s) => s.weekday === dow)
-    return {
-      dow,
-      label: DAY_NAMES[dow],
-      working: sc?.isWorking ?? (dow >= 1 && dow <= 5),
-      start: sc?.startTime ?? '09:00',
-      end: sc?.endTime ?? '18:00',
-    }
-  })
-)
-
-// ── Actions ───────────────────────────────────────────────────────
-const openBooking = () => openModal({ doctor: props.doctor })
-const openWithService = (svc: BookingService) => openModal({ doctor: props.doctor, service: svc })
-</script>
 
 <style scoped>
 /* Шрифти підключені в main.css */
@@ -324,7 +326,7 @@ const openWithService = (svc: BookingService) => openModal({ doctor: props.docto
   font-family: var(--font-serif);
   font-size: 18px;
   font-weight: 400;
-  color: var(--text);
+  color: var(--black-50);
   margin-bottom: 4px;
 }
 .dc-compact .dc-name {
@@ -342,7 +344,7 @@ const openWithService = (svc: BookingService) => openModal({ doctor: props.docto
   line-height: 1.65;
   margin-bottom: 14px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -362,7 +364,7 @@ const openWithService = (svc: BookingService) => openModal({ doctor: props.docto
   display: block;
   font-family: var(--font-serif);
   font-size: 18px;
-  color: var(--text);
+  color: var(--black-50);
 }
 .dc-sl {
   font-size: 11px;
@@ -405,6 +407,7 @@ const openWithService = (svc: BookingService) => openModal({ doctor: props.docto
 /* Actions */
 .dc-actions {
   display: flex;
+  flex-direction: column;
   gap: 8px;
   margin-top: 4px;
 }
@@ -487,8 +490,7 @@ const openWithService = (svc: BookingService) => openModal({ doctor: props.docto
   flex-direction: column;
   gap: 18px;
 }
-.dc-exp-section {
-}
+
 .dc-exp-title {
   font-size: 11px;
   font-weight: 700;

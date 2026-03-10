@@ -1,61 +1,4 @@
 <script setup lang="ts">
-// ── State ─────────────────────────────────────
-const loadingDoc = ref(true)
-
-// ── Data ──────────────────────────────────────
-const doctors = ref<any[]>([])
-
-const fallbackDocs = [
-  {
-    id: '',
-    name: 'Олена Савченко',
-    specialty: 'Терапевт · Кардіолог',
-    bio: '10 років досвіду, кандидат медичних наук',
-    tags: ['Терапія', 'ЕКГ', 'Холтер'],
-  },
-  {
-    id: '',
-    name: 'Микола Бондар',
-    specialty: 'Невролог',
-    bio: 'Спеціаліст з болей у спині та головних болях',
-    tags: ['Неврологія', 'МРТ'],
-  },
-  {
-    id: '',
-    name: 'Ірина Коваль',
-    specialty: 'Стоматолог',
-    bio: 'Естетична та відновлювальна стоматологія',
-    tags: ['Лікування', 'Вибілення'],
-  },
-  {
-    id: '',
-    name: 'Андрій Мельник',
-    specialty: 'Ортопед',
-    bio: 'Операції та консервативне лікування суглобів',
-    tags: ['Суглоби', 'УЗД'],
-  },
-]
-
-const displayDocs = computed(() =>
-  doctors.value.length
-    ? doctors.value.slice(0, 4).map((d) => ({
-        id: d.id,
-        name: d.user?.name || '—',
-        specialty: d.specialty,
-        bio: d.bio || '',
-        tags: (d.services || []).slice(0, 3).map((s: any) => s.name),
-      }))
-    : fallbackDocs
-)
-
-const ini = (n: string) =>
-  (n || '??')
-    .split(' ')
-    .map((x: string) => x[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-
 const steps = [
   {
     icon: '👤',
@@ -125,12 +68,6 @@ onMounted(async () => {
   )
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
 
-  try {
-    doctors.value = (await $fetch('/api/doctors')) as any[]
-  } catch {}
-  loadingDoc.value = false
-
-  // Re-observe after data loads
   await nextTick()
   document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el))
 })
@@ -140,45 +77,7 @@ onMounted(async () => {
     <Hero />
     <TrustBar />
     <Services />
-
-    <!-- ─── DOCTORS ───────────────────────────────────── -->
-    <section id="doctors" class="sect doctors-sect">
-      <div class="container">
-        <div class="sect-hd">
-          <div class="eyebrow">Команда</div>
-          <h2 class="sect-h2">Наші лікарі</h2>
-          <p class="sect-p">
-            Сертифіковані спеціалісти з багаторічним досвідом та індивідуальним підходом до кожного
-            пацієнта
-          </p>
-        </div>
-
-        <div v-if="loadingDoc" class="doc-grid">
-          <div v-for="i in 4" :key="i" class="skel skel-tall"></div>
-        </div>
-
-        <div v-else class="doc-grid">
-          <div
-            v-for="(d, i) in displayDocs"
-            :key="d.id || i"
-            class="doc-card reveal"
-            :style="`transition-delay:${i * 80}ms`"
-          >
-            <div class="doc-av-wrap">
-              <div class="doc-av">{{ ini(d.name) }}</div>
-              <div class="doc-av-ring"></div>
-            </div>
-            <h3 class="doc-name">{{ d.name }}</h3>
-            <div class="doc-spec">{{ d.specialty }}</div>
-            <p v-if="d.bio" class="doc-bio">{{ d.bio }}</p>
-            <div class="doc-tags">
-              <span v-for="t in d.tags" :key="t" class="doc-tag">{{ t }}</span>
-            </div>
-            <NuxtLink :to="`/register?doctor=${d.id || ''}`" class="doc-book">Записатись</NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
+    <Doctors />
 
     <!-- ─── HOW IT WORKS ──────────────────────────────── -->
     <section id="steps" class="sect steps-sect">
@@ -309,104 +208,6 @@ onMounted(async () => {
   line-height: 1.75;
   max-width: 560px;
   margin: 12px auto 0;
-}
-
-/* ── Doctors ────────────────────────────────── */
-.doctors-sect {
-  background: var(--f0);
-}
-.doc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 22px;
-}
-.doc-card {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid var(--f2);
-  padding: 30px 24px;
-  text-align: center;
-  transition: all 0.28s;
-}
-.doc-card:hover {
-  border-color: var(--gl);
-  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
-}
-.doc-av-wrap {
-  position: relative;
-  width: 72px;
-  margin: 0 auto 18px;
-}
-.doc-av {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
-  background: var(--gx);
-  color: var(--g);
-  font-family: var(--serif);
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.doc-av-ring {
-  position: absolute;
-  inset: -5px;
-  border-radius: 22px;
-  border: 1.5px dashed var(--gl);
-  animation: spin-slow 20s linear infinite;
-}
-.doc-name {
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--ink);
-  margin-bottom: 5px;
-}
-.doc-spec {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--g1);
-  margin-bottom: 10px;
-}
-.doc-bio {
-  font-size: 13.5px;
-  color: var(--i3);
-  line-height: 1.65;
-  margin-bottom: 14px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.doc-tags {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-.doc-tag {
-  font-size: 11.5px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  background: var(--f1);
-  color: var(--i3);
-}
-.doc-book {
-  display: block;
-  padding: 10px;
-  background: var(--gx);
-  color: var(--g);
-  border-radius: 9px;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.15s;
-}
-.doc-book:hover {
-  background: var(--g);
-  color: white;
 }
 
 /* ── Steps ──────────────────────────────────── */
