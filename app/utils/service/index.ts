@@ -1,1 +1,4 @@
 export * from './auth.services'
+export * from './appointment.services'
+export * from './doctor.services'
+export * from './service.services'

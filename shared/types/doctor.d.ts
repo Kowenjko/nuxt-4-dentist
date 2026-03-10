@@ -76,20 +76,6 @@ export interface MetaSlot {
   lunchBreak: { start: string; end: string }
 }
 
-export interface MyAppointment {
-  id: string
-  startTime: string
-  endTime: string
-  status: AppointmentStatus
-  notes?: string
-  doctor: {
-    id: string
-    specialty: string
-    user: { name: string; email: string; avatar?: string }
-  }
-  service: { id: string; name: string; duration: number; price: number }
-}
-
 export interface DoctorSlotsI {
   slots: TimeSlot[]
   meta: MetaSlot

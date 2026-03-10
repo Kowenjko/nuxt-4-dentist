@@ -6,7 +6,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const { baseURL } = useRuntimeConfig().public
 
   const api = $fetch.create({
-    baseURL,
+    baseURL: baseURL + API,
     headers: {
       'Content-Type': 'application/json',
     },
