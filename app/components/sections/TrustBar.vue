@@ -50,4 +50,16 @@ const trusts = [
   color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
 }
+
+/* Trust strip */
+@media (max-width: 768px) {
+  .trust-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px 24px;
+  }
+  .trust-item {
+    width: calc(50% - 12px);
+  }
+}
 </style>
