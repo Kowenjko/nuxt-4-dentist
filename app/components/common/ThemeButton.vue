@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Moon, Sun } from 'lucide-vue-next'
+import { MoonIcon, SunIcon } from 'lucide-vue-next'
 const {
   isDark,
   isLabel = false,
@@ -15,8 +15,8 @@ const title = computed(() => (isDark ? 'Світла тема' : 'Темна т�
 
 <template>
   <Button :variant :title="title">
-    <Sun v-if="isDark" />
-    <Moon v-else />
+    <SunIcon v-if="isDark" />
+    <MoonIcon v-else />
     <span v-if="isLabel" class="btn-label">{{ title }}</span>
   </Button>
 </template>

@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
         },
         service: { select: { id: true, name: true, duration: true, price: true } },
       },
-      orderBy: { startTime: 'asc' },
+      orderBy: { startTime: 'desc' },
     }),
     prisma.appointment.count({ where }),
   ])

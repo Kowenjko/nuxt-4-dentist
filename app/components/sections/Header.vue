@@ -2,7 +2,7 @@
 import { LogInIcon, LogOutIcon } from 'lucide-vue-next'
 
 const { isDark, toggle: toggleTheme } = useTheme('client')
-const { isAuthenticated: isAuth, logout } = useAuth()
+const { isAuthenticated: isAuth, logout, isAdmin } = useAuth()
 const { openApptPanel, open } = useBooking()
 const { y: scrollY } = useWindowScroll()
 
@@ -58,6 +58,7 @@ const logoutUser = () => {
         <a v-for="item in navigation" @click.prevent="go(item.id)" :key="item.id">{{
           item.name
         }}</a>
+        <NuxtLink v-if="isAdmin" :to="ADMIN_LINK">Адмін</NuxtLink>
       </nav>
 
       <div class="nav-end" v-if="!hideNav">

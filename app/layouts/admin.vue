@@ -1,3 +1,45 @@
+<script setup lang="ts">
+import {
+  Grid2X2Icon,
+  User2Icon,
+  StethoscopeIcon,
+  StarIcon,
+  CalendarClockIcon,
+  LogOutIcon,
+  SunIcon,
+  MoonIcon,
+} from 'lucide-vue-next'
+
+const sidebarOpen = ref(false)
+
+const menu = [
+  { name: 'Дашборд', to: ADMIN_LINK, icon: Grid2X2Icon },
+  { name: 'Користувачі', to: ADMIN_USERS_LINK, icon: User2Icon },
+  { name: 'Лікарі', to: ADMIN_DOCTORS_LINK, icon: StethoscopeIcon },
+  { name: 'Послуги', to: ADMIN_SERVICES_LINK, icon: StarIcon },
+  { name: 'Записи', to: ADMIN_APPOINTMENTS_LINK, icon: CalendarClockIcon },
+]
+
+const { user, logout, token, fetchUser, isAuthenticated, isAdmin } = useAuth()
+const { isDark, toggle: toggleTheme, init: initTheme, applyFor } = useTheme('admin')
+const route = useRoute()
+
+onMounted(async () => {
+  initTheme()
+  applyFor('admin')
+
+  if (token.value && !isAuthenticated.value) await fetchUser()
+  if (!isAuthenticated.value || !isAdmin.value) return navigateTo(LOGIN_LINK)
+})
+
+watch(
+  () => route.path,
+  () => {
+    sidebarOpen.value = false
+  }
+)
+</script>
+
 <template>
   <div class="shell">
     <!-- Mobile top header (hidden on desktop via CSS) -->
@@ -10,16 +52,14 @@
       >
         <span /><span /><span />
       </button>
-      <div class="topbar-logo">
-        <span class="topbar-logo-icon">⊕</span>
-        <span>MedPanel</span>
-      </div>
+
+      <BrandButton />
       <button
         class="theme-toggle compact"
         @click="toggleTheme"
         :title="isDark ? 'Світла' : 'Темна'"
       >
-        <span v-if="isDark">☀️</span><span v-else>🌙</span>
+        <span v-if="isDark"><SunIcon /></span><span v-else><MoonIcon /></span>
       </button>
     </header>
     <!-- Overlay — ДО sidebar в DOM, sidebar перекриває його через z-index -->
@@ -27,50 +67,20 @@
 
     <aside class="sidebar" :class="{ 'is-open': sidebarOpen }">
       <div class="sidebar-logo">
-        <span class="logo-icon">⊕</span>
-        <span class="logo-text">MedPanel</span>
+        <BrandButton />
       </div>
 
-      <nav class="nav">
+      <nav class="admin-nav">
         <NuxtLink
-          to="/admin"
-          class="nav-link"
-          exact-active-class="is-active"
+          v-for="(nav, i) in menu"
+          :key="i"
+          :to="nav.to"
           @click="sidebarOpen = false"
-        >
-          <IconGrid /> <span>Дашборд</span>
-        </NuxtLink>
-        <NuxtLink
-          to="/admin/users"
-          class="nav-link"
+          class="admin-nav-link"
           active-class="is-active"
-          @click="sidebarOpen = false"
         >
-          <IconUsers /> <span>Користувачі</span>
-        </NuxtLink>
-        <NuxtLink
-          to="/admin/doctors"
-          class="nav-link"
-          active-class="is-active"
-          @click="sidebarOpen = false"
-        >
-          <IconStethoscope /> <span>Лікарі</span>
-        </NuxtLink>
-        <NuxtLink
-          to="/admin/services"
-          class="nav-link"
-          active-class="is-active"
-          @click="sidebarOpen = false"
-        >
-          <IconStar /> <span>Послуги</span>
-        </NuxtLink>
-        <NuxtLink
-          to="/admin/appointments"
-          class="nav-link"
-          active-class="is-active"
-          @click="sidebarOpen = false"
-        >
-          <IconCalendar /> <span>Записи</span>
+          <component v-if="nav.icon" :is="nav.icon" />
+          <span>{{ nav.name }}</span>
         </NuxtLink>
       </nav>
 
@@ -80,31 +90,20 @@
         @click="toggleTheme"
         :title="isDark ? 'Світла тема' : 'Темна тема'"
       >
-        <span v-if="isDark">☀️</span><span v-else>🌙</span>
+        <span v-if="isDark"><SunIcon /></span><span v-else><MoonIcon /></span>
         <span class="t-label">{{ isDark ? 'Світла' : 'Темна' }} тема</span>
       </button>
 
       <div class="sidebar-footer">
         <div class="user-pill">
-          <div class="user-avatar">{{ initials }}</div>
+          <div class="user-avatar">{{ iniAvatar(user?.name) }}</div>
           <div class="user-info">
             <div class="user-name">{{ user?.name }}</div>
             <div class="user-role">Адміністратор</div>
           </div>
         </div>
         <button class="logout-btn" @click="logout" title="Вийти">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            width="16"
-            height="16"
-          >
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
+          <LogOutIcon />
         </button>
       </div>
     </aside>
@@ -114,51 +113,6 @@
     </main>
   </div>
 </template>
-
-<script setup lang="ts">
-const { user, logout } = useAuth()
-const sidebarOpen = ref(false)
-
-// Close sidebar on route change
-const route = useRoute()
-watch(
-  () => route.path,
-  () => {
-    sidebarOpen.value = false
-  }
-)
-const { isDark, toggle: toggleTheme, init: initTheme, applyFor } = useTheme('admin')
-
-onMounted(() => {
-  initTheme()
-  applyFor('admin')
-})
-const initials = computed(
-  () =>
-    user.value?.name
-      ?.split(' ')
-      .map((n: string) => n[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase() || '?'
-)
-
-const IconGrid = defineComponent({
-  template: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`,
-})
-const IconUsers = defineComponent({
-  template: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-})
-const IconStethoscope = defineComponent({
-  template: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6h0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>`,
-})
-const IconStar = defineComponent({
-  template: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>`,
-})
-const IconCalendar = defineComponent({
-  template: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
-})
-</script>
 
 <style>
 /* Шрифти підключені в main.css */
@@ -232,7 +186,7 @@ textarea {
   letter-spacing: 0.04em;
 }
 
-.nav {
+.admin-nav {
   flex: 1;
   padding: 12px 10px;
   display: flex;
@@ -241,7 +195,7 @@ textarea {
   overflow-y: auto;
 }
 
-.nav-link {
+.admin-nav-link {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -252,19 +206,19 @@ textarea {
   font-weight: 500;
   transition: all 0.12s;
 }
-.nav-link:hover {
+.admin-nav-link:hover {
   color: var(--text);
   background: var(--surface2);
 }
-.nav-link.is-active {
+.admin-nav-link.is-active {
   color: var(--accent);
   background: var(--accent-bg);
 }
-.nav-link svg {
+.admin-nav-link svg {
   flex-shrink: 0;
   opacity: 0.8;
 }
-.nav-link.is-active svg {
+.admin-nav-link.is-active svg {
   opacity: 1;
 }
 

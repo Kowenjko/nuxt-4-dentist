@@ -1,25 +1,5 @@
 @import 'vue-sonner/style.css';
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   main.css — Глобальні стилі та CSS-змінні
-   КлінікаПлюс — Client + Admin panel
-   ═══════════════════════════════════════════════════════════════════════════
-
-   Структура:
-   1. Шрифти (Google Fonts)
-   2. Скидання
-   3. Токени (незмінні: шрифти, радіуси, тіні, анімації)
-   4. Тема клієнта — light  [data-theme="client-light"]
-   5. Тема клієнта — dark   [data-theme="client-dark"]
-   6. Тема адмінки — dark   [data-theme="admin-dark"]   (default для admin)
-   7. Тема адмінки — light  [data-theme="admin-light"]
-   8. Семантичні аліаси (спільні для всіх компонентів)
-   9. Базові HTML-стилі
-   10. Toggle-кнопка теми
-   11. Утиліти
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* ── 2. Скидання ───────────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -532,7 +512,7 @@ body.admin,
   background: var(--surface);
   color: var(--text-3);
   font-family: inherit;
-  font-size: 13px;
+  /* font-size: 13px; */
   font-weight: 500;
   cursor: pointer;
   transition: all var(--duration-fast);
@@ -554,7 +534,9 @@ body.admin,
 
 /* Компактний варіант (лише іконка) */
 .theme-toggle.compact {
-  padding: 7px;
+  padding: 7px !important;
+  border-radius: 50%;
+  min-height: 36px;
   gap: 0;
 }
 .theme-toggle.compact .t-label {
