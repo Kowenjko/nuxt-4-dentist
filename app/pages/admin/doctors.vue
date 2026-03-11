@@ -197,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin' })
+definePageMeta({ layout: 'admin' })
 
 // ── Theme ──────────────────────────────────
 // Тема керується в layouts/admin.vue через useTheme('admin')

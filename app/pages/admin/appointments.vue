@@ -239,7 +239,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin' })
+definePageMeta({ layout: 'admin' })
 
 const appts = ref<any[]>([])
 const pagination = ref<any>({})

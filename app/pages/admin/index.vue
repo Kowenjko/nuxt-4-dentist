@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin' })
+definePageMeta({ layout: 'admin' })
 
 const today = new Date().toLocaleDateString('uk-UA', {
   weekday: 'long',
