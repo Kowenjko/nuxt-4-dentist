@@ -1,9 +1,3 @@
-// composables/useBooking.ts
-// ─────────────────────────────────────────────────────────────────────
-// Повний composable для системи онлайн-запису пацієнтів
-// Підтримує: запис, перегляд своїх записів, скасування
-// ─────────────────────────────────────────────────────────────────────
-
 // ── Module-level singletons ────────────────────────────────────────────
 // Modal
 const isOpen = ref(false)
@@ -98,7 +92,6 @@ export const useBooking = () => {
   }
 
   // ── Slot grouping ──────────────────────────────────────────────────
-
   const morningSlots = computed(() => slots.value.filter((s) => s.period === 'morning'))
   const afternoonSlots = computed(() => slots.value.filter((s) => s.period === 'afternoon'))
   const eveningSlots = computed(() => slots.value.filter((s) => s.period === 'evening'))
@@ -118,7 +111,7 @@ export const useBooking = () => {
     loading.value = true
     error.value = ''
     try {
-      allDoctors.value = await $fetch<BookingDoctor[]>('/api/doctors')
+      allDoctors.value = await doctorAPI.getAll()
     } catch (e: any) {
       error.value = e?.data?.statusMessage || 'Не вдалось завантажити список лікарів'
     } finally {
@@ -135,57 +128,20 @@ export const useBooking = () => {
     error.value = ''
     try {
       // API повертає { meta, slots }
-      const res = await $fetch<{
-        meta: {
-          date: string
-          workStart: string
-          workEnd: string
-          lunchBreak: { start: string; end: string } | null
-        }
-        slots: TimeSlot[]
-      }>(`/api/doctors/${selDoctor.value.id}/slots`, {
-        params: { date: selDate.value, serviceId: selService.value?.id },
+
+      const res = await doctorAPI.getSlots(selDoctor.value.id, {
+        date: selDate.value,
+        serviceId: selService.value?.id,
       })
+
       slots.value = res.slots
       lunchBreak.value = res.meta.lunchBreak
     } catch (err) {
       console.log(err)
-      // Fallback: generate from doctor's schedule
-      // const dow = new Date(`${selDate.value}T12:00:00`).getDay()
-      // const sched = selDoctor.value.doctorSchedule?.find((s) => s.weekday === dow)
-      // const dur = selService.value?.duration ?? 30
-      // slots.value = _genSlots(
-      //   selDate.value,
-      //   sched?.startTime ?? '09:00',
-      //   sched?.endTime ?? '18:00',
-      //   dur
-      // )
     } finally {
       loading.value = false
     }
   }
-
-  // const _genSlots = (date: string, start: string, end: string, dur: number): TimeSlot[] => {
-  //   const result: TimeSlot[] = []
-  //   let [h, m] = start.split(':').map(Number)
-  //   const [eh, em] = end.split(':').map(Number)
-  //   const endMin = eh! * 60 + em!
-  //   while (h! * 60 + m! + dur <= endMin) {
-  //     const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-  //     result.push({
-  //       time,
-  //       datetime: `${date}T${time}:00`,
-  //       available: Math.random() > 0.3,
-  //       period: slotPeriod(time),
-  //     })
-  //     m += dur
-  //     if (m >= 60) {
-  //       h += Math.floor(m / 60)
-  //       m %= 60
-  //     }
-  //   }
-  //   return result
-  // }
 
   // ── API: Submit booking ────────────────────────────────────────────
 
@@ -194,16 +150,11 @@ export const useBooking = () => {
     submitting.value = true
     error.value = ''
     try {
-      const token = useCookie('auth_token').value
-      const res = await $fetch<MyAppointment>('/api/appointments', {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: {
-          doctorId: selDoctor.value.id,
-          serviceId: selService.value.id,
-          startTime: selSlot.value.datetime,
-          notes: notes.value || undefined,
-        },
+      const res = await appointmentAPI.create({
+        doctorId: selDoctor.value.id,
+        serviceId: selService.value.id,
+        startTime: selSlot.value.datetime,
+        notes: notes.value || undefined,
       })
       bookedId.value = res.id
       step.value = 'success'
@@ -222,19 +173,10 @@ export const useBooking = () => {
   const loadMyAppointments = async () => {
     apptLoading.value = true
     try {
-      const token = useCookie('auth_token').value
-      const res = await $fetch<{ data: MyAppointment[] }>('/api/appointments/my', {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
+      const res = await appointmentAPI.my()
       myAppointments.value = res.data || []
     } catch {
-      // fallback: try generic endpoint
-      try {
-        const res = await $fetch<{ data: MyAppointment[] }>('/api/appointments?limit=20')
-        myAppointments.value = res.data || []
-      } catch {
-        myAppointments.value = []
-      }
+      myAppointments.value = []
     } finally {
       apptLoading.value = false
     }
@@ -243,12 +185,7 @@ export const useBooking = () => {
   const cancelAppointment = async (id: string) => {
     cancellingId.value = id
     try {
-      const token = useCookie('auth_token').value
-      await $fetch(`/api/appointments/${id}`, {
-        method: 'PUT',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: { status: 'CANCELLED' },
-      })
+      await appointmentAPI.update(id, { status: 'CANCELLED' })
       const appt = myAppointments.value.find((a) => a.id === id)
       if (appt) appt.status = 'CANCELLED'
     } catch (e: any) {
@@ -441,11 +378,6 @@ export const useBooking = () => {
     closeApptPanel,
     cancelAppointment,
     loadMyAppointments,
-    // helpers
-    // fmtPrice,
-    // fmtDate,
-    // fmtDateShort,
-    // fmtDateTime,
     statusLabel,
     statusColor,
     canCancel,

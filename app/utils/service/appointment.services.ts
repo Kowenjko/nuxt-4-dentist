@@ -10,12 +10,12 @@ export const appointmentAPI = {
 
   async create(body: CreateAppointmentI) {
     const { $api } = useNuxtApp()
-    return await $api<AppointmentI>(APPOINTMENTS, { method: 'POST', body })
+    return await $api<MyAppointment>(APPOINTMENTS, { method: 'POST', body })
   },
 
-  async update(id: string, body: AppointmentI) {
+  async update(id: string, body: UpdateAppointmentI) {
     const { $api } = useNuxtApp()
-    return await $api<AppointmentI>(APPOINTMENTS + `/${id}`, { method: 'PUT', body })
+    return await $api<MyAppointment>(APPOINTMENTS + `/${id}`, { method: 'PUT', body })
   },
 
   async delete(id: string) {

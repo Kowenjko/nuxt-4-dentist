@@ -1,3 +1,68 @@
+<script setup lang="ts">
+const {
+  apptPanelOpen,
+  myAppointments,
+  apptLoading,
+  cancellingId,
+  closeApptPanel,
+  loadMyAppointments,
+  cancelAppointment,
+  open,
+  statusLabel,
+  statusColor,
+  canCancel,
+} = useBooking()
+
+// ── Tabs ─────────────────────────────────────────────────────────
+type TabKey = 'upcoming' | 'past' | 'all'
+const activeTab = ref<TabKey>('upcoming')
+const tabs = [
+  { key: 'upcoming' as TabKey, label: 'Майбутні' },
+  { key: 'past' as TabKey, label: 'Минулі' },
+  { key: 'all' as TabKey, label: 'Всі' },
+]
+
+const isUpcoming = (a: MyAppointment) =>
+  ['PENDING', 'CONFIRMED'].includes(a.status) && new Date(a.startTime) > new Date()
+
+const isPast = (a: MyAppointment) =>
+  a.status === 'COMPLETED' || a.status === 'CANCELLED' || new Date(a.startTime) <= new Date()
+
+const filteredAppts = computed<MyAppointment[]>(() => {
+  const sorted = [...myAppointments.value].sort(
+    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+  )
+  if (activeTab.value === 'upcoming') return sorted.filter(isUpcoming)
+  if (activeTab.value === 'past') return sorted.filter(isPast)
+  return sorted
+})
+
+const tabCount = (key: TabKey) => {
+  if (key === 'upcoming') return myAppointments.value.filter(isUpcoming).length || 0
+  if (key === 'past') return myAppointments.value.filter(isPast).length || 0
+  return myAppointments.value.length || 0
+}
+
+// ── Empty state ───────────────────────────────────────────────────
+const emptyIcon = computed(() => (activeTab.value === 'upcoming' ? '📅' : '📋'))
+const emptyTitle = computed(() =>
+  activeTab.value === 'upcoming' ? 'Немає майбутніх записів' : 'Немає записів'
+)
+const emptyMsg = computed(() =>
+  activeTab.value === 'upcoming'
+    ? 'Запишіться до лікаря прямо зараз — це займе менше 2 хвилин'
+    : "Тут з'явиться ваша історія візитів"
+)
+
+// ── Cancel flow ───────────────────────────────────────────────────
+const confirmCancelId = ref<string | null>(null)
+
+const doCancel = async (id: string) => {
+  await cancelAppointment(id)
+  confirmCancelId.value = null
+}
+</script>
+
 <template>
   <Teleport to="body">
     <!-- Overlay -->
@@ -170,72 +235,6 @@
     </Transition>
   </Teleport>
 </template>
-
-<script setup lang="ts">
-const {
-  apptPanelOpen,
-  myAppointments,
-  apptLoading,
-  cancellingId,
-  closeApptPanel,
-  loadMyAppointments,
-  cancelAppointment,
-  open,
-
-  statusLabel,
-  statusColor,
-  canCancel,
-} = useBooking()
-
-// ── Tabs ─────────────────────────────────────────────────────────
-type TabKey = 'upcoming' | 'past' | 'all'
-const activeTab = ref<TabKey>('upcoming')
-const tabs = [
-  { key: 'upcoming' as TabKey, label: 'Майбутні' },
-  { key: 'past' as TabKey, label: 'Минулі' },
-  { key: 'all' as TabKey, label: 'Всі' },
-]
-
-const isUpcoming = (a: MyAppointment) =>
-  ['PENDING', 'CONFIRMED'].includes(a.status) && new Date(a.startTime) > new Date()
-
-const isPast = (a: MyAppointment) =>
-  a.status === 'COMPLETED' || a.status === 'CANCELLED' || new Date(a.startTime) <= new Date()
-
-const filteredAppts = computed<MyAppointment[]>(() => {
-  const sorted = [...myAppointments.value].sort(
-    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
-  )
-  if (activeTab.value === 'upcoming') return sorted.filter(isUpcoming)
-  if (activeTab.value === 'past') return sorted.filter(isPast)
-  return sorted
-})
-
-const tabCount = (key: TabKey) => {
-  if (key === 'upcoming') return myAppointments.value.filter(isUpcoming).length || 0
-  if (key === 'past') return myAppointments.value.filter(isPast).length || 0
-  return myAppointments.value.length || 0
-}
-
-// ── Empty state ───────────────────────────────────────────────────
-const emptyIcon = computed(() => (activeTab.value === 'upcoming' ? '📅' : '📋'))
-const emptyTitle = computed(() =>
-  activeTab.value === 'upcoming' ? 'Немає майбутніх записів' : 'Немає записів'
-)
-const emptyMsg = computed(() =>
-  activeTab.value === 'upcoming'
-    ? 'Запишіться до лікаря прямо зараз — це займе менше 2 хвилин'
-    : "Тут з'явиться ваша історія візитів"
-)
-
-// ── Cancel flow ───────────────────────────────────────────────────
-const confirmCancelId = ref<string | null>(null)
-
-const doCancel = async (id: string) => {
-  await cancelAppointment(id)
-  confirmCancelId.value = null
-}
-</script>
 
 <style scoped>
 /* ── Overlay ─────────────────────────────────────────────────── */
@@ -493,7 +492,7 @@ const doCancel = async (id: string) => {
 .apc-name {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--black-50);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -549,7 +548,7 @@ const doCancel = async (id: string) => {
   flex-shrink: 0;
 }
 .acd-val {
-  color: var(--text-2);
+  color: var(--black-100);
 }
 .mono {
   font-family: 'Courier New', monospace !important;

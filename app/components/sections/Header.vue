@@ -13,7 +13,7 @@ const route = useRoute()
 
 const hideNav = computed(() => [LOGIN_LINK.name, REGISTER_LINK.name].includes(route.name as any))
 
-onClickOutside(menuRef, () => (menu.value = false))
+onClickOutside(menuRef, () => (menu.value = false), { ignore: ['.btn-burger'] })
 
 const openPanel = () => {
   if (isAuth.value) openApptPanel()
@@ -72,7 +72,7 @@ const logoutUser = () => {
         <Button v-else :to="LOGIN_LINK" variant="ghost" title="Вхід"> <LogInIcon /></Button>
       </div>
 
-      <BurgerButton :menu @click="menu = !menu" />
+      <BurgerButton :menu @click="menu = !menu" class="btn-burger" />
     </div>
 
     <Transition name="slide">

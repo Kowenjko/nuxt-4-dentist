@@ -117,10 +117,10 @@ const steps = [
 }
 .step-line {
   position: absolute;
-  left: 13px;
+  left: 7px;
   top: 50px;
   bottom: 0;
   width: 1px;
-  background: linear-gradient(to bottom, var(--gl), transparent);
+  background: linear-gradient(to bottom, var(--g2), transparent);
 }
 </style>

@@ -10,24 +10,24 @@ export const doctorAPI = {
 
   async update(id: string, body: DoctorProfileI) {
     const { $api } = useNuxtApp()
-    return await $api<DoctorProfileI>(DOCTORS + +`/${id}`, { method: 'PUT', body })
+    return await $api<DoctorProfileI>(DOCTORS + `/${id}`, { method: 'PUT', body })
   },
 
   async getSchedule(id: string) {
     const { $api } = useNuxtApp()
-    return await $api<DoctorScheduleI>(DOCTORS + +`/${id}` + SCHEDULE)
+    return await $api<DoctorScheduleI>(DOCTORS + `/${id}` + SCHEDULE)
   },
 
   async createSchedule(id: string, body: DoctorScheduleI) {
     const { $api } = useNuxtApp()
-    return await $api<CreateScheduleI>(DOCTORS + +`/${id}` + SCHEDULE, {
+    return await $api<CreateScheduleI>(DOCTORS + `/${id}` + SCHEDULE, {
       method: 'POST',
       body,
     })
   },
 
-  async getSlots(id: string) {
+  async getSlots(id: string, params: any) {
     const { $api } = useNuxtApp()
-    return await $api<DoctorSlotsI>(DOCTORS + +`/${id}` + SLOTS)
+    return await $api<DoctorSlotsI>(DOCTORS + `/${id}` + SLOTS, { params })
   },
 }

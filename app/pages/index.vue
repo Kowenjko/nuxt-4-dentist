@@ -94,9 +94,6 @@ onMounted(async () => {
   .hero-wrap {
     grid-template-columns: 1fr;
   }
-  .hero-right {
-    display: none;
-  }
   .hero-h1 {
     font-size: clamp(34px, 7vw, 52px);
   }

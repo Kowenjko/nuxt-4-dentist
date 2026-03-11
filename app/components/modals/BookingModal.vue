@@ -10,7 +10,6 @@ const {
   selDate,
   selSlot,
   notes,
-  bookedId,
   allDoctors,
   slots,
   morningSlots,
@@ -23,7 +22,6 @@ const {
   calTitle,
   prevMonth,
   nextMonth,
-  open,
   close,
   pickDoctor,
   pickService,
@@ -441,7 +439,7 @@ onMounted(() => {
                         'cc-blank': !cell.date,
                         'cc-disabled': cell.disabled,
                         'cc-today': cell.isToday,
-                        'cc-selected': selDate === cell.date,
+                        'cc-selected': selDate && selDate === cell.date,
                       }"
                       :disabled="cell.disabled || !cell.date"
                       @click="cell.date && !cell.disabled && doPick('date', cell.date)"
@@ -672,7 +670,6 @@ onMounted(() => {
 </template>
 
 <style>
-/* ── CSS vars (inherit from global or define fallbacks) ──────── */
 /* --bm-* змінні визначені глобально в main.css */
 
 /* ── Overlay ─────────────────────────────────────────────────── */
@@ -692,9 +689,9 @@ onMounted(() => {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 540px;
+  max-width: 570px;
   max-height: 92svh;
-  background: var(--bm-f0);
+  background: var(--f0);
   border-radius: 22px 22px 0 0;
   overflow: hidden;
   display: flex;

@@ -2,7 +2,16 @@ export interface CreateAppointmentI {
   doctorId: string
   serviceId: string
   startTime: string
-  notes: string
+  notes: string | undefined
+}
+export interface UpdateAppointmentI {
+  startTime?: string // Начало приема (хранить в UTC!)
+  endTime?: string // Конец приема
+  status?: AppointmentStatus
+  notes?: string
+  clientId?: string
+  doctorId?: string
+  serviceId?: string
 }
 
 export interface AppointmentI {
@@ -48,7 +57,7 @@ export interface AppointmentMetaI {
 }
 
 export interface AppointmentMyI {
-  data: AppointmentI
+  data: MyAppointment[]
   pagination: PaginationI
   counts: AppointmentCountsI
   meta: AppointmentMateI
