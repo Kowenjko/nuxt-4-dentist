@@ -19,3 +19,18 @@ export const fmtDateTime = (iso: string) =>
     hour: '2-digit',
     minute: '2-digit',
   })
+
+export const today = new Date().toLocaleDateString('uk-UA', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
+
+export const fmtTimeShort = (d: string) =>
+  new Date(d).toLocaleDateString('uk-UA', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })

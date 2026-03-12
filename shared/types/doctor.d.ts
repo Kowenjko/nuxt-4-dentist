@@ -7,6 +7,7 @@ export interface DoctorProfileI {
   specialty: string
   doctorSchedule: DoctorScheduleI[]
   appointments: AppointmentI[]
+  _count?: { appointments: number }
 }
 
 export interface DoctorScheduleI {
