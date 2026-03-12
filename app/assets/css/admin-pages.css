@@ -500,7 +500,7 @@ tbody tr:hover {
   }
 }
 
-.fg {
+/* .fg {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -550,7 +550,7 @@ textarea.fi {
   padding: 10px 12px;
   resize: vertical;
   min-height: 80px;
-}
+} */
 
 /* ── Alerts ─────────────────────────────────────────────────────────────── */
 .alert {

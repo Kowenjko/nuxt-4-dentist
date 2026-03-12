@@ -1,5 +1,5 @@
 export interface UserI {
-  id: string
+  id?: string
   email: string
   googleId?: string
   password?: string
@@ -7,11 +7,13 @@ export interface UserI {
   phone?: string
   avatar?: string
 
-  role: RoleT
-  createdAt: string
+  role: Role
+  createdAt?: string
 
-  doctorProfile: DoctorProfileI
-  appointments: AppointmentI[]
+  doctorProfile?: DoctorProfileI
+  appointments?: AppointmentI[]
+
+  specialty?: string
 }
 
 export interface UserResponseI {

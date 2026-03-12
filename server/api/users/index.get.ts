@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
         name: true,
         phone: true,
         avatar: true,
+        googleId: true,
         role: true,
         createdAt: true,
         doctorProfile: { select: { id: true, specialty: true } },

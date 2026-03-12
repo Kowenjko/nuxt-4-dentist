@@ -641,7 +641,7 @@ tbody tr:hover td {
   justify-content: flex-end;
 }
 
-.fg {
+/* .fg {
   margin-bottom: 14px;
 }
 .fg:last-child {
@@ -673,7 +673,7 @@ tbody tr:hover td {
 }
 .fi::placeholder {
   color: var(--text-3);
-}
+} */
 .fi-mono {
   font-family: var(--mono);
 }

@@ -34,3 +34,6 @@ export const fmtTimeShort = (d: string) =>
     hour: '2-digit',
     minute: '2-digit',
   })
+
+export const formatDate = (d: string) =>
+  new Date(d).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
