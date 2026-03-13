@@ -13,11 +13,12 @@ interface Props {
   disabled?: boolean
   textarea?: boolean
   select?: boolean
+  checkbox?: boolean
   minlength?: string
-  options?: { name: string; value: string }[]
+  options?: { name: string; value?: string; id?: string }[] | any[]
 }
 
-const model = defineModel<string | number>()
+const model = defineModel<string | number | string[]>()
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
@@ -35,7 +36,6 @@ const inputClasses = computed(() => ['fi', props.error ? 'is-error' : ''])
       <span v-if="required" class="required">*</span>
     </label>
 
-    <!-- Input -->
     <textarea
       :id
       v-if="textarea"
@@ -52,6 +52,15 @@ const inputClasses = computed(() => ['fi', props.error ? 'is-error' : ''])
         {{ option.name }}
       </option>
     </select>
+
+    <div v-else-if="checkbox" class="checkbox-list">
+      <label v-for="option in options" :key="option.id" class="checkbox-item">
+        <input type="checkbox" :value="option.id" v-model="model" v-bind="attrs" />
+        <span>{{ option.name }}</span>
+
+        <slot :option />
+      </label>
+    </div>
 
     <input
       v-else
@@ -146,5 +155,34 @@ textarea.fi {
   font-size: 12px;
   color: var(--danger);
   margin-top: 4px;
+}
+
+.checkbox-list {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 6px;
+}
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.checkbox-item:hover {
+  background: var(--surface2);
+}
+.checkbox-item input {
+  accent-color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .checkbox-list {
+    max-height: 160px;
+  }
 }
 </style>

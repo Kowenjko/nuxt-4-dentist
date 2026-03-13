@@ -47,10 +47,7 @@ const sbadge = (s: string) =>
 <template>
   <div>
     <div class="page-hd">
-      <div>
-        <h1 class="page-title">Дашборд</h1>
-        <p class="page-sub">{{ today }}</p>
-      </div>
+      <AdminTitle title="Дашборд" :subtitle="today" />
     </div>
 
     <div class="stats">

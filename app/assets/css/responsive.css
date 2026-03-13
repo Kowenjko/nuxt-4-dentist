@@ -754,14 +754,6 @@
     flex: 1;
     width: auto;
   }
-
-  /* Сервіс-список в лікарях */
-  .svc-list {
-    max-height: 160px;
-  }
-  .svc-price {
-    display: none;
-  }
 }
 
 @media (max-width: 360px) {

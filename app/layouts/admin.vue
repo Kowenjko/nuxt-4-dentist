@@ -307,7 +307,7 @@ textarea {
   margin-bottom: 24px;
   gap: 16px;
 }
-.page-title {
+/* .page-title {
   font-size: 20px;
   font-weight: 700;
   color: var(--text);
@@ -317,7 +317,7 @@ textarea {
   font-size: 12.5px;
   color: var(--text-3);
   margin-top: 3px;
-}
+} */
 
 .stats {
   display: grid;
@@ -742,7 +742,7 @@ tbody tr:hover td {
   color: var(--text-2);
 }
 
-.sched-row {
+/* .sched-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -754,8 +754,8 @@ tbody tr:hover td {
 }
 .sched-row.off {
   opacity: 0.4;
-}
-.sched-toggle {
+} */
+/* .sched-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -763,8 +763,8 @@ tbody tr:hover td {
 }
 .sched-toggle input {
   accent-color: var(--accent);
-}
-.sched-day {
+} */
+/* .sched-day {
   font-size: 13px;
   font-weight: 500;
   min-width: 28px;
@@ -790,9 +790,9 @@ tbody tr:hover td {
 }
 .time-inp:disabled {
   opacity: 0.3;
-}
+} */
 
-.svc-list {
+/* .svc-list {
   border: 1px solid var(--border);
   border-radius: 6px;
   max-height: 200px;
@@ -819,7 +819,7 @@ tbody tr:hover td {
   font-family: var(--mono);
   font-size: 11.5px;
   color: var(--text-3);
-}
+} */
 
 .status-sel {
   padding: 3px 8px;

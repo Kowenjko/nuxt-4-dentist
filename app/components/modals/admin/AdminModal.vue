@@ -6,7 +6,6 @@ const {
   saving = false,
   nameButtonConfirm = '',
   nameButtonDelete = '',
-  size = 'hd',
 } = defineProps<{
   title: string
   saving?: boolean
@@ -21,8 +20,8 @@ const model = defineModel()
 
 <template>
   <div v-if="model" class="overlay" @click.self="model = false">
-    <div class="modal">
-      <div :class="`modal-${size}`">
+    <div class="modal" :class="[size ? `modal-${size}` : '']">
+      <div :class="`modal-hd`">
         <span class="modal-title">{{ title }}</span>
         <button class="modal-x" @click="model = false"><XIcon /></button>
       </div>

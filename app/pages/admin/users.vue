@@ -103,10 +103,10 @@ definePageMeta({ layout: 'admin' })
 <template>
   <div>
     <div class="page-hd">
-      <div>
-        <h1 class="page-title">Користувачі</h1>
-        <p class="page-sub">Керування акаунтами · {{ pagination?.total || 0 }} всього</p>
-      </div>
+      <AdminTitle
+        title="Користувачі"
+        :subtitle="`Керування акаунтами · ${pagination?.total || 0} всього`"
+      />
 
       <AdminButton @click="openCreate"><PlusIcon /> Додати </AdminButton>
     </div>

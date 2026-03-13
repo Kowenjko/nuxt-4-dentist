@@ -129,10 +129,7 @@ definePageMeta({ layout: 'admin' })
 <template>
   <div>
     <div class="page-hd">
-      <div>
-        <h1 class="page-title">Лікарі</h1>
-        <p class="page-sub">Профілі, послуги та розклад</p>
-      </div>
+      <AdminTitle title="Лікарі" :subtitle="`Профілі, послуги та розклад`" />
     </div>
 
     <div class="card">
@@ -222,123 +219,24 @@ definePageMeta({ layout: 'admin' })
     </div>
 
     <!-- Profile modal -->
-    <div v-if="profileModal" class="overlay" @click.self="profileModal = false">
-      <div class="modal">
-        <div class="modal-hd">
-          <span class="modal-title">{{ editDoctor?.user?.name }}</span>
-          <button class="modal-x" @click="profileModal = false">×</button>
-        </div>
-        <div class="modal-body">
-          <div v-if="formError" class="alert alert-error">{{ formError }}</div>
-          <div class="fg">
-            <label class="fl">Спеціальність</label>
-            <input v-model="formData.specialty" class="fi" placeholder="Стоматолог" />
-          </div>
-          <div class="fg">
-            <label class="fl">Про лікаря</label>
-            <textarea
-              v-model="formData.bio"
-              class="fi fi-ta"
-              placeholder="Короткий опис..."
-            ></textarea>
-          </div>
-          <div class="fg">
-            <label class="fl">Послуги</label>
-            <div class="svc-list">
-              <label v-for="s in services" :key="s.id" class="svc-item">
-                <input type="checkbox" :value="s.id" v-model="formData.serviceIds" />
-                <span>{{ s.name }}</span>
-                <span class="svc-price"
-                  >{{ Number(s.price).toLocaleString('uk-UA') }} ₴ · {{ s.duration }} хв</span
-                >
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="modal-ft">
-          <button class="btn btn-ghost" @click="profileModal = false">Скасувати</button>
-          <button class="btn btn-primary" @click="saveProfile" :disabled="saving">
-            {{ saving ? 'Збереження...' : 'Зберегти' }}
-          </button>
-        </div>
-      </div>
-    </div>
+    <UpdateDoctorModal
+      :title="editDoctor?.user?.name"
+      :saving
+      :formError
+      :formData
+      :services
+      v-model="profileModal"
+      @confirm="saveProfile"
+    />
 
     <!-- Schedule modal -->
-    <div v-if="scheduleModal" class="overlay" @click.self="scheduleModal = false">
-      <div class="modal modal-lg">
-        <div class="modal-hd">
-          <span class="modal-title">Розклад — {{ scheduleDoctor?.user?.name }}</span>
-          <button class="modal-x" @click="scheduleModal = false">×</button>
-        </div>
-        <div class="modal-body">
-          <div
-            v-for="day in schedule"
-            :key="day.weekday"
-            class="sched-row"
-            :class="{ off: !day.isWorking }"
-          >
-            <label class="sched-toggle">
-              <input type="checkbox" v-model="day.isWorking" />
-              <span class="sched-day">{{ days[day.weekday] }}</span>
-            </label>
-            <div class="sched-times">
-              <input
-                type="time"
-                v-model="day.startTime"
-                class="time-inp"
-                :disabled="!day.isWorking"
-              />
-              <span class="sched-sep">—</span>
-              <input
-                type="time"
-                v-model="day.endTime"
-                class="time-inp"
-                :disabled="!day.isWorking"
-              />
-              <span class="sched-lunch-label" v-if="day.isWorking">Обід:</span>
-              <input
-                v-if="day.isWorking"
-                type="time"
-                :value="day.lunchStart || ''"
-                class="time-inp time-inp-lunch"
-                @change="day.lunchStart = ($event.target as HTMLInputElement).value"
-              />
-              <span class="sched-sep" v-if="day.isWorking">—</span>
-              <input
-                v-if="day.isWorking"
-                type="time"
-                :value="day.lunchEnd || ''"
-                class="time-inp time-inp-lunch"
-                @change="day.lunchEnd = ($event.target as HTMLInputElement).value"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="modal-ft">
-          <button class="btn btn-ghost" @click="scheduleModal = false">Скасувати</button>
-          <button class="btn btn-primary" @click="saveSchedule" :disabled="saving">
-            {{ saving ? 'Збереження...' : 'Зберегти' }}
-          </button>
-        </div>
-      </div>
-    </div>
+    <ScheduleModal
+      :title="`Розклад — ${scheduleDoctor?.user?.name}`"
+      :saving
+      :schedule
+      :days
+      v-model="scheduleModal"
+      @confirm="saveSchedule"
+    />
   </div>
 </template>
-
-<style scoped>
-.sched-lunch-label {
-  font-size: 11px;
-  color: var(--text-3);
-  white-space: nowrap;
-  padding-left: 6px;
-}
-.time-inp-lunch {
-  width: 88px;
-  opacity: 0.85;
-}
-.sched-sep {
-  color: var(--text-3);
-  padding: 0 2px;
-}
-</style>
