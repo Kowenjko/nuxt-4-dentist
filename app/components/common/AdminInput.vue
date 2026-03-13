@@ -4,6 +4,7 @@ import { computed, useAttrs } from 'vue'
 defineOptions({ inheritAttrs: false })
 
 interface Props {
+  id?: string
   label?: string
   type?: string
   placeholder?: string
@@ -20,6 +21,7 @@ const model = defineModel<string | number>()
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
+  id: '',
 })
 
 const attrs = useAttrs()
@@ -28,13 +30,14 @@ const inputClasses = computed(() => ['fi', props.error ? 'is-error' : ''])
 
 <template>
   <div class="fg">
-    <label v-if="label" class="fl">
+    <label v-if="label" class="fl" :for="id">
       {{ label }}
       <span v-if="required" class="required">*</span>
     </label>
 
     <!-- Input -->
     <textarea
+      :id
       v-if="textarea"
       v-model="model"
       v-bind="attrs"
@@ -55,11 +58,13 @@ const inputClasses = computed(() => ['fi', props.error ? 'is-error' : ''])
       v-model="model"
       v-bind="attrs"
       :type="type"
+      :id
       :placeholder="placeholder"
       :required="required"
       :disabled="disabled"
       :minlength="minlength"
       :class="inputClasses"
+      autocomplete="off"
     />
 
     <p v-if="error" class="input-error">

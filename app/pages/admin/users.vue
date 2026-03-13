@@ -114,18 +114,16 @@ definePageMeta({ layout: 'admin' })
     <div class="card">
       <div class="card-toolbar">
         <div class="toolbar-left">
-          <input
+          <AdminInput
             v-model="search"
-            class="inp inp-search"
             placeholder="Пошук за іменем або email..."
+            id="user-search"
           />
-
-          <select v-model="roleFilter" class="inp">
-            <option value="">Всі ролі</option>
-            <option value="CLIENT">Пацієнт</option>
-            <option value="DOCTOR">Лікар</option>
-            <option value="ADMIN">Адміністратор</option>
-          </select>
+          <AdminInput
+            select
+            v-model="roleFilter"
+            :options="[{ value: '', name: 'Всі ролі' }, ...doctorOptions]"
+          />
         </div>
       </div>
 
@@ -183,77 +181,33 @@ definePageMeta({ layout: 'admin' })
               <td class="mono">{{ formatDate(u.createdAt!) }}</td>
               <td>
                 <div class="actions">
-                  <button class="btn btn-ghost btn-sm" @click="openEdit(u)">Змінити</button>
-                  <button class="btn btn-danger btn-sm" @click="delTarget = u">Видалити</button>
+                  <AdminButton variant="ghost" size="sm" @click="openEdit(u)">
+                    Змінити
+                  </AdminButton>
+                  <AdminButton variant="danger" size="sm" @click="delTarget = u">
+                    Видалити
+                  </AdminButton>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <div class="pagination" v-if="pagination">
-        <span>{{ pagination?.total }} записів</span>
-        <div class="pg-btns">
-          <!-- prettier-ignore -->
-          <button class="btn btn-ghost btn-sm" :disabled="page <= 1" @click="page--">←</button>
-          <span style="padding: 5px 10px; color: var(--text-2)"
-            >{{ page }} / {{ pagination.totalPages || 1 }}</span
-          >
-          <!-- prettier-ignore -->
-          <button class="btn btn-ghost btn-sm" :disabled="page >= (pagination.totalPages || 1)" @click="page++">→</button>
-        </div>
-      </div>
+      <PaginationButton :pagination :page />
     </div>
     <!-- Create/Edit modal -->
-    <AdminModal
-      :title="editing ? 'Редагувати користувача' : 'Новий користувач'"
-      v-model="modal"
+    <CreateUserModal
+      :editing
       :saving
-      :name-button-confirm="saving ? 'Збереження...' : 'Зберегти'"
+      :formError
+      :formData
+      :doctorOptions
+      v-model="modal"
       @confirm="save"
-    >
-      <div v-if="formError" class="alert alert-error">{{ formError }}</div>
-      <div class="form-row">
-        <AdminInput v-model="formData.name" label="Ім'я" placeholder="Іван Іваненко" />
-        <AdminInput v-model="formData.phone" label="Телефон" placeholder="+380 99 000 00 00" />
-      </div>
-      <AdminInput
-        v-model="formData.email"
-        type="email"
-        label="Email"
-        placeholder="user@example.com"
-      />
-      <AdminInput
-        v-if="!editing"
-        v-model="formData.password"
-        type="password"
-        label="Пароль"
-        placeholder="Мінімум 8 символів"
-      />
-
-      <AdminInput label="Роль" select v-model="formData.role" :options="doctorOptions" />
-
-      <AdminInput
-        v-if="formData.role === 'DOCTOR' && !editing"
-        v-model="formData.specialty"
-        label="Спеціальність"
-        placeholder="Стоматолог"
-      />
-    </AdminModal>
+    />
 
     <!-- Delete confirm -->
-    <AdminModal
-      title="Видалити користувача?"
-      v-model="delTarget"
-      name-button-delete="Видалити"
-      @delete="doDelete"
-    >
-      <p style="font-size: 13.5px; color: var(--text-2); line-height: 1.6">
-        Видалити <strong style="color: var(--text)">{{ delTarget.name }}</strong
-        >?<br />Цю дію не можна скасувати.
-      </p>
-    </AdminModal>
+    <DeleteUserModal v-model="delTarget" @delete="doDelete" />
   </div>
 </template>
 

@@ -566,7 +566,7 @@ tbody tr:hover td {
   color: var(--text-3);
 }
 
-.pagination {
+/* .pagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -578,7 +578,7 @@ tbody tr:hover td {
 .pg-btns {
   display: flex;
   gap: 4px;
-}
+} */
 
 .overlay {
   position: fixed;

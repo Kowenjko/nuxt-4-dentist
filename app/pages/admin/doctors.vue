@@ -1,3 +1,135 @@
+<script setup lang="ts">
+const doctors = ref<any[]>([])
+const filtered = ref<any[]>([])
+const allSvcs = ref<any[]>([])
+const loading = ref(true)
+const search = ref('')
+const profileModal = ref(false)
+const schedModal = ref(false)
+const editDoc = ref<any>(null)
+const schedDoc = ref<any>(null)
+const saving = ref(false)
+const ferr = ref('')
+const pForm = ref({ specialty: '', bio: '', serviceIds: [] as string[] })
+// Тиждень починається з неділі (0) — як в JS Date
+const wdays = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+const sched = ref(
+  Array.from({ length: 7 }, (_, i) => ({
+    weekday: i,
+    startTime: '09:00',
+    endTime: '18:00',
+    lunchStart: null as string | null,
+    lunchEnd: null as string | null,
+    isWorking: i >= 1 && i <= 5,
+  }))
+)
+
+const ini = (n: string) =>
+  n
+    ?.split(' ')
+    .map((x: string) => x[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || '?'
+const filter = () => {
+  const q = search.value.toLowerCase()
+  filtered.value = doctors.value.filter(
+    (d) => d.user?.name?.toLowerCase().includes(q) || d.specialty?.toLowerCase().includes(q)
+  )
+}
+
+const load = async () => {
+  loading.value = true
+  const [dr, sr] = await Promise.all([
+    $fetch('/api/doctors') as any,
+    $fetch('/api/services') as any,
+  ])
+  doctors.value = dr
+  filtered.value = dr
+  allSvcs.value = sr
+  loading.value = false
+}
+
+const openProfile = (d: any) => {
+  editDoc.value = d
+  pForm.value = {
+    specialty: d.specialty,
+    bio: d.bio || '',
+    serviceIds: (d.services || []).map((s: any) => s.id),
+  }
+  ferr.value = ''
+  profileModal.value = true
+}
+const saveProfile = async () => {
+  saving.value = true
+  ferr.value = ''
+  try {
+    await $fetch(`/api/doctors/${editDoc.value.id}`, { method: 'PUT', body: pForm.value })
+    profileModal.value = false
+    load()
+  } catch (e: any) {
+    ferr.value = e?.data?.statusMessage || 'Помилка'
+  } finally {
+    saving.value = false
+  }
+}
+
+const openSched = (d: any) => {
+  schedDoc.value = d
+  const ex = d.doctorSchedule || []
+  sched.value = Array.from({ length: 7 }, (_, i) => {
+    const f = ex.find((s: any) => s.weekday === i)
+    return f
+      ? {
+          weekday: i,
+          startTime: f.startTime,
+          endTime: f.endTime,
+          isWorking: f.isWorking,
+          lunchStart: f.lunchStart || null,
+          lunchEnd: f.lunchEnd || null,
+        }
+      : {
+          weekday: i,
+          startTime: '09:00',
+          endTime: '18:00',
+          lunchStart: null,
+          lunchEnd: null,
+          isWorking: i >= 1 && i <= 5,
+        }
+  })
+  schedModal.value = true
+}
+// Якщо один з полів обіду очищено — очищаємо обидва (API вимагає пару або нічого)
+// очищення неповної пари обіду — в saveSched
+
+const saveSched = async () => {
+  saving.value = true
+  try {
+    const payload = sched.value.map((d) => {
+      const lunchStart = d.lunchStart || null
+      const lunchEnd = d.lunchEnd || null
+      const lunch =
+        lunchStart && lunchEnd ? { lunchStart, lunchEnd } : { lunchStart: null, lunchEnd: null }
+      return { ...d, ...lunch }
+    })
+    await $fetch(`/api/doctors/${schedDoc.value.id}/schedule`, {
+      method: 'POST',
+      body: { schedule: payload },
+    })
+    schedModal.value = false
+    load()
+  } catch (e: any) {
+    alert(e?.data?.statusMessage || 'Помилка')
+  } finally {
+    saving.value = false
+  }
+}
+
+onMounted(load)
+
+definePageMeta({ layout: 'admin' })
+</script>
+
 <template>
   <div>
     <div class="page-hd">
@@ -195,141 +327,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({ layout: 'admin' })
-
-// ── Theme ──────────────────────────────────
-// Тема керується в layouts/admin.vue через useTheme('admin')
-
-const doctors = ref<any[]>([])
-const filtered = ref<any[]>([])
-const allSvcs = ref<any[]>([])
-const loading = ref(true)
-const search = ref('')
-const profileModal = ref(false)
-const schedModal = ref(false)
-const editDoc = ref<any>(null)
-const schedDoc = ref<any>(null)
-const saving = ref(false)
-const ferr = ref('')
-const pForm = ref({ specialty: '', bio: '', serviceIds: [] as string[] })
-// Тиждень починається з неділі (0) — як в JS Date
-const wdays = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
-const sched = ref(
-  Array.from({ length: 7 }, (_, i) => ({
-    weekday: i,
-    startTime: '09:00',
-    endTime: '18:00',
-    lunchStart: null as string | null,
-    lunchEnd: null as string | null,
-    isWorking: i >= 1 && i <= 5,
-  }))
-)
-
-const ini = (n: string) =>
-  n
-    ?.split(' ')
-    .map((x: string) => x[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase() || '?'
-const filter = () => {
-  const q = search.value.toLowerCase()
-  filtered.value = doctors.value.filter(
-    (d) => d.user?.name?.toLowerCase().includes(q) || d.specialty?.toLowerCase().includes(q)
-  )
-}
-
-const load = async () => {
-  loading.value = true
-  const [dr, sr] = await Promise.all([
-    $fetch('/api/doctors') as any,
-    $fetch('/api/services') as any,
-  ])
-  doctors.value = dr
-  filtered.value = dr
-  allSvcs.value = sr
-  loading.value = false
-}
-
-const openProfile = (d: any) => {
-  editDoc.value = d
-  pForm.value = {
-    specialty: d.specialty,
-    bio: d.bio || '',
-    serviceIds: (d.services || []).map((s: any) => s.id),
-  }
-  ferr.value = ''
-  profileModal.value = true
-}
-const saveProfile = async () => {
-  saving.value = true
-  ferr.value = ''
-  try {
-    await $fetch(`/api/doctors/${editDoc.value.id}`, { method: 'PUT', body: pForm.value })
-    profileModal.value = false
-    load()
-  } catch (e: any) {
-    ferr.value = e?.data?.statusMessage || 'Помилка'
-  } finally {
-    saving.value = false
-  }
-}
-
-const openSched = (d: any) => {
-  schedDoc.value = d
-  const ex = d.doctorSchedule || []
-  sched.value = Array.from({ length: 7 }, (_, i) => {
-    const f = ex.find((s: any) => s.weekday === i)
-    return f
-      ? {
-          weekday: i,
-          startTime: f.startTime,
-          endTime: f.endTime,
-          isWorking: f.isWorking,
-          lunchStart: f.lunchStart || null,
-          lunchEnd: f.lunchEnd || null,
-        }
-      : {
-          weekday: i,
-          startTime: '09:00',
-          endTime: '18:00',
-          lunchStart: null,
-          lunchEnd: null,
-          isWorking: i >= 1 && i <= 5,
-        }
-  })
-  schedModal.value = true
-}
-// Якщо один з полів обіду очищено — очищаємо обидва (API вимагає пару або нічого)
-// очищення неповної пари обіду — в saveSched
-
-const saveSched = async () => {
-  saving.value = true
-  try {
-    const payload = sched.value.map((d) => {
-      const lunchStart = d.lunchStart || null
-      const lunchEnd = d.lunchEnd || null
-      const lunch =
-        lunchStart && lunchEnd ? { lunchStart, lunchEnd } : { lunchStart: null, lunchEnd: null }
-      return { ...d, ...lunch }
-    })
-    await $fetch(`/api/doctors/${schedDoc.value.id}/schedule`, {
-      method: 'POST',
-      body: { schedule: payload },
-    })
-    schedModal.value = false
-    load()
-  } catch (e: any) {
-    alert(e?.data?.statusMessage || 'Помилка')
-  } finally {
-    saving.value = false
-  }
-}
-
-onMounted(load)
-</script>
 
 <style scoped>
 /* Спільні стилі адмін-сторінок — в assets/styles/admin-pages.css */
