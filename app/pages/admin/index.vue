@@ -6,14 +6,16 @@ const { data: users } = useAPI<ApiResponseI<UserI[]>>(USERS, {
   query: { limit: 1, page: 1 },
 })
 
-const { data: services } = useAPI<ServiceI[]>(SERVICES)
+const { data: services } = useAPI<ServiceI[]>(SERVICES, { key: 'service-list' })
 const { data: appointments, pending: loadingAppointments } = useAPI<ApiResponseI<AppointmentI[]>>(
   APPOINTMENTS,
   {
     query: { limit: 6 },
   }
 )
-const { data: doctors, pending: loadingDoctor } = useAPI<DoctorProfileI[]>(DOCTORS)
+const { data: doctors, pending: loadingDoctor } = useAPI<DoctorProfileI[]>(DOCTORS, {
+  key: 'doctor-list',
+})
 
 // computed
 const statsUsers = computed(() => users.value?.pagination?.total ?? 0)

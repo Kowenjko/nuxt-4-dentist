@@ -1,87 +1,89 @@
 <script setup lang="ts">
-const doctors = ref<any[]>([])
-const filtered = ref<any[]>([])
-const allSvcs = ref<any[]>([])
-const loading = ref(true)
 const search = ref('')
 const profileModal = ref(false)
-const schedModal = ref(false)
-const editDoc = ref<any>(null)
-const schedDoc = ref<any>(null)
+const scheduleModal = ref(false)
+const editDoctor = ref<any>(null)
+const scheduleDoctor = ref<any>(null)
 const saving = ref(false)
-const ferr = ref('')
-const pForm = ref({ specialty: '', bio: '', serviceIds: [] as string[] })
+const formError = ref('')
+const formData = ref<DoctorUpdateI>({ specialty: '', bio: '', serviceIds: [] as string[] })
+
 // Тиждень починається з неділі (0) — як в JS Date
-const wdays = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
-const sched = ref(
-  Array.from({ length: 7 }, (_, i) => ({
-    weekday: i,
+const days = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+const scheduleOrder = [1, 2, 3, 4, 5, 6, 0] // порядок відображення
+const schedule = ref(
+  scheduleOrder.map((wd) => ({
+    weekday: wd,
     startTime: '09:00',
     endTime: '18:00',
     lunchStart: null as string | null,
     lunchEnd: null as string | null,
-    isWorking: i >= 1 && i <= 5,
+    isWorking: wd >= 1 && wd <= 5,
   }))
 )
 
-const ini = (n: string) =>
-  n
-    ?.split(' ')
-    .map((x: string) => x[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase() || '?'
-const filter = () => {
-  const q = search.value.toLowerCase()
-  filtered.value = doctors.value.filter(
-    (d) => d.user?.name?.toLowerCase().includes(q) || d.specialty?.toLowerCase().includes(q)
-  )
-}
+const {
+  data: doctors,
+  pending: loadingDoctor,
+  refresh: refreshDoctor,
+} = useAPI<DoctorProfileI[]>(DOCTORS, {
+  key: 'doctor-list',
+})
 
-const load = async () => {
-  loading.value = true
-  const [dr, sr] = await Promise.all([
-    $fetch('/api/doctors') as any,
-    $fetch('/api/services') as any,
-  ])
-  doctors.value = dr
-  filtered.value = dr
-  allSvcs.value = sr
-  loading.value = false
+const {
+  data: services,
+  pending: loadingService,
+  refresh: refreshService,
+} = useAPI<ServiceI[]>(SERVICES, {
+  key: 'service-list',
+})
+
+const filtered = computed(() => {
+  const q = search.value.toLowerCase()
+  return (
+    doctors.value?.filter(
+      (d) => d.user?.name?.toLowerCase().includes(q) || d.specialty?.toLowerCase().includes(q)
+    ) || []
+  )
+})
+
+const refresh = async () => {
+  await refreshDoctor()
+  // await refreshService()
 }
 
 const openProfile = (d: any) => {
-  editDoc.value = d
-  pForm.value = {
+  editDoctor.value = d
+  formData.value = {
     specialty: d.specialty,
     bio: d.bio || '',
     serviceIds: (d.services || []).map((s: any) => s.id),
   }
-  ferr.value = ''
+  formError.value = ''
   profileModal.value = true
 }
 const saveProfile = async () => {
   saving.value = true
-  ferr.value = ''
+  formError.value = ''
   try {
-    await $fetch(`/api/doctors/${editDoc.value.id}`, { method: 'PUT', body: pForm.value })
+    await doctorAPI.update(editDoctor.value.id, formData.value)
     profileModal.value = false
-    load()
+    await refresh()
   } catch (e: any) {
-    ferr.value = e?.data?.statusMessage || 'Помилка'
+    formError.value = e?.data?.statusMessage || 'Помилка'
   } finally {
     saving.value = false
   }
 }
 
-const openSched = (d: any) => {
-  schedDoc.value = d
+const openSchedule = (d: any) => {
+  scheduleDoctor.value = d
   const ex = d.doctorSchedule || []
-  sched.value = Array.from({ length: 7 }, (_, i) => {
-    const f = ex.find((s: any) => s.weekday === i)
+  schedule.value = scheduleOrder.map((wd) => {
+    const f = ex.find((s: any) => s.weekday === wd)
     return f
       ? {
-          weekday: i,
+          weekday: wd,
           startTime: f.startTime,
           endTime: f.endTime,
           isWorking: f.isWorking,
@@ -89,43 +91,37 @@ const openSched = (d: any) => {
           lunchEnd: f.lunchEnd || null,
         }
       : {
-          weekday: i,
+          weekday: wd,
           startTime: '09:00',
           endTime: '18:00',
           lunchStart: null,
           lunchEnd: null,
-          isWorking: i >= 1 && i <= 5,
+          isWorking: wd >= 1 && wd <= 5,
         }
   })
-  schedModal.value = true
+  scheduleModal.value = true
 }
-// Якщо один з полів обіду очищено — очищаємо обидва (API вимагає пару або нічого)
-// очищення неповної пари обіду — в saveSched
 
-const saveSched = async () => {
+const saveSchedule = async () => {
   saving.value = true
   try {
-    const payload = sched.value.map((d) => {
+    const payload = schedule.value.map((d) => {
       const lunchStart = d.lunchStart || null
       const lunchEnd = d.lunchEnd || null
       const lunch =
         lunchStart && lunchEnd ? { lunchStart, lunchEnd } : { lunchStart: null, lunchEnd: null }
       return { ...d, ...lunch }
     })
-    await $fetch(`/api/doctors/${schedDoc.value.id}/schedule`, {
-      method: 'POST',
-      body: { schedule: payload },
-    })
-    schedModal.value = false
-    load()
+
+    await doctorAPI.createSchedule(scheduleDoctor.value.id, { schedule: payload })
+    scheduleModal.value = false
+    await refresh()
   } catch (e: any) {
     alert(e?.data?.statusMessage || 'Помилка')
   } finally {
     saving.value = false
   }
 }
-
-onMounted(load)
 
 definePageMeta({ layout: 'admin' })
 </script>
@@ -141,17 +137,17 @@ definePageMeta({ layout: 'admin' })
 
     <div class="card">
       <div class="card-toolbar">
-        <input
+        <AdminInput
           v-model="search"
-          @input="filter"
-          class="inp inp-search"
           placeholder="Пошук за іменем або спеціальністю..."
+          id="doctor-search"
         />
+
         <span style="font-size: 12.5px; color: var(--text-3)">{{ filtered.length }} лікарів</span>
       </div>
 
       <div class="table-wrap">
-        <div v-if="loading" class="loading">Завантаження...</div>
+        <div v-if="loadingDoctor && loadingService" class="loading">Завантаження...</div>
         <table v-else>
           <thead>
             <tr>
@@ -175,7 +171,7 @@ definePageMeta({ layout: 'admin' })
             <tr v-for="d in filtered" :key="d.id">
               <td>
                 <div class="user-cell">
-                  <div class="av av-green">{{ ini(d.user?.name) }}</div>
+                  <div class="av av-green">{{ iniAvatar(d.user?.name) }}</div>
                   <div>
                     <div class="uc-name">{{ d.user?.name }}</div>
                     <div class="uc-sub">{{ d.user?.email }}</div>
@@ -216,7 +212,7 @@ definePageMeta({ layout: 'admin' })
               <td>
                 <div class="actions">
                   <button class="btn btn-ghost btn-sm" @click="openProfile(d)">Профіль</button>
-                  <button class="btn btn-ghost btn-sm" @click="openSched(d)">Розклад</button>
+                  <button class="btn btn-ghost btn-sm" @click="openSchedule(d)">Розклад</button>
                 </div>
               </td>
             </tr>
@@ -229,19 +225,19 @@ definePageMeta({ layout: 'admin' })
     <div v-if="profileModal" class="overlay" @click.self="profileModal = false">
       <div class="modal">
         <div class="modal-hd">
-          <span class="modal-title">{{ editDoc?.user?.name }}</span>
+          <span class="modal-title">{{ editDoctor?.user?.name }}</span>
           <button class="modal-x" @click="profileModal = false">×</button>
         </div>
         <div class="modal-body">
-          <div v-if="ferr" class="alert alert-error">{{ ferr }}</div>
+          <div v-if="formError" class="alert alert-error">{{ formError }}</div>
           <div class="fg">
             <label class="fl">Спеціальність</label>
-            <input v-model="pForm.specialty" class="fi" placeholder="Стоматолог" />
+            <input v-model="formData.specialty" class="fi" placeholder="Стоматолог" />
           </div>
           <div class="fg">
             <label class="fl">Про лікаря</label>
             <textarea
-              v-model="pForm.bio"
+              v-model="formData.bio"
               class="fi fi-ta"
               placeholder="Короткий опис..."
             ></textarea>
@@ -249,8 +245,8 @@ definePageMeta({ layout: 'admin' })
           <div class="fg">
             <label class="fl">Послуги</label>
             <div class="svc-list">
-              <label v-for="s in allSvcs" :key="s.id" class="svc-item">
-                <input type="checkbox" :value="s.id" v-model="pForm.serviceIds" />
+              <label v-for="s in services" :key="s.id" class="svc-item">
+                <input type="checkbox" :value="s.id" v-model="formData.serviceIds" />
                 <span>{{ s.name }}</span>
                 <span class="svc-price"
                   >{{ Number(s.price).toLocaleString('uk-UA') }} ₴ · {{ s.duration }} хв</span
@@ -269,22 +265,22 @@ definePageMeta({ layout: 'admin' })
     </div>
 
     <!-- Schedule modal -->
-    <div v-if="schedModal" class="overlay" @click.self="schedModal = false">
+    <div v-if="scheduleModal" class="overlay" @click.self="scheduleModal = false">
       <div class="modal modal-lg">
         <div class="modal-hd">
-          <span class="modal-title">Розклад — {{ schedDoc?.user?.name }}</span>
-          <button class="modal-x" @click="schedModal = false">×</button>
+          <span class="modal-title">Розклад — {{ scheduleDoctor?.user?.name }}</span>
+          <button class="modal-x" @click="scheduleModal = false">×</button>
         </div>
         <div class="modal-body">
           <div
-            v-for="day in sched"
+            v-for="day in schedule"
             :key="day.weekday"
             class="sched-row"
             :class="{ off: !day.isWorking }"
           >
             <label class="sched-toggle">
               <input type="checkbox" v-model="day.isWorking" />
-              <span class="sched-day">{{ wdays[day.weekday] }}</span>
+              <span class="sched-day">{{ days[day.weekday] }}</span>
             </label>
             <div class="sched-times">
               <input
@@ -304,22 +300,24 @@ definePageMeta({ layout: 'admin' })
               <input
                 v-if="day.isWorking"
                 type="time"
-                v-model="day.lunchStart"
+                :value="day.lunchStart || ''"
                 class="time-inp time-inp-lunch"
+                @change="day.lunchStart = ($event.target as HTMLInputElement).value"
               />
               <span class="sched-sep" v-if="day.isWorking">—</span>
               <input
                 v-if="day.isWorking"
                 type="time"
-                v-model="day.lunchEnd"
+                :value="day.lunchEnd || ''"
                 class="time-inp time-inp-lunch"
+                @change="day.lunchEnd = ($event.target as HTMLInputElement).value"
               />
             </div>
           </div>
         </div>
         <div class="modal-ft">
-          <button class="btn btn-ghost" @click="schedModal = false">Скасувати</button>
-          <button class="btn btn-primary" @click="saveSched" :disabled="saving">
+          <button class="btn btn-ghost" @click="scheduleModal = false">Скасувати</button>
+          <button class="btn btn-primary" @click="saveSchedule" :disabled="saving">
             {{ saving ? 'Збереження...' : 'Зберегти' }}
           </button>
         </div>
@@ -329,8 +327,6 @@ definePageMeta({ layout: 'admin' })
 </template>
 
 <style scoped>
-/* Спільні стилі адмін-сторінок — в assets/styles/admin-pages.css */
-
 .sched-lunch-label {
   font-size: 11px;
   color: var(--text-3);

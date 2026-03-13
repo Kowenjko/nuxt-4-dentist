@@ -10,6 +10,12 @@ export interface DoctorProfileI {
   _count?: { appointments: number }
 }
 
+export interface DoctorUpdateI {
+  specialty: ''
+  bio: ''
+  serviceIds: string[]
+}
+
 export interface DoctorScheduleI {
   id: string
   doctorId: string
@@ -17,8 +23,8 @@ export interface DoctorScheduleI {
   weekday: number // 0 - Воскресенье, 1 - Понедельник, ..., 6 - Суббота
   startTime: string // "09:00"
   endTime: string // "18:00"
-  lunchStart?: string // "13:00" — null якщо перерви немає
-  lunchEnd?: string // "14:00" — null якщо перерви немає
+  lunchStart?: string | null // "13:00" — null якщо перерви немає
+  lunchEnd?: string | null // "14:00" — null якщо перерви немає
   isWorking: boolean // Выходной или рабочий день
 }
 

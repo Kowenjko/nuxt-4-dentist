@@ -8,7 +8,7 @@ export const doctorAPI = {
     return await $api<DoctorProfileI>(DOCTORS + `/${id}`)
   },
 
-  async update(id: string, body: DoctorProfileI) {
+  async update(id: string, body: DoctorUpdateI) {
     const { $api } = useNuxtApp()
     return await $api<DoctorProfileI>(DOCTORS + `/${id}`, { method: 'PUT', body })
   },
@@ -18,9 +18,9 @@ export const doctorAPI = {
     return await $api<DoctorScheduleI>(DOCTORS + `/${id}` + SCHEDULE)
   },
 
-  async createSchedule(id: string, body: DoctorScheduleI) {
+  async createSchedule(id: string, body: CreateScheduleI) {
     const { $api } = useNuxtApp()
-    return await $api<CreateScheduleI>(DOCTORS + `/${id}` + SCHEDULE, {
+    return await $api<DoctorScheduleI[]>(DOCTORS + `/${id}` + SCHEDULE, {
       method: 'POST',
       body,
     })
