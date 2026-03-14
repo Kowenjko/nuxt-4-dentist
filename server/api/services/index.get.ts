@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
           user: { select: { id: true, name: true, avatar: true } },
         },
       },
+      _count: { select: { appointments: true } },
     },
     orderBy: { name: 'asc' },
   })

@@ -1,28 +1,20 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin' })
+import { PlusIcon } from 'lucide-vue-next'
 
-const services = ref<any[]>([])
-const filtered = ref<any[]>([])
-const loading = ref(true)
 const search = ref('')
 const modal = ref(false)
 const editing = ref<any>(null)
 const delTarget = ref<any>(null)
 const saving = ref(false)
 const formError = ref('')
-const formData = ref({ name: '', duration: 60, price: 0 })
+const formData = ref<ServiceI>({ name: '', duration: 60, price: 0 })
 
-watch(search, () => {
-  const q = search.value.toLowerCase()
-  filtered.value = services.value.filter((s) => s.name.toLowerCase().includes(q))
-})
+const { data: services, pending, refresh } = useAPI<ServiceI[]>(SERVICES)
 
-const load = async () => {
-  loading.value = true
-  services.value = (await $fetch('/api/services')) as any[]
-  filtered.value = services.value
-  loading.value = false
-}
+const filtered = computed(
+  () =>
+    services.value?.filter((s) => s.name.toLowerCase().includes(search.value.toLowerCase())) || []
+)
 
 const openCreate = () => {
   editing.value = null
@@ -30,9 +22,9 @@ const openCreate = () => {
   formError.value = ''
   modal.value = true
 }
-const openEdit = (s: any) => {
-  editing.value = s
-  formData.value = { name: s.name, duration: s.duration, price: Number(s.price) }
+const openEdit = (service: ServiceI) => {
+  editing.value = service
+  formData.value = { name: service.name, duration: service.duration, price: Number(service.price) }
   formError.value = ''
   modal.value = true
 }
@@ -45,11 +37,10 @@ const save = async () => {
   saving.value = true
   formError.value = ''
   try {
-    if (editing.value)
-      await $fetch(`/api/services/${editing.value.id}`, { method: 'PUT', body: formData.value })
-    else await $fetch('/api/services', { method: 'POST', body: formData.value })
+    if (editing.value) await serviceAPI.update(editing.value.id, formData.value)
+    else await serviceAPI.create(formData.value)
     modal.value = false
-    load()
+    await refresh()
   } catch (e: any) {
     formError.value = e?.data?.statusMessage || 'Помилка'
   } finally {
@@ -60,9 +51,9 @@ const save = async () => {
 const doDelete = async () => {
   saving.value = true
   try {
-    await $fetch(`/api/services/${delTarget.value.id}`, { method: 'DELETE' })
+    await serviceAPI.delete(delTarget.value.id)
     delTarget.value = null
-    load()
+    await refresh()
   } catch (e: any) {
     alert(e?.data?.statusMessage || 'Помилка')
   } finally {
@@ -70,33 +61,24 @@ const doDelete = async () => {
   }
 }
 
-onMounted(load)
+definePageMeta({ layout: 'admin' })
 </script>
 
 <template>
   <div>
     <div class="page-hd">
-      <div>
-        <h1 class="page-title">Послуги</h1>
-        <p class="page-sub">Каталог медичних послуг</p>
-      </div>
-      <button class="btn btn-primary" @click="openCreate">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-        Додати послугу
-      </button>
+      <AdminTitle title="Послуги" subtitle="Каталог медичних послуг" />
+      <AdminButton @click="openCreate"><PlusIcon /> Додати послугу</AdminButton>
     </div>
 
     <div class="card">
       <div class="card-toolbar">
-        <input v-model="search" class="inp inp-search" placeholder="Пошук за назвою..." />
+        <AdminInput v-model="search" placeholder="Пошук за назвою..." id="service-search" />
         <span style="font-size: 12.5px; color: var(--text-3)">{{ filtered.length }} послуг</span>
       </div>
 
       <div class="table-wrap">
-        <div v-if="loading" class="loading">Завантаження...</div>
+        <div v-if="pending" class="loading">Завантаження...</div>
         <table v-else>
           <thead>
             <tr>
@@ -136,7 +118,7 @@ onMounted(load)
                   >
                     {{ d.user?.name?.split(' ')[1] || d.user?.name }}
                   </span>
-                  <span v-if="(s.doctors || []).length > 3" class="badge badge-neutral"
+                  <span v-if="s.doctors && s.doctors?.length > 3" class="badge badge-neutral"
                     >+{{ s.doctors.length - 3 }}</span
                   >
                   <span
