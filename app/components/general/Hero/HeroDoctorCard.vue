@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const { doctor } = defineProps<{ doctor: DoctorProfileI }>()
+const { doctor } = defineProps<{ doctor: BookingDoctor }>()
 const emit = defineEmits<{ selectSlot: [] }>()
 
 const nowDate = new Date().toISOString()?.slice(0, 10)
@@ -8,7 +8,6 @@ const { data } = useAPI<DoctorSlotsI>(DOCTORS + `/${doctor?.id}` + SLOTS, {
   query: { date: nowDate, serviceId: doctor.services?.[0]?.id },
 })
 const selSlot = ref<any>(null)
-const bookCard = shallowRef(false)
 
 const bookCardRef = useTemplateRef('bookCardRef')
 const { open } = useBooking()
@@ -44,8 +43,9 @@ const openModal = () => {
         <div class="book-doc-service">{{ doctor.services?.[0]?.name }}</div>
       </div>
 
-      <div class="book-status free" v-if="data?.slots && data.slots.length > 0 && !isAvailable">
-        Вільний
+      <div class="book-status free" v-if="!isAvailable">Вільний</div>
+      <div class="book-status weekend" v-else-if="data?.slots && data.slots.length === 0">
+        Вихідний
       </div>
       <div class="book-status busy" v-else>Зайнятий</div>
     </div>
@@ -128,6 +128,10 @@ const openModal = () => {
   &.busy {
     background: var(--bm-redbg);
     color: var(--danger-alias);
+  }
+  &.weekend {
+    background: var(--warning-bg);
+    color: var(--warning);
   }
 }
 .book-label {

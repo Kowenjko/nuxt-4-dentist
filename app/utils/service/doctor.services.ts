@@ -1,7 +1,7 @@
 export const doctorAPI = {
   async getAll() {
     const { $api } = useNuxtApp()
-    return await $api<DoctorProfileI[]>(DOCTORS)
+    return await $api<BookingDoctor[]>(DOCTORS)
   },
   async get(id: string) {
     const { $api } = useNuxtApp()

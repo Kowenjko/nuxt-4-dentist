@@ -1,3 +1,78 @@
+<script setup lang="ts">
+definePageMeta({ layout: 'admin' })
+
+const services = ref<any[]>([])
+const filtered = ref<any[]>([])
+const loading = ref(true)
+const search = ref('')
+const modal = ref(false)
+const editing = ref<any>(null)
+const delTarget = ref<any>(null)
+const saving = ref(false)
+const formError = ref('')
+const formData = ref({ name: '', duration: 60, price: 0 })
+
+watch(search, () => {
+  const q = search.value.toLowerCase()
+  filtered.value = services.value.filter((s) => s.name.toLowerCase().includes(q))
+})
+
+const load = async () => {
+  loading.value = true
+  services.value = (await $fetch('/api/services')) as any[]
+  filtered.value = services.value
+  loading.value = false
+}
+
+const openCreate = () => {
+  editing.value = null
+  formData.value = { name: '', duration: 60, price: 0 }
+  formError.value = ''
+  modal.value = true
+}
+const openEdit = (s: any) => {
+  editing.value = s
+  formData.value = { name: s.name, duration: s.duration, price: Number(s.price) }
+  formError.value = ''
+  modal.value = true
+}
+
+const save = async () => {
+  if (!formData.value.name.trim()) {
+    formError.value = 'Вкажіть назву'
+    return
+  }
+  saving.value = true
+  formError.value = ''
+  try {
+    if (editing.value)
+      await $fetch(`/api/services/${editing.value.id}`, { method: 'PUT', body: formData.value })
+    else await $fetch('/api/services', { method: 'POST', body: formData.value })
+    modal.value = false
+    load()
+  } catch (e: any) {
+    formError.value = e?.data?.statusMessage || 'Помилка'
+  } finally {
+    saving.value = false
+  }
+}
+
+const doDelete = async () => {
+  saving.value = true
+  try {
+    await $fetch(`/api/services/${delTarget.value.id}`, { method: 'DELETE' })
+    delTarget.value = null
+    load()
+  } catch (e: any) {
+    alert(e?.data?.statusMessage || 'Помилка')
+  } finally {
+    saving.value = false
+  }
+}
+
+onMounted(load)
+</script>
+
 <template>
   <div>
     <div class="page-hd">
@@ -94,16 +169,16 @@
           <button class="modal-x" @click="modal = false">×</button>
         </div>
         <div class="modal-body">
-          <div v-if="ferr" class="alert alert-error">{{ ferr }}</div>
+          <div v-if="formError" class="alert alert-error">{{ formError }}</div>
           <div class="fg">
             <label class="fl">Назва</label>
-            <input v-model="form.name" class="fi" placeholder="Лікування карієсу" autofocus />
+            <input v-model="formData.name" class="fi" placeholder="Лікування карієсу" autofocus />
           </div>
           <div class="form-row">
             <div class="fg">
               <label class="fl">Тривалість (хв)</label>
               <input
-                v-model.number="form.duration"
+                v-model.number="formData.duration"
                 type="number"
                 min="15"
                 step="15"
@@ -114,7 +189,7 @@
             <div class="fg">
               <label class="fl">Ціна (₴)</label>
               <input
-                v-model.number="form.price"
+                v-model.number="formData.price"
                 type="number"
                 min="0"
                 step="100"
@@ -155,78 +230,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({ layout: 'admin' })
-
-const services = ref<any[]>([])
-const filtered = ref<any[]>([])
-const loading = ref(true)
-const search = ref('')
-const modal = ref(false)
-const editing = ref<any>(null)
-const delTarget = ref<any>(null)
-const saving = ref(false)
-const ferr = ref('')
-const form = ref({ name: '', duration: 60, price: 0 })
-
-watch(search, () => {
-  const q = search.value.toLowerCase()
-  filtered.value = services.value.filter((s) => s.name.toLowerCase().includes(q))
-})
-
-const load = async () => {
-  loading.value = true
-  services.value = (await $fetch('/api/services')) as any[]
-  filtered.value = services.value
-  loading.value = false
-}
-
-const openCreate = () => {
-  editing.value = null
-  form.value = { name: '', duration: 60, price: 0 }
-  ferr.value = ''
-  modal.value = true
-}
-const openEdit = (s: any) => {
-  editing.value = s
-  form.value = { name: s.name, duration: s.duration, price: Number(s.price) }
-  ferr.value = ''
-  modal.value = true
-}
-
-const save = async () => {
-  if (!form.value.name.trim()) {
-    ferr.value = 'Вкажіть назву'
-    return
-  }
-  saving.value = true
-  ferr.value = ''
-  try {
-    if (editing.value)
-      await $fetch(`/api/services/${editing.value.id}`, { method: 'PUT', body: form.value })
-    else await $fetch('/api/services', { method: 'POST', body: form.value })
-    modal.value = false
-    load()
-  } catch (e: any) {
-    ferr.value = e?.data?.statusMessage || 'Помилка'
-  } finally {
-    saving.value = false
-  }
-}
-
-const doDelete = async () => {
-  saving.value = true
-  try {
-    await $fetch(`/api/services/${delTarget.value.id}`, { method: 'DELETE' })
-    delTarget.value = null
-    load()
-  } catch (e: any) {
-    alert(e?.data?.statusMessage || 'Помилка')
-  } finally {
-    saving.value = false
-  }
-}
-
-onMounted(load)
-</script>
