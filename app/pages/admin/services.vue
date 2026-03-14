@@ -144,71 +144,7 @@ definePageMeta({ layout: 'admin' })
     </div>
 
     <!-- Modal -->
-    <div v-if="modal" class="overlay" @click.self="modal = false">
-      <div class="modal modal-sm">
-        <div class="modal-hd">
-          <span class="modal-title">{{ editing ? 'Редагувати послугу' : 'Нова послуга' }}</span>
-          <button class="modal-x" @click="modal = false">×</button>
-        </div>
-        <div class="modal-body">
-          <div v-if="formError" class="alert alert-error">{{ formError }}</div>
-          <div class="fg">
-            <label class="fl">Назва</label>
-            <input v-model="formData.name" class="fi" placeholder="Лікування карієсу" autofocus />
-          </div>
-          <div class="form-row">
-            <div class="fg">
-              <label class="fl">Тривалість (хв)</label>
-              <input
-                v-model.number="formData.duration"
-                type="number"
-                min="15"
-                step="15"
-                class="fi fi-mono"
-                placeholder="60"
-              />
-            </div>
-            <div class="fg">
-              <label class="fl">Ціна (₴)</label>
-              <input
-                v-model.number="formData.price"
-                type="number"
-                min="0"
-                step="100"
-                class="fi fi-mono"
-                placeholder="1200"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="modal-ft">
-          <button class="btn btn-ghost" @click="modal = false">Скасувати</button>
-          <button class="btn btn-primary" @click="save" :disabled="saving">
-            {{ saving ? 'Збереження...' : 'Зберегти' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete confirm -->
-    <div v-if="delTarget" class="overlay" @click.self="delTarget = null">
-      <div class="modal modal-sm">
-        <div class="modal-hd">
-          <span class="modal-title">Видалити послугу?</span>
-          <button class="modal-x" @click="delTarget = null">×</button>
-        </div>
-        <div class="modal-body">
-          <p style="font-size: 13.5px; color: var(--text-2); line-height: 1.6">
-            Видалити <strong style="color: var(--text)">{{ delTarget.name }}</strong
-            >?<br />
-            <span style="color: var(--danger)">Неможливо, якщо є активні записи.</span>
-          </p>
-        </div>
-        <div class="modal-ft">
-          <button class="btn btn-ghost" @click="delTarget = null">Скасувати</button>
-          <button class="btn btn-danger" @click="doDelete" :disabled="saving">Видалити</button>
-        </div>
-      </div>
-    </div>
+    <CreateServiceModal :editing :saving :formError :formData v-model="modal" @confirm="save" />
+    <DeleteServiceModal v-model="delTarget" @delete="doDelete" />
   </div>
 </template>

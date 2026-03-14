@@ -26,7 +26,11 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const attrs = useAttrs()
-const inputClasses = computed(() => ['fi', props.error ? 'is-error' : ''])
+const inputClasses = computed(() => [
+  'fi',
+  props.error ? 'is-error' : '',
+  props.type === 'number' ? 'fi-mono' : '',
+])
 </script>
 
 <template>
