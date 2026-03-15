@@ -33,7 +33,13 @@ export default defineEventHandler(async (event) => {
     if (body.notes !== undefined) data.notes = body.notes
   } else {
     // Doctors and admins can change status and notes
-    if (body.status) data.status = body.status
+    const VALID_STATUSES = ['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED']
+    if (body.status) {
+      if (!VALID_STATUSES.includes(body.status)) {
+        throw createError({ statusCode: 400, statusMessage: `Invalid status: ${body.status}` })
+      }
+      data.status = body.status
+    }
     if (body.notes !== undefined) data.notes = body.notes
   }
 
