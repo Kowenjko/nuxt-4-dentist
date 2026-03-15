@@ -1,20 +1,21 @@
 <script lang="ts" setup>
 const emit = defineEmits<{ delete: [] }>()
-const model = defineModel<ServiceI>()
+const model = defineModel<AppointmentI>()
 </script>
 
 <template>
   <AdminModal
-    title="Видалити послугу?"
+    title="Видалити запис?"
     v-model="model"
     name-button-delete="Видалити"
     size="sm"
     @delete="emit('delete')"
   >
     <p class="info">
-      Видалити <strong>{{ model?.name }}</strong
-      >?<br />
-      <span class="info-danger">Неможливо, якщо є активні записи.</span>
+      Видалити запис клієнта<br />
+      <strong>{{ model?.client.name }}</strong> -
+      <strong>{{ fmtDateTime(model?.startTime!) }}</strong> ?<br />
+      <span class="info-danger"> Цю дію не можна скасувати.</span>
     </p>
   </AdminModal>
 </template>

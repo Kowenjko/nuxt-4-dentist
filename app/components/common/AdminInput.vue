@@ -29,7 +29,7 @@ const attrs = useAttrs()
 const inputClasses = computed(() => [
   'fi',
   props.error ? 'is-error' : '',
-  props.type === 'number' ? 'fi-mono' : '',
+  props.type === 'number' || props.type === 'datetime-local' ? 'fi-mono' : '',
 ])
 </script>
 

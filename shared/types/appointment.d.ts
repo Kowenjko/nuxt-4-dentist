@@ -1,6 +1,7 @@
 export interface CreateAppointmentI {
   doctorId: string
   serviceId: string
+  clientId?: string
   startTime: string
   notes: string | undefined
 }

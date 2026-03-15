@@ -8,13 +8,13 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ confirm: [] }>()
-const modal = defineModel()
+const model = defineModel()
 </script>
 
 <template>
   <AdminModal
     :title="editing ? 'Редагувати користувача' : 'Новий користувач'"
-    v-model="modal"
+    v-model="model"
     :saving
     :name-button-confirm="saving ? 'Збереження...' : 'Зберегти'"
     @confirm="emit('confirm')"

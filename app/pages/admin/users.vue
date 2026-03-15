@@ -116,6 +116,7 @@ definePageMeta({ layout: 'admin' })
         <div class="toolbar-left">
           <AdminInput
             v-model="search"
+            type="text"
             placeholder="Пошук за іменем або email..."
             id="user-search"
           />

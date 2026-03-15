@@ -845,7 +845,7 @@ tbody tr:hover td {
   color: var(--danger);
 }
 
-.detail-grid {
+/* .detail-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
@@ -872,7 +872,7 @@ tbody tr:hover td {
   font-size: 11.5px;
   color: var(--text-3);
   margin-top: 2px;
-}
+} */
 
 .dash-grid {
   display: grid;
